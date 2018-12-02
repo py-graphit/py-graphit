@@ -16,6 +16,7 @@ global:
 install:
   # install library
   - pip install codecov
+  - pip install pandas
   - pip install .[test]
 
 script:
