@@ -8,7 +8,7 @@ Unit tests for Graph iteration related methods
 
 import types
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
 

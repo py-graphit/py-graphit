@@ -8,7 +8,7 @@ Unit tests for Graph query methods
 
 import os
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit.graph_io.io_jgf_format import read_jgf
 from graphit.graph_axis.graph_axis_mixin import NodeAxisTools

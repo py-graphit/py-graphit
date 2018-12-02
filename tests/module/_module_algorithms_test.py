@@ -9,11 +9,12 @@ Unit tests for the graphit component
 import itertools
 import networkx
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
 from graphit.graph_algorithms import *
 from graphit.graph_networkx import NetworkXGraph
+
 
 class TestGraphAlgorithms(UnittestPythonCompatibility):
 

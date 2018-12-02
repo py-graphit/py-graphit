@@ -13,7 +13,7 @@ except:
     no_nx = True
 
 from unittest import skipIf
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit.graph_networkx import NetworkXGraph
 

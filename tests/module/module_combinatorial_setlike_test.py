@@ -6,7 +6,7 @@ file: module_combinatorial_setlike_test.py
 Unit tests for graphit 'set' like math operations functions
 """
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
 from graphit.graph_combinatorial.graph_setlike_operations import *

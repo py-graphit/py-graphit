@@ -9,7 +9,7 @@ Unit tests for import and export of graph data formats
 import os
 import unittest
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph, GraphAxis
 from graphit.graph_py2to3 import PY_STRING

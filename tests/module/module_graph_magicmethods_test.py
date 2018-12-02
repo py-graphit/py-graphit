@@ -6,7 +6,7 @@ file: module_graph_magicmethods_test.py
 Unit tests for Graph magic methods
 """
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
 

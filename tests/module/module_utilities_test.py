@@ -6,7 +6,7 @@ file: module_utilities.test.py
 Unit tests for the graphit utility functions
 """
 
-from unittest_baseclass import UnittestPythonCompatibility, MAJOR_PY_VERSION
+from tests.module.unittest_baseclass import UnittestPythonCompatibility, MAJOR_PY_VERSION
 
 from graphit import Graph
 from graphit.graph_utils.graph_utilities import *

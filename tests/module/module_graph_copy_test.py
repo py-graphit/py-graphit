@@ -8,7 +8,7 @@ Unit tests for Graph copy related methods
 
 import copy
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
 

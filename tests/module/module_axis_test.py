@@ -7,7 +7,7 @@ Unit tests for the Graph axis methods
 """
 
 import os
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit.graph_exceptions import GraphitException
 from graphit.graph_io.io_jgf_format import read_jgf

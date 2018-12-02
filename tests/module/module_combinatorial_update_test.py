@@ -10,7 +10,7 @@ import os
 import string
 import random
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit.graph_io.io_tgf_format import read_tgf
 from graphit.graph_combinatorial.graph_update_operations import graph_add

@@ -8,7 +8,7 @@ Unit tests for the Graph Object Relations Mapper (orm)
 
 import os
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit.graph_io.io_tgf_format import read_tgf
 from graphit.graph_orm import GraphORM

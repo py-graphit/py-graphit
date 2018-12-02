@@ -6,7 +6,7 @@ file: module_graph_edges_test.py
 Unit tests for the Graph edge related methods
 """
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
 from graphit.graph import GraphitException

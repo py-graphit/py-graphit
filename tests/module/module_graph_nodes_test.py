@@ -8,7 +8,7 @@ Unit tests for Graph node related methods
 
 import os
 
-from unittest_baseclass import UnittestPythonCompatibility, UNICODE_TYPE
+from tests.module.unittest_baseclass import UnittestPythonCompatibility, UNICODE_TYPE
 
 from graphit import Graph
 from graphit.graph import GraphitException

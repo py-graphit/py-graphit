@@ -6,7 +6,7 @@ file: module_graph_iteration_test.py
 Unit tests for Graph node/edge attribute methods
 """
 
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
 from graphit.graph_exceptions import GraphitException

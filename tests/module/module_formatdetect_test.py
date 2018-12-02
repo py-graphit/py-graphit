@@ -6,13 +6,10 @@ file: module_formatdetect_test.py
 Unit tests for the FormatDetect class
 """
 
-import sys
 import unittest
-from unittest_baseclass import UnittestPythonCompatibility
+from tests.module.unittest_baseclass import UnittestPythonCompatibility, MAJOR_PY_VERSION
 
 from graphit.graph_io.io_helpers import FormatDetect
-
-MAJOR_PY_VERSION = sys.version_info[0]
 
 
 class TestFormatDetect(UnittestPythonCompatibility):
