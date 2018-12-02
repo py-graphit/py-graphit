@@ -7,8 +7,9 @@ Python 2/3 unittest compatibility class
 """
 
 import unittest
+import sys
 
-from graphit.graph_py2to3 import MAJOR_PY_VERSION
+MAJOR_PY_VERSION = sys.version_info[0]
 
 # Unicode test
 UNICODE_TYPE = str
