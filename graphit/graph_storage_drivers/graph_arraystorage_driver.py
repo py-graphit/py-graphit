@@ -221,6 +221,16 @@ class ArrayStorage(GraphDriverBaseClass):
         else:
             self._storage = DataFrame(kwargs)
 
+    def __delitem__(self, key):
+
+        if key not in self:
+            raise KeyError(key)
+
+        if self.is_view:
+            self._view.remove(key)
+
+        self._storage.drop([key], axis=1, inplace=True)
+
     def __getitem__(self, key):
         """
         Implement class __getitem__
@@ -261,11 +271,26 @@ class ArrayStorage(GraphDriverBaseClass):
 
         return object.__getattribute__(self, key)
 
+    def __iter__(self):
+        """
+        Implement class __iter__
+
+        Iterate over keys in _storage
+        """
+
+        view = self._view_select()
+        for key in view.keys():
+            yield key
+
     def __len__(self):
 
         if self.is_view:
             return len(self._view)
         return len(self.keys())
+
+    def __setitem__(self, key, value):
+
+        self.set(key, value)
 
     @property
     def dataframe(self):
@@ -310,16 +335,6 @@ class ArrayStorage(GraphDriverBaseClass):
             return SeriesStorage(result)
         return result
 
-    def remove(self, key):
-
-        if key not in self.keys():
-            raise KeyError('"{0}" not in storage or not part of selective view'.format(key))
-
-        if self.is_view:
-            self._view.remove(key)
-
-        self._storage.drop([key], axis=1, inplace=True)
-
     def set(self, key, value):
 
         try:
@@ -345,10 +360,6 @@ class ArrayStorage(GraphDriverBaseClass):
         # If new key and is_view, add to view
         if self.is_view:
             self._view.append(key)
-
-    def fromkeys(self, keys, value=None):
-
-        return ArrayStorage(dict([(k, [value]) for k in keys if k in self]))
 
     def to_dict(self, return_full=False):
         """

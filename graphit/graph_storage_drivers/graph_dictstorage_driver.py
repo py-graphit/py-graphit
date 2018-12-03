@@ -11,10 +11,9 @@ methods using the Python 3.x concept of view based representations with the
 added feature to define views as data mask on the storage level.
 """
 
-import copy
 import weakref
 
-from graphit.graph_py2to3 import colabc, to_unicode, prepaire_data_dict
+from graphit.graph_py2to3 import colabc, to_unicode
 from graphit.graph_storage_drivers.graph_driver_baseclass import GraphDriverBaseClass
 from graphit.graph_storage_drivers.graph_storage_views import AdjacencyView
 
@@ -195,7 +194,7 @@ class ValuesView(colabc.ValuesView):
         return ''.join((type(self).__name__, '(', repr(tuple(self)), ')'))
 
 
-class DictStorage(GraphDriverBaseClass, dict):
+class DictStorage(GraphDriverBaseClass):
     """
     DictStorage class
     
@@ -241,6 +240,27 @@ class DictStorage(GraphDriverBaseClass, dict):
         else:
             self._storage = DictWrapper(**kwargs)
 
+    def __delitem__(self, key):
+
+        if key not in self:
+            raise KeyError(key)
+
+        if self.is_view:
+            self._view.remove(key)
+
+        del self._storage[key]
+
+    def __getitem__(self, key):
+
+        view = self._storage
+        if self.is_view:
+            view = self._view
+
+        if key not in view:
+            raise KeyError(key)
+
+        return self._storage[key]
+
     def __getstate__(self):
         """
         Implement class __getstate__
@@ -257,6 +277,13 @@ class DictStorage(GraphDriverBaseClass, dict):
             state[key] = getattr(self, key)
 
         return state
+
+    def __setitem__(self, key, value):
+
+        key = to_unicode(key)
+        self._storage[key] = to_unicode(value)
+        if self.is_view:
+            self._view.add(key)
 
     def __setstate__(self, state):
         """
@@ -298,171 +325,41 @@ class DictStorage(GraphDriverBaseClass, dict):
 
         return len(self._storage)
 
-    def copy(self):
-        """
-        Return a deep copy of the storage class with the same view as
-        the parent instance.
-
-        :return:    deep copy of storage instance
-        :rtype:     DictStorage
-        """
-
-        deepcopy = DictStorage(copy.deepcopy(self._storage))
-        if self.is_view:
-            deepcopy.set_view(self._view)
-
-        return deepcopy
-
-    def to_dict(self, return_full=False):
-        """
-        Return a shallow copy of the full dictionary.
-        
-        If the current DictStorage represent a selective view on the parent
-        dictionary then only return a dictionary with a shallow copy of the
-        keys in the selective view.
-        
-        :param return_full: ignores is_view and return the full dictionary
-        :type return_full:  bool
-        
-        :rtype:             :py:dict
-        """
-        
-        return_dict = self._storage
-        if self.is_view and not return_full:
-            return_dict = {k: v for k, v in return_dict.items() if k in self._view}
-        
-        return return_dict
-
-    def fromkeys(self, keys, value=None):
-        """
-        Return a shallow copy of the dictionary for selected keys.
-
-        If the DictStorage instance represent a selective view of the main
-        dictionary, only those keys will be considered.
-
-        TODO: value=None results in a KeyError for View based comparison methods
-
-        :param keys:  keys to return dictionary copy for
-        :param value: Default value keys
-        """
-
-        return DictStorage([(k, value) for k in keys if k in self])
-
-    def get(self, key, default=None):
-        """
-        Implement dictionary getter
-        
-        If the DictStorage instance represent a selective view of the main
-        dictionary, only allow item getter for keys in the respective view.
-        
-        ..  note:: Do not use this method directly to add nodes or edges
-                   from the graph as it may leave the graph in a funny state.
-                   Use the graph add_node or add_edge methods instead.
-        
-        :param key:     dictionary key to get value for
-        :param default: default value to return if key does not exist
-        """
-        
-        if self.is_view:
-            if key in self._view:
-                return self._storage[key]
-            return default
-        
-        return self._storage.get(key, default)
-    
-    def items(self):
-        """
-        Implement Python 3 dictionary like 'items' method that returns a
-        DictView class.
-        
-        :return: dictionary items as tuple of key/value pairs
-        :rtype:  ItemsView instance
-        """
-        
-        return ItemsView(self)
-    
-    iteritems = items
-    viewitems = items
-    
-    def keys(self):
-        """
-        Implement Python 3 dictionary like 'keys' method that returns a DictView
-        class.
-        
-        :return: dictionary keys
-        :rtype:  KeysView instance
-        """
-        
-        return KeysView(self)
-    
-    iterkeys = keys
-    viewkeys = keys
-    
-    def remove(self, key):
-        """
-        Remove key, value pairs from the dictionary
-        
-        If the DictStorage instance represent a selective view of the main
-        dictionary, only allow item deletion for keys in the respective view.
-        
-        ..  note:: Do not use this method directly to remove nodes or edges
-                   from the graph as it may leave the graph in a funny state.
-                   Use the graph remove_node or remove_edge methods instead.
-        
-        :param key: dictionary key to remove
-        """
-
-        if key not in self.keys():
-            raise KeyError('"{0}" not in storage or not part of selective view'.format(key))
-
-        if self.is_view:
-            self._view.remove(key)
-        
-        del self._storage[key]
-
-    def set(self, key, value):
-        """
-        Implement dictionary setter
-        
-        ..  note::  Do not use this method directly to add new nodes or edges
-            to the graph. Use the graph add_node or add_edge methods for this
-            purpose instead.
-        
-        :param key:   dictionary key to add or update
-        :param value: key value
-        """
-        
-        self._storage[key] = to_unicode(value)
-        if self.is_view:
-            self._view.add(to_unicode(key))
-
-    def update(self, *args, **kwargs):
-        """
-        Update key/value pairs also updating the view if needed
-        
-        :param other: other key/value pairs
-        :type other:  :py:dict
-        """
-
-        kwargs = prepaire_data_dict(kwargs)
-
-        self._storage.update(*args, **kwargs)
-        if self.is_view:
-            other = []
-            if args:
-                other = list(args[0].keys())
-            self._view.update(other + list(kwargs.keys()))
-    
     def values(self):
         """
         Implement Python 3 dictionary like 'values' method that returns a DictView
         class.
-        
+
         :return: dictionary values
         :rtype:  ValuesView instance
         """
-        
+
         return ValuesView(self)
-    
+
     itervalues = values
-    viewvalues = values
+
+    def items(self):
+        """
+        Implement Python 3 dictionary like 'items' method that returns a
+        DictView class.
+
+        :return: dictionary items as tuple of key/value pairs
+        :rtype:  ItemsView instance
+        """
+
+        return ItemsView(self)
+
+    iteritems = items
+
+    def keys(self):
+        """
+        Implement Python 3 dictionary like 'keys' method that returns a DictView
+        class.
+
+        :return: dictionary keys
+        :rtype:  KeysView instance
+        """
+
+        return KeysView(self)
+
+    iterkeys = keys
