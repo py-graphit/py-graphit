@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_pgf_format.py
 
 """
-file: io_pgf_format.py
-
-Functions for reading and writing graphs defined in Propitiatory Graph Format
+Reading and writing graphs defined in Propitiatory Graph Format
 (.pgf) a format specific to the graphit module.
 
 Graph nodes, edges and adjacency are stored as plain python dictionaries

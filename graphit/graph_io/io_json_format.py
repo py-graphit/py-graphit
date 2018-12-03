@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_json_format.py
 
 """
-file: io_json_format.py
-
 Functions for importing and exporting JSON data into a graph data structure
 """
 

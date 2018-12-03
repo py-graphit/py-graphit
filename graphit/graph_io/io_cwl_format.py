@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_cwl_format.py
 
 """
-file: io_cwl_format.py
-
 Functions for importing data structures in Common Workflow Language format.
 
 The Common Workflow Language (CWL) is a specification for describing analysis

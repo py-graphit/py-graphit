@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_jsonschema_format.py
 
 """
-file: io_jsonschema_format.py
-
 Functions for building and validating graphs based on a JSON schema definition.
 http://json-schema.org
 """

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_pydata_format.py
 
 """
-file: io_pydata_format.py
-
 Functions for importing and exporting (nested) Python data structures into
 graph data structures.
 """

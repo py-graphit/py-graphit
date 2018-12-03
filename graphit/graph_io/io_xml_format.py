@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_xml_format.py
 
 """
-file: io_xml_format.py
-
 Functions for exporting and importing XML documents in a graph structure.
 """
 

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_jgf_format.py
 
 """
-file: io_json_format.py
-
 Functions for reading and writing graph files in the graphit .jgf JSON format
 
 This is a propitiatory format in which the graph meta-data, the nodes, edges

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_dot_format.py
 
 """
-file: io_dict_format.py
-
 Functions for exporting and importing graphs to and from graph description
 language (DOT) format
 """

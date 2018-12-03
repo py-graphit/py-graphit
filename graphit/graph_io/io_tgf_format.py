@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_tgf_format.py
 
 """
-file: io_tgf_format.py
-
 Functions for reading and writing graphs defined in Trivial Graph Format (.tgf)
 a simple text-based file format for describing graphs. It consists of a list of
 node definitions, which map node IDs to labels, followed by a list of edges,

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_yaml_format.py
 
 """
-file: io_yaml_format.py
-
 Functions for importing and exporting graphs in YAML format.
 Relies on PyYAML.
 """

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_jsonschema_format_drafts.py
 
 """
-file: io_jsonschema_format_drafts.py
-
 Classes representing JSON Schema draft version as specified by
 http://json-schema.org.
 """

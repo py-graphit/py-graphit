@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2018
+# Author:  Marc van Dijk (marcvdijk@gmail.com)
+# file: io_web_format.py
 
 """
-file: io_web_format.py
-
 Functions for reading and writing hierarchical data structures defined by the
 Spider data modelling package as .web format files.
 
