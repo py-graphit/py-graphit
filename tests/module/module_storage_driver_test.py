@@ -7,6 +7,7 @@ Unit tests graph nodes and edges storage drivers
 """
 
 import random
+import types
 
 from tests.module.unittest_baseclass import UnittestPythonCompatibility, MAJOR_PY_VERSION
 
@@ -14,74 +15,219 @@ from graphit.graph_storage_drivers.graph_dictstorage_driver import DictStorage
 from graphit.graph_storage_drivers.graph_arraystorage_driver import ArrayStorage
 
 
-class _PropertyTests(object):
-    """
-    Mixin class to test class property getter and setter methods
-    """
-
-    _propvalue = 3
-
-    @property
-    def aproperty(self):
-
-        return self._propvalue
-
-    @aproperty.setter
-    def aproperty(self, value):
-
-        self._propvalue = value
-
-
 class _BaseStorageDriverTests(object):
     """
     Base class for storage driver unit tests
+
+    Tests all of the abstract and derived methods in the 'GraphDriverBaseClass'
+    base class inherited by storage specific drivers.
     """
 
-    def test_storagedriver_creation(self):
+    # Abstract methods from MutableMapping class
+    def test_storagedriver__delitem__(self):
         """
-        Test default Python dict-like creation from iterable and/or mappings
-        """
-
-        # Storage from a native dict
-        fromdict = self.storage_instance(self.mapping)
-        self.assertViewEqual(self.mapping, fromdict)
-
-        # Storage from keyword arguments (only for nodes)
-        if all([isinstance(k, str) for k in self.mapping]):
-            frommap = self.storage_instance(**self.mapping)
-            self.assertViewEqual(self.mapping, frommap)
-
-        # Storage from list of tuples
-        frommap = self.storage_instance(self.mapping.items())
-        self.assertViewEqual(self.mapping, frommap)
-
-        # Storage from a list of keys
-        keys = random.sample(self.mapping.keys(), 2)
-        new_d = fromdict.fromkeys(keys, 1)
-        self.assertDictEqual(self.mapping.fromkeys(keys, 1), new_d)
-
-    def test_storagedriver_length(self):
-        """
-        Test size of storage which equals number of keys in default Python dict
+        Test Python dict-like __delitem__ method
         """
 
-        self.assertEqual(len(self.storage), len(self.mapping))
-        self.assertEqual(len(self.storage), len(self.storage.keys()))
+        key_to_remove = random.choice(list(self.mapping.keys()))
 
-    def test_storagedriver_getitem(self):
+        # Remove key
+        del self.storage[key_to_remove]
+        self.assertTrue(key_to_remove not in self.storage)
+
+        # Remove key that does not exist
+        self.assertRaises(KeyError, self.storage.__delitem__, 'nokey')
+
+    def test_storagedriver__getitem__(self):
         """
-        Test Python dict-like __getitem__ behaviour
+        Test Python dict-like __getitem__ method
         """
 
         for node, attr in self.mapping.items():
             self.assertDictEqual(attr, self.storage[node])
 
+        # Get key that does not exist
         self.assertRaises(KeyError, self.storage.__getitem__, 'nokey')
 
-    def test_storagedriver_getattr(self):
+    def test_storagedriver__len__(self):
         """
-        Test Python dict-like __getattr__ behaviour, only for string based
-        access so no edges
+        Test Python dict-like __len__ method
+        """
+
+        self.assertEqual(len(self.storage), len(self.mapping))
+        self.assertEqual(len(self.storage), len(self.storage.keys()))
+
+    def test_storagedriver__setitem__(self):
+        """
+        Test Python dict-like __setitem__ method
+        """
+
+        key_to_change = random.choice(list(self.mapping.keys()))
+
+        # Change value for existing key
+        self.storage[key_to_change] = {'key': 2, 'extra': False}
+        self.assertDictEqual({'key': 2, 'extra': False}, self.storage[key_to_change])
+
+        # Add newkey, value pair
+        self.storage[self.new_key] = {'key': 6}
+        self.assertDictEqual({'key': 6}, self.storage[self.new_key])
+
+    def test_storagedriver__iter__(self):
+        """
+        Test Python dict-like __iter__ method
+        """
+
+        for k in self.storage:
+            self.assertTrue(k in self.mapping)
+
+    # Derived methods from 'Mapping' class
+    def test_storagedriver__contains__(self):
+        """
+        Test Python dict-like __contains__ method
+        """
+
+        self.assertTrue(random.choice(list(self.mapping.keys())) in self.storage)
+        self.assertFalse(self.new_key in self.storage)
+
+    def test_storagedriver__eq__(self):
+        """
+        Test Python dict-like __eq__ method
+        """
+
+        graph1 = self.storage_instance({'three': 3, 'four': 4, 'six': 6})
+        self.assertFalse(self.storage == graph1)
+
+        self.assertFalse(self.storage == ['four', 'six', 'three'])
+
+    def test_storagedriver__ne__(self):
+        """
+        Test Python dict-like __ne__ method
+        """
+
+        graph1 = self.storage_instance({'three': 3, 'four': 4, 'six': 6})
+        self.assertTrue(self.storage != graph1)
+
+        self.assertTrue(self.storage != ['four', 'six', 'three'])
+
+    def test_storagedriver_get(self):
+        """
+        Test Python dict-like get method
+        """
+
+        for node, attr in self.mapping.items():
+            self.assertDictEqual(attr, self.storage.get(node))
+
+        # Default getter
+        self.assertTrue(self.storage.get(self.new_key, 6), 6)
+        self.assertEqual(self.storage.get(self.new_key), None)
+
+    def test_storagedriver_items(self, items=None):
+        """
+        Test Python dict-like items method.
+        Return object may be a list or generator/view-like object
+        """
+
+        if items is None:
+            items = self.storage.items()
+
+        self.assertViewEqual(self.mapping.items(), list(items))
+
+    def test_storagedriver_keys(self, keys=None):
+        """
+        Test Python dict-like keys method.
+        Return object may be a list or generator/view-like object
+        """
+
+        if keys is None:
+            keys = self.storage.keys()
+
+        self.assertViewEqual(self.mapping.keys(), list(keys))
+
+    def test_storagedriver_values(self, values=None):
+        """
+        Test Python dict-like values method.
+        Return object may be a list or generator/view-like object
+        """
+
+        if values is None:
+            values = self.storage.values()
+
+        self.assertViewEqual(self.mapping.values(), list(values))
+
+    # Derived methods from 'MutableMapping' class
+    def test_storagedriver_clear(self):
+        """
+        Test Python dict-like clear method
+        """
+
+        self.storage.clear()
+        self.assertEqual(len(self.storage), 0)
+
+    def test_storagedriver_pop(self):
+        """
+        Test Python dict-like pop method.
+        """
+
+        key = random.choice(list(self.mapping.keys()))
+
+        pop = self.storage.pop(key)
+        self.assertDictEqual(self.mapping[key], pop)
+        self.assertTrue(key not in self.storage)
+
+    def test_storagedriver_popitem(self):
+        """
+        Test Python dict-like popitem method.
+        """
+
+        popitem = self.storage.popitem()
+        self.assertTrue(popitem not in list(self.storage.items()))
+
+    def test_storagedriver_update(self):
+        """
+        Test Python dict-like update method.
+        """
+
+        update = dict(zip(random.sample(self.mapping.keys(), 2),
+                          [{'key': 8}, {'key': 9, 'last': True}]))
+
+        self.storage.update(update)
+        self.mapping.update(update)
+
+        for node, attr in self.mapping.items():
+            self.assertDictEqual(attr, self.storage[node])
+
+        kw = {self.new_key: 6}
+        self.storage.update(kw)
+        self.assertTrue(self.new_key in self.storage)
+
+    def test_storagedriver_setdefault(self):
+        """
+        Test Python dict-like setdefault method.
+        """
+
+        self.storage.setdefault(self.new_key, 10)
+        self.assertTrue(self.new_key in self.storage)
+
+    # Default class magic methods
+    def test_storagedriver__str__(self):
+        """
+        Test Python __str__ method
+        """
+
+        self.assertEqual(str(sorted(self.storage)), str(sorted(self.mapping.keys())))
+
+    def test_storagedriver__repr__(self):
+        """
+        Test Python __repr__ method
+        """
+
+        self.assertEqual(repr(self.storage), '<{0} object {1}: {2} items>'.format(type(self.storage).__name__,
+                                                                                  id(self.storage), len(self.storage)))
+
+    def test_storagedriver__getattr__(self):
+        """
+        Test Python dict-like __getattr__ method.
+        Only for string based access so no edges
         """
 
         if isinstance(self.new_key, str):
@@ -90,34 +236,28 @@ class _BaseStorageDriverTests(object):
 
         self.assertRaises(AttributeError, self.storage.__getattr__, 'nokey')
 
-    def test_storagedriver_setitem(self):
+    # Derived dict-like methods
+    def test_storagedriver_set(self):
         """
-        Test Python dict-like __setitem__ behaviour
+        Test dictionary set method.
+        Not a default Python dict method
         """
 
-        key_to_change = random.choice(list(self.mapping.keys()))
-
-        # Change value for existing key
-        self.storage[key_to_change] = {'key': 2, 'extra': False}
-        self.assertDictEqual({'key': 2, 'extra': False}, self.storage.get(key_to_change))
-
-        # Add newkey, value pair
-        self.storage[self.new_key] = {'key': 6}
-        self.assertDictEqual({'key': 6}, self.storage.get(self.new_key))
+        self.storage.set(self.new_key, 6)
+        self.assertTrue(self.new_key in self.storage)
 
     def test_storagedriver_set_empty(self):
         """
-        Test Python dict-like __setitem__ behaviour without attributes
+        Test Python dict-like set without attributes
         equals adding only a node or edge with empty attribute store.
         """
 
         self.storage[self.new_key] = {}
-        self.assertDictEqual({}, self.storage.get(self.new_key))
+        self.assertDictEqual({}, self.storage[self.new_key])
 
     def test_storagedriver_set_attributes(self):
         """
-        Test 'set' and Python dict-like __setitem__ behaviour on node/edge
-        attribute stores.
+        Test Python dict-like set behaviour on node/edge attribute stores.
         """
 
         key = random.choice(list(self.mapping.keys()))
@@ -134,114 +274,6 @@ class _BaseStorageDriverTests(object):
         attr['new'] = True
         self.assertEqual(self.storage[key]['new'], True)
 
-    def test_storagedriver_delitem(self):
-        """
-        Test Python dict-like __delitem__ behaviour
-        """
-
-        key_to_remove = random.choice(list(self.mapping.keys()))
-
-        # Remove key
-        del self.storage[key_to_remove]
-        self.assertTrue(key_to_remove not in self.storage)
-
-        # Remove key that does not exist
-        self.assertRaises(KeyError, self.storage.__delitem__, 'nokey')
-
-    def test_storagedriver_contain(self):
-        """
-        Test Python dict-like contain magic methods
-        """
-
-        self.assertTrue(random.choice(list(self.mapping.keys())) in self.storage)
-        self.assertFalse(self.new_key in self.storage)
-
-    # def test_storagedriver_property(self):
-    #     """
-    #     Test ability of the class to deal with get/set of class property values
-    #     """
-    #
-    #     propclass = type('PropertyClass', (self.storage_instance, _PropertyTests), {})
-    #     storage = propclass({'one': 1, 'two': 2, 'three': 3})
-    #
-    #     # Default getter property and regular data
-    #     self.assertEquals(storage['one'], 1)
-    #     self.assertEquals(storage.aproperty, 3)
-    #     self.assertEquals(storage.two, 2)
-    #
-    #     # 'get' method should not return property
-    #     self.assertIsNone(storage.get('aproperty'))
-    #     self.assertIsNone(storage.get('_propvalue'))
-    #
-    #     # Default setter
-    #     storage.aproperty = 4
-    #     self.assertEquals(storage.aproperty, 4)
-    #     self.assertTrue('aproperty' not in storage)
-    #
-    #     # Properties have precedence over data store
-    #     storage['aproperty'] = 10
-    #     self.assertTrue('aproperty' in storage)
-    #     self.assertEquals(storage.aproperty, 4)
-    #     self.assertEquals(storage['aproperty'], 10)
-
-    def test_storagedriver_iter(self):
-        """
-        Test Python dict-like __iter__ behaviour
-        """
-
-        keys = self.storage.keys()
-        for k in self.storage:
-            self.assertTrue(k in keys)
-
-    def test_storagedriver_str(self):
-        """
-        Test Python __str__ behaviour
-        """
-
-        self.assertEqual(str(sorted(self.storage)), str(sorted(self.mapping.keys())))
-
-    def test_storagedriver_repr(self):
-        """
-        Test Python __repr__ behaviour
-        """
-
-        self.assertEqual(repr(self.storage), '<{0} object {1}: {2} items>'.format(type(self.storage).__name__,
-                                                                                  id(self.storage), len(self.storage)))
-
-    def test_storagedriver_clear(self):
-        """
-        Test Python dict clear method
-        """
-
-        self.storage.clear()
-        self.assertEqual(len(self.storage), 0)
-
-    def test_storagedriver_get(self):
-        """
-        Test Python dict get method
-        """
-
-        for node, attr in self.mapping.items():
-            self.assertDictEqual(attr, self.storage.get(node))
-
-        # Default getter
-        self.assertTrue(self.storage.get(self.new_key, 6), 6)
-        self.assertEqual(self.storage.get(self.new_key), None)
-
-    def test_storagedriver_items(self, items=None):
-        """
-        Test Python dict-like items method. This should return at least a
-        'view' or 'generator' like object. In case of a generator we can use
-        it only once and thus for testing we convert it to a list.
-        """
-
-        if items is None:
-            items = self.storage.items()
-        items = list(items)
-
-        self.assertTrue(isinstance(items, list))
-        self.assertViewEqual(self.mapping.items(), items)
-
     def test_storagedriver_iteritems(self):
         """
         Iteritems and viewitems should be testable by regular items test
@@ -249,24 +281,6 @@ class _BaseStorageDriverTests(object):
 
         self.test_storagedriver_items(items=self.storage.iteritems())
         self.test_storagedriver_items(items=self.storage.viewitems())
-
-    def test_storagedriver_keys(self, keys=None):
-        """
-        Test Python dict-like keys method. This should return at least a
-        'view' or 'generator' like object. In case of a generator we can use
-        it only once and thus for testing we convert it to a list.
-        """
-
-        if keys is None:
-            keys = self.storage.keys()
-        keys = list(keys)
-
-        self.assertTrue(isinstance(keys, list))
-        self.assertViewEqual(self.mapping.keys(), keys)
-
-        # Test keyview __contain__
-        key = random.choice(list(self.mapping.keys()))
-        self.assertTrue(key in keys)
 
     def test_storagedriver_iterkeys(self):
         """
@@ -276,20 +290,6 @@ class _BaseStorageDriverTests(object):
         self.test_storagedriver_keys(keys=self.storage.iterkeys())
         self.test_storagedriver_keys(keys=self.storage.viewkeys())
 
-    def test_storagedriver_values(self, values=None):
-        """
-        Test Python dict-like values method. This should return at least a
-        'view' or 'generator' like object. In case of a generator we can use
-        it only once and thus for testing we convert it to a list.
-        """
-
-        if values is None:
-            values = self.storage.values()
-        values = list(values)
-
-        self.assertTrue(isinstance(values, list))
-        self.assertViewEqual(self.mapping.values(), values)
-
     def test_storagedriver_itervalues(self):
         """
         Itervalues and viewvalues should be testable by regular values test
@@ -298,125 +298,7 @@ class _BaseStorageDriverTests(object):
         self.test_storagedriver_values(values=self.storage.itervalues())
         self.test_storagedriver_values(values=self.storage.viewvalues())
 
-    def test_storagedriver_pop(self):
-        """
-        Test dictionary pop method.
-        """
-
-        key = random.choice(list(self.mapping.keys()))
-
-        pop = self.storage.pop(key)
-        self.assertDictEqual(self.mapping[key], pop)
-        self.assertTrue(key not in self.storage)
-
-    def test_storagedriver_popitem(self):
-        """
-        Test dictionary popitem method.
-        """
-
-        popitem = self.storage.popitem()
-        self.assertTrue(popitem not in list(self.storage.items()))
-
-    def test_storagedriver_set(self):
-        """
-        Test dictionary set method. Not a default Python dict method
-        """
-
-        self.storage.set(self.new_key, 6)
-        self.assertTrue(self.new_key in self.storage)
-
-    def test_storagedriver_setdefault(self):
-
-        self.storage.setdefault(self.new_key, 10)
-        self.assertTrue(self.new_key in self.storage)
-
-    def test_storagedriver_update(self):
-
-        update = dict(zip(random.sample(self.mapping.keys(), 2),
-                          [{'key': 8}, {'key': 9, 'last': True}]))
-
-        self.storage.update(update)
-        self.mapping.update(update)
-
-        for node, attr in self.mapping.items():
-            self.assertDictEqual(attr, self.storage.get(node))
-
-        kw = {self.new_key: 6}
-        self.storage.update(kw)
-        self.assertTrue(self.new_key in self.storage)
-
-    def test_storagedriver_copy(self):
-        """
-        Test copy storage instance copy method
-        """
-
-        # Copy full storage instance
-        copy = self.storage.copy()
-        self.assertFalse(id(self.storage) == id(copy))
-        self.assertFalse(id(self.storage._storage) == id(copy._storage))
-
-        # Copy full storage instance including view
-        viewkeys = random.sample(self.mapping.keys(), 2)
-        self.storage.set_view(viewkeys)
-
-        copy = self.storage.copy()
-        self.assertFalse(id(self.storage) == id(copy))
-        self.assertFalse(id(self.storage._storage) == id(copy._storage))
-        self.assertEqual(len(self.storage), len(copy))
-        self.assertTrue(len(copy) < len(copy._storage))
-
-    def test_storagedriver_truethtest(self):
-        """
-        Test methods for 'existence' truth test
-        """
-
-        # An empty storage instance
-        empty = self.storage_instance()
-        self.assertIsNotNone(empty is None)
-        self.assertEqual(len(empty), 0)
-
-        # A storage instance with content
-        self.assertIsNotNone(self.storage is None)
-        self.assertNotEqual(len(self.storage), 0)
-
-    def test_storagedriver_comparison(self):
-        """
-        Test rich key based comparison operators between two storage objects
-        """
-
-        if isinstance(self.new_key, str):
-            graph1 = self.storage_instance({'three': 3, 'four': 4, 'six': 6})
-            graph2 = self.storage_instance({'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6})
-
-            self.assertEqual(self.storage.intersection(graph1), {'four', 'three'})
-            self.assertEqual(self.storage.difference(graph1), {'five', 'two', 'one'})
-            self.assertEqual(self.storage.symmetric_difference(graph1), {'six', 'five', 'two', 'one'})
-            self.assertEqual(self.storage.union(graph1), {'six', 'three', 'one', 'four', 'five', 'two'})
-            self.assertFalse(self.storage.isdisjoint(graph1))
-            self.assertFalse(self.storage.issubset(self.storage, propper=True))
-            self.assertTrue(self.storage.issubset(self.storage, propper=False))
-            self.assertTrue(graph2.issuperset(self.storage, propper=True))
-            self.assertTrue(self.storage.issuperset(self.storage, propper=False))
-
-            # Comparison operators between DictStorage Instances
-            self.assertEqual(self.storage & graph1, {'four', 'three'})
-            self.assertEqual(self.storage ^ graph1, {'six', 'five', 'two', 'one'})
-            self.assertEqual(self.storage | graph1, {'six', 'three', 'one', 'four', 'five', 'two'})
-            self.assertFalse(self.storage == graph1)
-            self.assertTrue(self.storage != graph1)
-            self.assertFalse(self.storage < self.storage)
-            self.assertTrue(self.storage <= self.storage)
-            self.assertTrue(graph2 > self.storage)
-            self.assertTrue(self.storage >= self.storage)
-
-            # Comparison operators between DictStorage Instance and other instance
-            # that can be converted to set representation
-            self.assertEqual(self.storage & ['four', 'six', 'three'], {'four', 'three'})
-            self.assertEqual(self.storage ^ ['four', 'six', 'three'], {'six', 'five', 'two', 'one'})
-            self.assertEqual(self.storage | ['four', 'six', 'three'], {'six', 'three', 'one', 'four', 'five', 'two'})
-            self.assertFalse(self.storage == ['four', 'six', 'three'])
-            self.assertTrue(self.storage != ['four', 'six', 'three'])
-
+    # 'View' based methods
     def test_storagedriver_view_get(self):
         """
         Test storage getter methods after a 'view' has been set on nodes or
@@ -541,6 +423,98 @@ class _BaseStorageDriverTests(object):
         if not isinstance(popitem[1], dict):
             popitem = (popitem[0], popitem[1].to_dict())
         self.assertDictEqual(self.mapping[popitem[0]], popitem[1])
+
+    # Other methods
+    def test_storagedriver_creation(self):
+        """
+        Test default Python dict-like creation from iterable and/or mappings
+        """
+
+        # Storage from a native dict
+        fromdict = self.storage_instance(self.mapping)
+        self.assertViewEqual(self.mapping, fromdict)
+
+        # Storage from keyword arguments (only for nodes)
+        if all([isinstance(k, str) for k in self.mapping]):
+            frommap = self.storage_instance(**self.mapping)
+            self.assertViewEqual(self.mapping, frommap)
+
+        # Storage from list of tuples
+        frommap = self.storage_instance(self.mapping.items())
+        self.assertViewEqual(self.mapping, frommap)
+
+        # Storage from a list of keys
+        keys = random.sample(self.mapping.keys(), 2)
+        new_d = fromdict.fromkeys(keys, 1)
+        self.assertDictEqual(self.mapping.fromkeys(keys, 1), new_d.to_dict())
+
+    def test_storagedriver_copy(self):
+        """
+        Test copy storage instance copy method
+        """
+
+        # Copy full storage instance
+        copy = self.storage.copy()
+        self.assertFalse(id(self.storage) == id(copy))
+        self.assertFalse(id(self.storage._storage) == id(copy._storage))
+
+        # Copy full storage instance including view
+        viewkeys = random.sample(self.mapping.keys(), 2)
+        self.storage.set_view(viewkeys)
+
+        copy = self.storage.copy()
+        self.assertFalse(id(self.storage) == id(copy))
+        self.assertFalse(id(self.storage._storage) == id(copy._storage))
+        self.assertEqual(len(self.storage), len(copy))
+        self.assertTrue(len(copy) < len(copy._storage))
+
+    def test_storagedriver_truethtest(self):
+        """
+        Test methods for 'existence' truth test
+        """
+
+        # An empty storage instance
+        empty = self.storage_instance()
+        self.assertIsNotNone(empty is None)
+        self.assertEqual(len(empty), 0)
+
+        # A storage instance with content
+        self.assertIsNotNone(self.storage is None)
+        self.assertNotEqual(len(self.storage), 0)
+
+    def test_storagedriver_comparison(self):
+        """
+        Test rich key based comparison operators between two storage objects
+        """
+
+        if isinstance(self.new_key, str):
+            graph1 = self.storage_instance({'three': 3, 'four': 4, 'six': 6})
+            graph2 = self.storage_instance({'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6})
+
+            self.assertEqual(self.storage.intersection(graph1), {'four', 'three'})
+            self.assertEqual(self.storage.difference(graph1), {'five', 'two', 'one'})
+            self.assertEqual(self.storage.symmetric_difference(graph1), {'six', 'five', 'two', 'one'})
+            self.assertEqual(self.storage.union(graph1), {'six', 'three', 'one', 'four', 'five', 'two'})
+            self.assertFalse(self.storage.isdisjoint(graph1))
+            self.assertFalse(self.storage.issubset(self.storage, propper=True))
+            self.assertTrue(self.storage.issubset(self.storage, propper=False))
+            self.assertTrue(graph2.issuperset(self.storage, propper=True))
+            self.assertTrue(self.storage.issuperset(self.storage, propper=False))
+
+            # Comparison operators between DictStorage Instances
+            self.assertEqual(self.storage & graph1, {'four', 'three'})
+            self.assertEqual(self.storage ^ graph1, {'six', 'five', 'two', 'one'})
+            self.assertEqual(self.storage | graph1, {'six', 'three', 'one', 'four', 'five', 'two'})
+            self.assertFalse(self.storage < self.storage)
+            self.assertTrue(self.storage <= self.storage)
+            self.assertTrue(graph2 > self.storage)
+            self.assertTrue(self.storage >= self.storage)
+
+            # Comparison operators between DictStorage Instance and other instance
+            # that can be converted to set representation
+            self.assertEqual(self.storage & ['four', 'six', 'three'], {'four', 'three'})
+            self.assertEqual(self.storage ^ ['four', 'six', 'three'], {'six', 'five', 'two', 'one'})
+            self.assertEqual(self.storage | ['four', 'six', 'three'], {'six', 'three', 'one', 'four', 'five', 'two'})
 
 
 class TestDictStorageNodes(_BaseStorageDriverTests, UnittestPythonCompatibility):
