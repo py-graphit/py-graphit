@@ -10,6 +10,7 @@ import inspect
 import logging
 
 from graphit import __module__
+from graphit.graph_py2to3 import colabc
 from graphit.graph_storage_drivers.graph_dictstorage_driver import DictStorage
 
 __all__ = ['GraphORM']
@@ -84,8 +85,8 @@ class MappingDictStorage(DictStorage):
         :raises:       TypeError
         """
 
-        if not isinstance(mapping, dict):
-            raise TypeError('Requires MappingDictStorage class to update from')
+        if not isinstance(mapping, colabc.MutableMapping):
+            raise TypeError('Requires dict-like storage class to update from')
 
         # Update node mapping for all unique mappings in other ORM
         to_add = []
