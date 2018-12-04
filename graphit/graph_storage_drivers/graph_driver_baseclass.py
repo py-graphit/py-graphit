@@ -36,6 +36,7 @@ import abc
 import copy
 
 from graphit.graph_py2to3 import to_unicode, colabc
+from graphit.graph_storage_drivers.graph_storage_views import DataView
 
 __all__ = ['GraphDriverBaseClass']
 
@@ -139,14 +140,30 @@ class GraphDriverBaseClass(colabc.MutableMapping):
 
         return self.intersection(other)
 
-    def __call__(self):
+    def __call__(self, data=False, default=None):
         """
         Implement class __call__
 
-        Calls the class `to_dict` method
+        Returns a Python dictionary representation of the full data store or
+        the view on it by calling the `to_dict` method.
 
-        :rtype:  :py:dict
+        If `data` is not None a `DataView` object is returned that allows
+        iterating over node/edge data attributes in a way similar to the
+        NodeDataView and EdgeDataView classes in NetworkX. In fact, this
+        feature is added to provide compatibility with NetworkX.
+
+        :param data:    return a DataView of the storage instance. The full
+                        attribute store is considered by default. If 'data'
+                        is an attribute dictionary key then only that key/value
+                        pair is considered in the DataView
+        :param default: default value returned by the DataView when the
+                        target parameter (data) is not defined.
+
+        :rtype:         :py:dict
         """
+
+        if data is not False:
+            return DataView(self, data, default)
 
         return self.to_dict()
 

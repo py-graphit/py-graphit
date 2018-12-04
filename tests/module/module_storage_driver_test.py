@@ -7,13 +7,12 @@ Unit tests graph nodes and edges storage drivers
 """
 
 import random
-import types
 
 from tests.module.unittest_baseclass import UnittestPythonCompatibility, MAJOR_PY_VERSION
 
 from graphit.graph_storage_drivers.graph_dictstorage_driver import DictStorage
 from graphit.graph_storage_drivers.graph_arraystorage_driver import ArrayStorage
-
+from graphit.graph_storage_drivers.graph_storage_views import DataView
 
 class _BaseStorageDriverTests(object):
     """
@@ -423,6 +422,53 @@ class _BaseStorageDriverTests(object):
         if not isinstance(popitem[1], dict):
             popitem = (popitem[0], popitem[1].to_dict())
         self.assertDictEqual(self.mapping[popitem[0]], popitem[1])
+
+    def test_dictstorage_dataview_attrdict(self):
+        """
+        Test DataView that iterates over full attribute dictionaries
+        """
+
+        data = self.storage(data=True)
+
+        self.assertIsInstance(data, DataView)
+
+        # Iterate
+        mapitem = self.mapping.items()
+        for item in data:
+            self.assertTrue(item in mapitem)
+
+        # contains
+        for item in mapitem:
+            self.assertTrue(item in data)
+
+        # getter
+        for key, value in self.mapping.items():
+            self.assertDictEqual(value, data[key])
+
+        # getter with non-existing primary key raises KeyError
+        self.assertRaises(KeyError, self.storage.__getitem__, 'nokey')
+
+    def test_dictstorage_dataview_attrdict(self):
+        """
+        Test DataView that iterates over specific key/value pairs
+        """
+
+        data = self.storage(data='weight', default=1.00)
+
+        self.assertIsInstance(data, DataView)
+
+        # Iterate
+        mapitem = dict({(k, v.get('weight', 1.00)) for k,v in self.mapping.items()})
+        for item in data:
+            self.assertTrue(item in mapitem)
+
+        # contains
+        for item in mapitem:
+            self.assertTrue(item in data)
+
+        # getter
+        for key, value in self.mapping.items():
+            self.assertEqual(value, data[key])
 
     # Other methods
     def test_storagedriver_creation(self):

@@ -11,7 +11,9 @@ therefor they should work for every storage driver. A driver can implement
 it's own version of a view for performance purposes for instance.
 """
 
-__all__ = ['AdjacencyView']
+from graphit.graph_py2to3 import colabc
+
+__all__ = ['AdjacencyView', 'DataView']
 
 
 class AdjacencyView(object):
@@ -174,3 +176,133 @@ class AdjacencyView(object):
         """
 
         return self._build_adjacency(self.nodes).items()
+
+
+class DataView(colabc.Set):
+    """
+    A read-only DataView class on node/edge data
+
+    This class allows iteration over the data store primary keys (nodes
+    or edges) and data attributes in a read-only fashion.
+    The full data dictionary is considered by default. If the 'data'
+    attribute is defined to something other then a boolean that parameter
+    will be used as lookup key for the data dictionary only returning the
+    corresponding value or 'default' if not found.
+
+    This class is available to provide compatibility with the NodeDataView
+    and EdgeDataView classes from the NetworkX library.
+    The same functionality can be achieved using the 'iteritems' or
+    'itervalues' methods of the default storage driver class that provide
+    iterators over the attribute data in the node/edge data store.
+    """
+
+    __slots__ = ('_storage', '_data', '_default')
+
+    def __init__(self, storage, data, default=None):
+        """
+        Implement class __init__
+
+        :param storage: node or edge storage instance
+        :param data:    data to return
+        :param default: default value to return
+        """
+
+        self._storage = storage
+        self._data = data
+        self._default = default
+
+    def __len__(self):
+        """
+        Implement class __len__
+
+        Returns the number of items in the _storage or the selective view on it.
+        """
+
+        return len(self._storage)
+
+    def __contains__(self, item):
+        """
+        Implement class __contains__
+
+        Validate if the data store contains the tuple (node/edge ID, dict) or
+        (node/edge ID, data value).
+        """
+
+        if not isinstance(item, tuple):
+            raise TypeError('Tuple required of type (node/edge ID, attribute data)')
+
+        try:
+            return self[item[0]] == item[1]
+        except (TypeError, ValueError):
+            return False
+
+    def __getitem__(self, item):
+        """
+        Implement class __getitem__
+
+        Return attribute data dict or specific value based on node/edge ID
+        Will return default value if specific key lookup failed.
+
+        :param item:    node/edge primary key
+
+        :return:        data dictionary or attribute value
+        """
+
+        value = self._storage[item]
+        if self._data is True:
+            return value
+        return value.get(self._data, self._default)
+
+    def __iter__(self):
+        """
+        Implement class __iter__
+
+        Iterator returning tuples of (node/edge ID, dict) or
+        (node/edge ID, data value).
+
+        :return: iterator
+        """
+
+        if self._data is True:
+            return iter(self._storage.iteritems())
+
+        if self._data is not True:
+            return ((key, value.get(self._data, self._default)) for key, value in self._storage.iteritems())
+
+    def __str__(self):
+        """
+        Implement class __str__
+        """
+
+        return str(list(self))
+
+    def __repr__(self):
+        """
+        Implement class __get__
+        """
+
+        if self._data is True:
+            return '{0}({1})'.format(self.__class__.__name__, dict(self))
+
+        return '{0}({1}, data={2})'.format(self.__class__.__name__, dict(self), self._data)
+
+    def get(self, item, default=None):
+        """
+        Implement dict-like 'get' method
+
+        Return node/edge attribute dictionary or specific value (_data).
+        If _data key was not found return default value.
+
+        :param item:    node/edge primary key
+        :param default: default value to return
+
+        :return:        data dictionary or attribute value
+        """
+
+        data = self[item]
+
+        if not isinstance(data, dict):
+            if data == self._default and default != self._default:
+                return default
+
+        return data

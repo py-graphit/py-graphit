@@ -316,8 +316,7 @@ class DictStorage(GraphDriverBaseClass):
         """
         Implement class __len__
 
-        Returns the number of items in the _storage or the selective
-        view on it.
+        Returns the number of items in the _storage or the selective view on it.
         """
 
         if self.is_view:
