@@ -448,7 +448,7 @@ class _BaseStorageDriverTests(object):
         # getter with non-existing primary key raises KeyError
         self.assertRaises(KeyError, self.storage.__getitem__, 'nokey')
 
-    def test_dictstorage_dataview_attrdict(self):
+    def test_dictstorage_dataview_attrkey(self):
         """
         Test DataView that iterates over specific key/value pairs
         """
@@ -458,8 +458,9 @@ class _BaseStorageDriverTests(object):
         self.assertIsInstance(data, DataView)
 
         # Iterate
-        mapitem = dict({(k, v.get('weight', 1.00)) for k,v in self.mapping.items()})
+        mapitem = [(k, v.get('weight', 1.00)) for k,v in self.mapping.items()]
         for item in data:
+            print(item)
             self.assertTrue(item in mapitem)
 
         # contains
@@ -468,7 +469,7 @@ class _BaseStorageDriverTests(object):
 
         # getter
         for key, value in self.mapping.items():
-            self.assertEqual(value, data[key])
+            self.assertEqual(value.get('weight', 1.00), data[key])
 
     # Other methods
     def test_storagedriver_creation(self):

@@ -98,6 +98,8 @@ class SeriesStorage(MutableMapping):
         :return:    key value
         """
 
+        if self._dropna:
+            return self._storage.dropna()[key]
         return self._storage[key]
 
     def __setitem__(self, key, value):
