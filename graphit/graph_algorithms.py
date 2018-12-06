@@ -121,12 +121,14 @@ def dfs_paths(graph, start, goal, method='dfs'):
                 stack.append((next_node, path + [next_node]))
 
 
-def dijkstra_shortest_path(graph, start, goal, weight='weight'):
+def dijkstra_shortest_path(graph, start, goal, weight=None):
     """
     Dijkstra algorithm for finding shortest paths.
     
     In contrast to depth- or breath first search, Dijkstra's algorithm
     supports weighted graphs using a priority queue.
+    The `weight` attribute defined the edge data attribute to use as
+    weight which defaults to 1 if not defined or not found.
     
     Original publication:
     Dijkstra, E. W. (1959). "A note on two problems in connexion with graphs"
@@ -152,19 +154,21 @@ def dijkstra_shortest_path(graph, start, goal, weight='weight'):
             yield linked_list[0]
             linked_list = linked_list[1]
     
-    q = [(0, start, ())]
-    visited = []
-    while len(q):
-        (cost1, v1, path) = heapq.heappop(q)
-        if v1 not in visited:
-            visited.append(v1)
-        if v1 == goal:
-            return list(flatten(path))[::-1] + [v1]
-        path = (v1, path)
-        for v2 in adj[v1]:
-            if v2 not in visited:
-                cost2 = graph.edges[(v1, v2)].get(weight, 1)
-                heapq.heappush(q, (cost1 + cost2, v2, path))
+    queue = [(0, start, ())]
+    visited_nodes = []
+    while len(queue):
+        (cost1, node1, path) = heapq.heappop(queue)
+        if node1 not in visited_nodes:
+            visited_nodes.append(node1)
+        if node1 == goal:
+            return list(flatten(path))[::-1] + [node1]
+        path = (node1, path)
+        for node2 in adj[node1]:
+            if node2 not in visited_nodes:
+                cost2 = 1
+                if weight is not None:
+                    cost2 = graph.edges[(node1, node2)].get(weight, 1)
+                heapq.heappush(queue, (cost1 + cost2, node2, path))
 
     return []
 
