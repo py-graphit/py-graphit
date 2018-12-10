@@ -106,7 +106,7 @@ class AdjacencyView(object):
 
         return True
 
-    def degree(self, nodes=None, method='degree'):
+    def degree(self, nodes=None, method='degree', weight=None):
         """
         Return the degree of nodes in the graph
 
@@ -123,6 +123,10 @@ class AdjacencyView(object):
         :type nodes:    :py:list
         :param method:  degree type as 'indegree', 'outdegree' or both 'degree'
         :type method:   :py:str
+        :param weight:  Name of edge weight attribute. If None, then each edge
+                        has weight 1. The degree is the sum of the edge weights
+                        adjacent to the node.
+        :type weight:   :py:str
 
         :return:        Degree
         :rtype:         :py:dict
@@ -131,15 +135,26 @@ class AdjacencyView(object):
         adj = self._build_adjacency(nodes or self.nodes)
 
         degree = dict.fromkeys(adj, 0)
-        for node in adj:
+        if weight is None:
+            for node in adj:
 
-            # outdegree
-            if method in ('degree', 'outdegree'):
-                degree[node] += len(adj[node])
+                # outdegree
+                if method in ('degree', 'outdegree'):
+                    degree[node] += len(adj[node])
 
-            # indegree including self loops
-            if method in ('degree', 'indegree'):
-                degree[node] += sum([1 if node in adj[n] else 0 for n in adj])
+                # indegree including self loops
+                if method in ('degree', 'indegree'):
+                    degree[node] += sum([1 if node in adj[n] else 0 for n in adj])
+        else:
+            for node in adj:
+
+                # outdegree
+                if method in ('degree', 'outdegree'):
+                    degree[node] += sum([self.edges[(node, n)].get(weight, 1) for n in adj[node]])
+
+                # indegree including self loops
+                if method in ('degree', 'indegree'):
+                    degree[node] += sum([self.edges[(n, node)].get(weight, 1) if node in adj[n] else 0 for n in adj])
 
         return degree
 

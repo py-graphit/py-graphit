@@ -6,7 +6,7 @@ file: module_algorithms_test.py
 Unit tests for the graphit component
 """
 
-import networkx
+#import networkx
 
 from unittest import skipIf
 from tests.module.unittest_baseclass import UnittestPythonCompatibility
@@ -46,19 +46,19 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
         self.gn.directed = True
 
         # NetworkX graph
-        self.nx = networkx.DiGraph()
+        #self.nx = networkx.DiGraph()
 
         for eid in edges:
             self.graph.add_edge(node_from_edge=True, *eid, **edges[eid])
             self.gn.add_edge(node_from_edge=True, *eid, **edges[eid])
-            self.nx.add_edge(*eid, **edges[eid])
+            #self.nx.add_edge(*eid, **edges[eid])
 
     def test_algorithm_degree(self):
         """
         Test degree method part of the Adjacency view
         """
 
-        # degree
+        # Degree
         self.assertDictEqual(self.graph.adjacency.degree(), {
             1: 1, 2: 3, 3: 3, 4: 3, 5: 4, 7: 4, 14: 3, 15: 2, 16: 1, 12: 3, 22: 3, 24: 1, 13: 3, 28: 1, 8: 3, 9: 2,
             10: 2, 11: 3, 25: 2, 26: 3, 27: 1, 17: 2, 18: 3, 19: 1, 20: 2, 21: 2, 23: 1})
@@ -72,6 +72,12 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
         self.assertDictEqual(self.graph.adjacency.degree(method='indegree'), {
             1: 0, 2: 1, 3: 1, 4: 1, 5: 2, 7: 2,14: 1, 15: 1, 16: 1, 12: 2, 22: 1, 24: 1, 13: 2, 28: 1, 8: 1, 9: 1,
             10: 1, 11: 1, 25: 1, 26: 2, 27: 1, 17: 1, 18: 1, 19: 1, 20: 1, 21: 1, 23: 1})
+
+        # Weighted degree
+        self.assertDictEqual(self.graph.adjacency.degree(weight='weight'), {
+            1: 1.0, 2: 3.0, 3: 4.0, 4: 3.0, 5: 3.75, 7: 3.75, 14: 5.0, 15: 4.0, 16: 1.0, 12: 4.5, 22: 3.0, 24: 1.0,
+            13: 4.0, 28: 1.0, 8: 4.5, 9: 1.0, 10: 6.0, 11: 5.0, 25: 2.0, 26: 3.0, 27: 1.0, 17: 2.0, 18: 4.0, 19: 2.0,
+            20: 2.0, 21: 2.0, 23: 1.0})
 
     def test_algorithm_dijkstra_shortest_path(self):
         """
