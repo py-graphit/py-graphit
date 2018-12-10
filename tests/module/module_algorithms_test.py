@@ -170,7 +170,7 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
         """
 
         # Default eigenvector centrality
-        self.assertDictEqual(eigenvector_centrality(self.graph, max_iter=1000),
+        self.assertDictAlmostEqual(eigenvector_centrality(self.graph, max_iter=1000),
                              {1: 4.625586668162422e-22, 2: 2.585702947502789e-19, 3: 7.21415747939946e-17,
                               4: 7.21415747939946e-17, 5: 2.6788916354749308e-14, 7: 3.737126037589252e-12,
                               8: 3.723731579643154e-12, 9: 4.133449353873311e-10, 10: 4.133449353873311e-10,
@@ -179,10 +179,11 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
                               17: 4.152068010478676e-10, 18: 3.837343162085218e-08, 19: 3.0343757153351047e-06,
                               20: 3.0343757153351047e-06, 21: 0.0002095723846317974, 22: 0.012842890187130716,
                               23: 0.7070483707650801, 24: 0.7070483707650801, 25: 4.152068010478676e-10,
-                              26: 3.0536657740585734e-06, 27: 0.00021109911510684646, 28: 0.0004176371258851023})
+                              26: 3.0536657740585734e-06, 27: 0.00021109911510684646, 28: 0.0004176371258851023},
+                                   places=14)
 
         # Weighted eigenvector centrality
-        self.assertDictEqual(eigenvector_centrality(self.graph, max_iter=1000, weight='weight'),
+        self.assertDictAlmostEqual(eigenvector_centrality(self.graph, max_iter=1000, weight='weight'),
                              {1: 8.688902566026301e-23, 2: 5.899764842331867e-20, 3: 2.0000289704530646e-17,
                               4: 2.0000289704530646e-17, 5: 9.026876112472413e-15, 7: 1.148684996586023e-12,
                               8: 1.5255620780686783e-12, 9: 1.029772476508652e-10, 10: 6.178634859047565e-10,
@@ -191,7 +192,8 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
                               17: 1.5522865250051764e-10, 18: 1.745502542904305e-08, 19: 3.359775472482072e-06,
                               20: 1.679887736241036e-06, 21: 0.00014125541592609745, 22: 0.010542254842300024,
                               23: 0.7070653405331172, 24: 0.7070653405331172, 25: 1.5522865250051764e-10,
-                              26: 2.0037291488250496e-05, 27: 0.0016833983234686718, 28: 0.0017929426478924984})
+                              26: 2.0037291488250496e-05, 27: 0.0016833983234686718, 28: 0.0017929426478924984},
+                                   places=14)
 
         # Non-convergence exception
         self.assertRaises(ArithmeticError, eigenvector_centrality, self.graph, max_iter=100)

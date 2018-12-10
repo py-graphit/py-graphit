@@ -36,3 +36,12 @@ class UnittestPythonCompatibility(unittest.TestCase):
         """
 
         return all([t in expected_seq for t in actual_seq]) and all([t in actual_seq for t in expected_seq])
+
+    def assertDictAlmostEqual(self, expected_seq, actual_seq, places=None, msg=None):
+        """
+        Test if dict values are almost equal for numberic values
+        """
+
+        self.assertEqual(expected_seq.keys(), actual_seq.keys())
+        return all([self.assertAlmostEqual(expected_seq[key], value, places=places) for key, value in
+                    actual_seq.items()])
