@@ -44,22 +44,30 @@ def dfs_nodes(graph, start, method='dfs', max_depth=None):
         yield second
 
 
-def dfs_edges(graph, start,  method='dfs', max_depth=None):
+def dfs_edges(graph, start,  method='dfs', max_depth=None, edge_based=False):
     """
     Edge implementation of depth-first-search and breath-first-search
 
-    :param graph:     graph to search
-    :type graph:      graph class instance
-    :param start:     root node to start the search from
-    :type start:      node ID or Node object
-    :param method:    search method. Depth-first search (dfs, default)
-                      and Breath-first search (bfs) supported.
-    :type method:     :py:str
-    :param max_depth: maximum search depth
-    :type max_depth:  :py:int, default equals number of nodes in graph
+    This function uses dfs or bfs to traverse the nodes of the graph reporting
+    the connected edges. A list of visited nodes is used to guide graph
+    traversal but this does not guaranty that all edges will be visited.
+    Use the `edge_based` argument to switch to a true edge based graph
+    traversal.
 
-    :return:	      A generator of edges in dfs or bfs mode.
-    :rtype:           :py:generator
+    :param graph:       graph to search
+    :type graph:        graph class instance
+    :param start:       root node to start the search from
+    :type start:        node ID or Node object
+    :param method:      search method. Depth-first search (dfs, default)
+                        and Breath-first search (bfs) supported.
+    :type method:       :py:str
+    :param max_depth:   maximum search depth
+    :type max_depth:    :py:int, default equals number of nodes in graph
+    :param edge_based:  traverse over edges instead of nodes
+    :type edge_based:   :py:bool
+
+    :return:	        A generator of edges in dfs or bfs mode.
+    :rtype:             :py:generator
     """
 
     # Get node object from node ID
@@ -81,9 +89,16 @@ def dfs_edges(graph, start,  method='dfs', max_depth=None):
         parent, depth_now, children = stack[stack_pop]
         try:
             child = next(children)
-            if child not in visited:
+
+            # Use true edge or node DFS method
+            if edge_based:
+                visited_object = (parent, child)
+            else:
+                visited_object = child
+
+            if visited_object not in visited:
                 yield parent, child
-                visited.add(child)
+                visited.add(visited_object)
                 if depth_now > 1:
                     stack.append((child, depth_now - 1, iter(adjacency[child])))
         except StopIteration:
