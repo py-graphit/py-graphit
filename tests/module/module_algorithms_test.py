@@ -6,14 +6,14 @@ file: module_algorithms_test.py
 Unit tests for the graphit component
 """
 
-import networkx
+#import networkx
 
 from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
 from graphit.graph_algorithms.path_traversal import dfs_nodes, dfs_paths, dfs_edges
 from graphit.graph_algorithms.shortest_path import dijkstra_shortest_path
-from graphit.graph_algorithms.connectivity import is_reachable, nodes_are_interconnected
+from graphit.graph_algorithms.connectivity import is_reachable
 from graphit.graph_algorithms.centrality import brandes_betweenness_centrality, eigenvector_centrality
 
 from graphit.graph_networkx import NetworkXGraph
@@ -44,12 +44,12 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
         self.gn.directed = True
 
         # NetworkX graph
-        self.nx = networkx.DiGraph()
+        #self.nx = networkx.DiGraph()
 
         for eid in edges:
             self.graph.add_edge(node_from_edge=True, *eid, **edges[eid])
             self.gn.add_edge(node_from_edge=True, *eid, **edges[eid])
-            self.nx.add_edge(*eid, **edges[eid])
+            #self.nx.add_edge(*eid, **edges[eid])
 
     def test_algorithm_dijkstra_shortest_path(self):
         """
@@ -64,9 +64,7 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
                              [1, 2, 3, 5, 8, 9, 12, 13, 28])
 
         # Reverse directionality of edge (14, 15)
-        self.nx.add_edge(15, 14)
         self.graph.add_edge(15, 14)
-        self.nx.remove_edge(14, 15)
         self.graph.remove_edge(14, 15)
 
         self.assertListEqual(dijkstra_shortest_path(self.graph, 1, 28), [1, 2, 3, 5, 8, 10, 11, 13, 28])

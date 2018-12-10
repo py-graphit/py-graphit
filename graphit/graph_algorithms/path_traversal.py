@@ -16,7 +16,7 @@ from graphit.graph_algorithms import node_neighbors
 
 logger = logging.getLogger(__module__)
 
-__all__ = ['dfs_paths', 'dfs_nodes']
+__all__ = ['dfs_paths', 'dfs_nodes', 'dfs_edges']
 
 
 def dfs_nodes(graph, start, method='dfs', max_depth=None):
