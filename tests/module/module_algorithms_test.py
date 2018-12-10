@@ -6,11 +6,13 @@ file: module_algorithms_test.py
 Unit tests for the graphit component
 """
 
-#import networkx
+import networkx
 
+from unittest import skipIf
 from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
+from graphit.graph_py2to3 import MAJOR_PY_VERSION
 from graphit.graph_algorithms.path_traversal import dfs_nodes, dfs_paths, dfs_edges
 from graphit.graph_algorithms.shortest_path import dijkstra_shortest_path
 from graphit.graph_algorithms.connectivity import is_reachable
@@ -44,12 +46,32 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
         self.gn.directed = True
 
         # NetworkX graph
-        #self.nx = networkx.DiGraph()
+        self.nx = networkx.DiGraph()
 
         for eid in edges:
             self.graph.add_edge(node_from_edge=True, *eid, **edges[eid])
             self.gn.add_edge(node_from_edge=True, *eid, **edges[eid])
-            #self.nx.add_edge(*eid, **edges[eid])
+            self.nx.add_edge(*eid, **edges[eid])
+
+    def test_algorithm_degree(self):
+        """
+        Test degree method part of the Adjacency view
+        """
+
+        # degree
+        self.assertDictEqual(self.graph.adjacency.degree(), {
+            1: 1, 2: 3, 3: 3, 4: 3, 5: 4, 7: 4, 14: 3, 15: 2, 16: 1, 12: 3, 22: 3, 24: 1, 13: 3, 28: 1, 8: 3, 9: 2,
+            10: 2, 11: 3, 25: 2, 26: 3, 27: 1, 17: 2, 18: 3, 19: 1, 20: 2, 21: 2, 23: 1})
+
+        # Outdegree
+        self.assertDictEqual(self.graph.adjacency.degree(method='outdegree'), {
+            1: 1, 2: 2, 3: 2, 4: 2, 5: 2, 7: 2, 14: 2, 15: 1, 16: 0, 12: 1, 22: 2, 24: 0, 13: 1, 28: 0, 8: 2, 9: 1,
+            10: 1, 11: 2, 25: 1, 26: 1, 27: 0, 17: 1, 18: 2, 19: 0, 20: 1, 21: 1, 23: 0})
+
+        # Indegree
+        self.assertDictEqual(self.graph.adjacency.degree(method='indegree'), {
+            1: 0, 2: 1, 3: 1, 4: 1, 5: 2, 7: 2,14: 1, 15: 1, 16: 1, 12: 2, 22: 1, 24: 1, 13: 2, 28: 1, 8: 1, 9: 1,
+            10: 1, 11: 1, 25: 1, 26: 2, 27: 1, 17: 1, 18: 1, 19: 1, 20: 1, 21: 1, 23: 1})
 
     def test_algorithm_dijkstra_shortest_path(self):
         """
@@ -74,9 +96,9 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
         Test depth-first search of all paths between two nodes
         """
 
-        self.assertListEqual(list(dfs_paths(self.graph, 2, 26)), [[2, 4, 7, 25, 26], [2, 4, 5, 7, 25, 26],
-                                                            [2, 4, 5, 8, 10, 11, 26], [2, 3, 5, 7, 25, 26],
-                                                            [2, 3, 5, 8, 10, 11, 26]])
+        self.assertListEqual(list(dfs_paths(self.graph, 2, 26)), [
+            [2, 4, 7, 25, 26], [2, 4, 5, 7, 25, 26], [2, 4, 5, 8, 10, 11, 26], [2, 3, 5, 7, 25, 26],
+            [2, 3, 5, 8, 10, 11, 26]])
 
         # Nodes 13 and 26 not connected via directional path
         self.assertListEqual(list(dfs_paths(self.graph, 13, 26)), [])
@@ -89,27 +111,62 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
         self.assertListEqual(list(dfs_paths(self.graph, 2, 26, cutoff=5)), [[2, 4, 7, 25, 26], [2, 4, 5, 7, 25, 26],
                                                                             [2, 3, 5, 7, 25, 26]])
 
-    def test_algorithm_dfs_edges(self):
+    @skipIf(MAJOR_PY_VERSION == 3, 'Using python 3 version of unittest')
+    def test_algorithm_dfs_edges_py2(self):
         """
         Test graph dfs_edges method in depth-first-search (dfs) and
-        breath-first-search (bfs) mode
+        breath-first-search (bfs) mode.
+        Traversal sequence is different between Python 2 and 3 making the
+        outcome for default dfs_edges version specific.
         """
 
-        # Depth-first search
-        self.assertListEqual(list(dfs_edges(self.graph, 5)), [(5, 8), (8, 9), (9, 12), (12, 13), (13, 28), (8, 10),
-                                                              (10, 11), (11, 26), (26, 27), (5, 7), (7, 25), (7, 17),
-                                                              (17, 18), (18, 19), (18, 20), (20, 21), (21, 22),
-                                                              (22, 23), (22, 24)])
-        self.assertListEqual(list(dfs_edges(self.graph, 8)), [(8, 9), (9, 12), (12, 13), (13, 28), (8, 10), (10, 11),
-                                                              (11, 26), (26, 27)])
+        self.assertListEqual(list(dfs_edges(self.graph, 5)), [
+            (5, 8), (8, 9), (9, 12), (12, 13), (13, 28), (8, 10), (10, 11), (11, 26), (26, 27), (5, 7), (7, 25),
+            (7, 17), (17, 18), (18, 19), (18, 20), (20, 21), (21, 22), (22, 23), (22, 24)])
+
+        self.assertListEqual(list(dfs_edges(self.graph, 8)), [
+            (8, 9), (9, 12), (12, 13), (13, 28), (8, 10), (10, 11), (11, 26), (26, 27)])
 
         # Breath-first search
-        self.assertListEqual(list(dfs_edges(self.graph, 8, method='bfs')), [(8, 9), (8, 10), (9, 12), (10, 11),
-                                                                            (12, 13), (11, 26), (13, 28), (26, 27)])
+        self.assertListEqual(list(dfs_edges(self.graph, 8, method='bfs')), [
+            (8, 9), (8, 10), (9, 12), (10, 11), (12, 13), (11, 26), (13, 28), (26, 27)])
 
         # With depth limit
-        self.assertListEqual(list(dfs_edges(self.graph, 5, max_depth=2)), [(5, 8), (8, 9), (8, 10), (5, 7), (7, 25),
-                                                                           (7, 17)])
+        self.assertListEqual(list(dfs_edges(self.graph, 5, max_depth=2)), [
+            (5, 8), (8, 9), (8, 10), (5, 7), (7, 25), (7, 17)])
+
+    @skipIf(MAJOR_PY_VERSION == 2, 'Using python 2 version of unittest')
+    def test_algorithm_dfs_edges_py3(self):
+        """
+        Test graph dfs_edges method in depth-first-search (dfs) and
+        breath-first-search (bfs) mode.
+        Traversal sequence is different between Python 2 and 3 making the
+        outcome for default dfs_edges version specific.
+        """
+
+        self.assertListEqual(list(dfs_edges(self.graph, 5)), [
+            (5, 7), (7, 25), (25, 26), (26, 27), (7, 17), (17, 18), (18, 19), (18, 20), (20, 21), (21, 22), (22, 24),
+            (22, 23), (5, 8), (8, 9), (9, 12), (12, 13), (13, 28), (8, 10), (10, 11)])
+
+        self.assertListEqual(list(dfs_edges(self.graph, 8)), [
+            (8, 9), (9, 12), (12, 13), (13, 28), (8, 10), (10, 11), (11, 26), (26, 27)])
+
+        # Breath-first search
+        self.assertListEqual(list(dfs_edges(self.graph, 8, method='bfs')), [
+            (8, 9), (8, 10), (9, 12), (10, 11), (12, 13), (11, 26), (13, 28), (26, 27)])
+
+        # With depth limit
+        self.assertListEqual(list(dfs_edges(self.graph, 5, max_depth=2)), [
+            (5, 7), (7, 25), (7, 17), (5, 8), (8, 9), (8, 10)])
+
+    def test_algorithm_dfs_edges__edge_based(self):
+        """
+        Test graph dfs_edges in True edge traversal mode
+        """
+
+        # Use true edge oriented DFS method
+        self.assertListEqual(list(dfs_edges(self.graph, 8, edge_based=True)), [
+            (8, 9), (9, 12), (12, 13), (13, 28), (8, 10), (10, 11), (11, 13), (11, 26), (26, 27)])
 
     def test_algorithm_dfs_nodes(self):
         """

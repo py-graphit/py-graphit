@@ -106,29 +106,40 @@ class AdjacencyView(object):
 
         return True
 
-    def degree(self, nodes):
+    def degree(self, nodes=None, method='degree'):
         """
         Return the degree of nodes in the graph
 
-        The degree (or valency) of a graph node are the number of edges
-        connected to the node, with loops counted twice.
-        For weighted degree pleae use the dedicated
-        'graphit.graph_algorithms.degree' function.
+        Reports a dictionary with for every node in the graph the number of
+        connected edges of type:
 
-        :param nodes: Nodes to return degree for
-        :type nodes:  :py:list
+        * indegree: edges from others to self
+        * outdegree: edges from self to others
+        * degree: indegree and outdegree combined
 
-        :return:      Degree
-        :rtype:       :py:dict
+        Edges connected to self are counted twice when using 'degree' as method
+
+        :param nodes:   Nodes to return degree for
+        :type nodes:    :py:list
+        :param method:  degree type as 'indegree', 'outdegree' or both 'degree'
+        :type method:   :py:str
+
+        :return:        Degree
+        :rtype:         :py:dict
         """
 
-        adj = self._build_adjacency(nodes)
+        adj = self._build_adjacency(nodes or self.nodes)
 
-        degree = {}
+        degree = dict.fromkeys(adj, 0)
         for node in adj:
-            degree[node] = len(adj[node])
-            if node in adj[node]:
-                degree[node] += 1
+
+            # outdegree
+            if method in ('degree', 'outdegree'):
+                degree[node] += len(adj[node])
+
+            # indegree including self loops
+            if method in ('degree', 'indegree'):
+                degree[node] += sum([1 if node in adj[n] else 0 for n in adj])
 
         return degree
 
