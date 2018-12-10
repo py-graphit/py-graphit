@@ -14,7 +14,9 @@ defined.
 
 from itertools import combinations
 
-from graphit.graph_algorithms import dijkstra_shortest_path, node_neighbors, dfs_paths
+from graphit.graph_algorithms import node_neighbors
+from graphit.graph_algorithms.path_traversal import dfs_paths
+from graphit.graph_algorithms.shortest_path import dijkstra_shortest_path
 from graphit.graph_helpers import edge_list_to_adjacency
 
 __all__ = ['closest_to', 'node_neighbors', 'node_all_parents', 'node_ancestors', 'node_children',

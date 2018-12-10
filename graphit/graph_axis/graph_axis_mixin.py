@@ -7,7 +7,7 @@ NodeTools and EdgeTools classes for axis based graphs (GraphAxis class)
 """
 
 from graphit.graph_mixin import NodeTools, EdgeTools
-from graphit.graph_algorithms import dijkstra_shortest_path
+from graphit.graph_algorithms.shortest_path import dijkstra_shortest_path
 
 __all__ = ['NodeAxisTools']
 

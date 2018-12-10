@@ -22,7 +22,7 @@ from graphit.graph_py2to3 import to_unicode, prepaire_data_dict
 from graphit.graph_storage_drivers.graph_dictstorage_driver import init_dictstorage_driver
 from graphit.graph_mixin import NodeTools, EdgeTools
 from graphit.graph_orm import GraphORM
-from graphit.graph_algorithms import nodes_are_interconnected
+from graphit.graph_algorithms.connectivity import nodes_are_interconnected
 from graphit.graph_combinatorial.graph_setlike_operations import graph_union, graph_issubset
 from graphit.graph_combinatorial.graph_update_operations import graph_update, graph_subtract
 from graphit.graph_exceptions import GraphitException
