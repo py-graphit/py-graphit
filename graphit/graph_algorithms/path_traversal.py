@@ -84,7 +84,7 @@ def dfs_edges(graph, start,  method='dfs', max_depth=None, edge_based=False):
 
     visited = {start.nid}
     adjacency = graph.adjacency()
-    stack = [(start.nid, max_depth, iter(adjacency[start.nid]))]
+    stack = [(start.nid, max_depth, iter(sorted(adjacency[start.nid])))]
     while stack:
         parent, depth_now, children = stack[stack_pop]
         try:
@@ -100,7 +100,7 @@ def dfs_edges(graph, start,  method='dfs', max_depth=None, edge_based=False):
                 yield parent, child
                 visited.add(visited_object)
                 if depth_now > 1:
-                    stack.append((child, depth_now - 1, iter(adjacency[child])))
+                    stack.append((child, depth_now - 1, iter(sorted(adjacency[child]))))
         except StopIteration:
             stack.pop(stack_pop)
 
