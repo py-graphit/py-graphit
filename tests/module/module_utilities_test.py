@@ -6,7 +6,7 @@ file: module_utilities.test.py
 Unit tests for the graphit utility functions
 """
 
-from tests.module.unittest_baseclass import UnittestPythonCompatibility, MAJOR_PY_VERSION
+from tests.module.unittest_baseclass import UnittestPythonCompatibility, PY_VERSION
 
 from graphit import Graph
 from graphit.graph_utils.graph_utilities import *
@@ -60,12 +60,12 @@ class TestUtilityFunctions(UnittestPythonCompatibility):
         self.assertEqual(ug2, self.graph)
 
         # Attribute overwrite. Different dict update behaviour between PY 2/3
-        if MAJOR_PY_VERSION == 2:
-            self.assertEqual(ug2.edges[(2, 3)]['arg1'], 2.66)
-            self.assertEqual(ug2.edges[(3, 2)]['arg1'], 2.66)
-        else:
+        if PY_VERSION == '3.6':
             self.assertEqual(ug2.edges[(2, 3)]['arg1'], 1.22)
             self.assertEqual(ug2.edges[(3, 2)]['arg1'], 1.22)
+        else:
+            self.assertEqual(ug2.edges[(2, 3)]['arg1'], 2.66)
+            self.assertEqual(ug2.edges[(3, 2)]['arg1'], 2.66)
 
         undirectional_checked = []
         for edge in ug2.edges:

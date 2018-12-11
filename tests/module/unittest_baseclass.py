@@ -9,7 +9,9 @@ Python 2/3 unittest compatibility class
 import unittest
 import sys
 
-MAJOR_PY_VERSION = sys.version_info[0]
+version = sys.version_info
+MAJOR_PY_VERSION = sys.version_info.major
+PY_VERSION = '{0}.{1}'.format(version.major, version.minor)
 
 # Unicode test
 UNICODE_TYPE = str
