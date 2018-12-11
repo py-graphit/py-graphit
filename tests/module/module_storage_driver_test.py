@@ -460,7 +460,6 @@ class _BaseStorageDriverTests(object):
         # Iterate
         mapitem = [(k, v.get('weight', 1.00)) for k,v in self.mapping.items()]
         for item in data:
-            print(item)
             self.assertTrue(item in mapitem)
 
         # contains
