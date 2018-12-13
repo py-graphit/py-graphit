@@ -25,4 +25,3 @@ from graphit.graph_io.io_yaml_format import *
 # Specific data formats
 from graphit.graph_io.io_cwl_format import *
 from graphit.graph_io.io_jsonschema_format import *
-

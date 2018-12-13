@@ -15,6 +15,7 @@ from math import sqrt
 from itertools import count
 
 from graphit import __module__
+from graphit.graph_exceptions import GraphitAlgorithmError
 
 logger = logging.getLogger(__module__)
 
@@ -167,12 +168,12 @@ def eigenvector_centrality(graph, max_iter=100, tolerance=1.0e-6, weight=None, s
     """
 
     if len(graph) == 0:
-        raise ArithmeticError('Cannot compute centrality for graph without nodes')
+        raise GraphitAlgorithmError('Cannot compute centrality for graph without nodes')
 
     # If no initial vector is provided, start with the all-ones vector.
     if isinstance(start_value, dict):
         if all(v == 0 for v in start_value.values()):
-            raise ArithmeticError('initial vector cannot have all zero values')
+            raise GraphitAlgorithmError('initial vector cannot have all zero values')
     else:
         start_value = {v: 1.0 for v in graph.nodes}
 
@@ -185,7 +186,7 @@ def eigenvector_centrality(graph, max_iter=100, tolerance=1.0e-6, weight=None, s
         previous_vector = vector
         vector = previous_vector.copy()
 
-        # Peform y^T = x^T A (left eigenvector)
+        # Perform y^T = x^T A (left eigenvector)
         for n1 in vector:
             for n2 in graph.adjacency[n1]:
                 vector[n2] += previous_vector[n1] * graph.edges[(n1, n2)].get(weight, 1)
@@ -199,4 +200,4 @@ def eigenvector_centrality(graph, max_iter=100, tolerance=1.0e-6, weight=None, s
         if sum(abs(vector[n] - previous_vector[n]) for n in vector) < nnodes * tolerance:
             return vector
 
-    raise ArithmeticError('Unable to convergen in {0} iterations'.format(max_iter))
+    raise GraphitAlgorithmError('Unable to convergen in {0} iterations'.format(max_iter))

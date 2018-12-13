@@ -21,6 +21,7 @@ class MappingDictStorage(DictStorage):
 
     mapping_index = 0
 
+    @classmethod
     def _check_duplicate_mapping(self, source, target):
         """
         Equality of functions is determined by checking code object equality
@@ -74,7 +75,7 @@ class MappingDictStorage(DictStorage):
 
         return self.mapping_index
 
-    def update(self, mapping):
+    def update(self, *args, **kwargs):
         """
         Update the current node or edge orm mapping with those defined by
         another orm instance
@@ -84,6 +85,10 @@ class MappingDictStorage(DictStorage):
 
         :raises:       TypeError
         """
+
+        mapping = kwargs
+        if len(args):
+            mapping = args[0]
 
         if not isinstance(mapping, colabc.MutableMapping):
             raise TypeError('Requires dict-like storage class to update from')
@@ -195,7 +200,7 @@ class GraphORM(object):
 
     The mro can be controlled using the `mro_pos` argument that can be defined
     as part of a registered custom node or edge (`add` method).
-    This argument influence the sort order of resolved classes in the MRO 
+    This argument influence the sort order of resolved classes in the MRO
     following the rule: smaller indices are resolved first.
     The mro_pos index may be both a negative to large positive number to force
     first or last resolution respectively.

@@ -452,7 +452,7 @@ class GraphDriverBaseClass(colabc.MutableMapping):
         Use Python lambda functions to query the storage based on primary
         storage keys (node ID/egde ID) and values (attribute dictionary).
         Other function are allowed as well as long as they match the
-        function fingerprint described below.
+        function signature described below.
 
         The used lambda function may except two arguments in the following
         order: the primary key first and the attribute dictionary (value)

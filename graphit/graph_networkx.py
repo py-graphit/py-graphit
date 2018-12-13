@@ -208,4 +208,3 @@ class NetworkXGraph(GraphBase):
             self.add_nodes(nodes)
         else:
             raise GraphitException("update needs nodes or edges input")
- 

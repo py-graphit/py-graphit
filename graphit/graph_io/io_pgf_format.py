@@ -24,16 +24,16 @@ logger = logging.getLogger(__module__)
 def write_graph(graph, path=os.path.join(os.getcwd(), 'graph.gpf')):
     """
     Export graph as Graph Python Format file
-    
+
     GPF format is the modules own file format consisting out of a serialized
     nodes and edges dictionary.
     The format is feature rich wth good performance but is not portable.
-    
+
     :param graph:        Graph object to export
     :type graph:         Graph instance
     :param path:         File path to write to
     :type path:          path as string
-    
+
     :return: Graph instance
     """
 
@@ -53,18 +53,20 @@ def write_graph(graph, path=os.path.join(os.getcwd(), 'graph.gpf')):
 def read_graph(graph_file, graph=None):
     """
     Import graph from Graph Python Format file
-    
+
     GPF format is the modules own file format consisting out of a serialized
     nodes and edges dictionary.
     The format is feature rich wth good performance but is not portable.
-    
+
     :param graph_file:    File path to read from
     :type graph_file:     :py:str
-    :param graph:        Graph object to import to or Graph by default
-    :type graph:         Graph instance
-    :return:             Graph instance
+    :param graph:         Graph object to import to or Graph by default
+    :type graph:          :graphit:Graph
+
+    :return:              Graph instance
+    :rtype:               :graphit:Graph
     """
-    
+
     if not graph:
         graph = Graph()
 
@@ -72,5 +74,5 @@ def read_graph(graph_file, graph=None):
     with open(graph_file) as f:
         code = compile(f.read(), "GPF_file", 'exec')
         exec(code)
-    
+
     return graph

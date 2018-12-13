@@ -162,14 +162,14 @@ class GraphBase(object):
 
         return any([other == self, graph_issubset(other, self)])
 
-    def __copy__(self, memo={}):
+    def __copy__(self):
         """
         Copy directives for this class
         """
 
         return self.copy(deep=False)
 
-    def __deepcopy__(self, memo={}):
+    def __deepcopy__(self, memo):
         """
         Deepcopy directives for this class
         """
@@ -1251,7 +1251,7 @@ class GraphBase(object):
         for node in nodes:
             self.remove_node(node)
 
-    def items(self, keystring=None, valuestring=None):
+    def items(self, keystring=None, valuestring=None, **kwargs):
         """
         Python dict-like function to return node items in the (sub)graph.
 
@@ -1273,7 +1273,7 @@ class GraphBase(object):
 
         return [(n.get(keystring), n.get(valuestring)) for n in self.iternodes()]
 
-    def keys(self, keystring=None):
+    def keys(self, keystring=None, **kwargs):
         """
         Python dict-like function to return node keys in the (sub)graph.
 
@@ -1290,7 +1290,7 @@ class GraphBase(object):
         keystring = keystring or self.key_tag
         return [n.get(keystring) for n in self.iternodes()]
 
-    def values(self, valuestring=None):
+    def values(self, valuestring=None, **kwargs):
         """
         Python dict-like function to return node values in the (sub)graph.
 

@@ -125,6 +125,7 @@ class OpenAPIMethod(NodeAxisTools):
 
             print('  default: {0}\n'.format(param.get('default', '')))
 
+    @classmethod
     def _process_parameters(self, params, reference):
 
         checked_params = {}

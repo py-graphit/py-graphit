@@ -32,6 +32,7 @@ class UnittestPythonCompatibility(unittest.TestCase):
             return super(UnittestPythonCompatibility, self).assertItemsEqual(expected_seq, actual_seq, msg=msg)
         return super(UnittestPythonCompatibility, self).assertCountEqual(expected_seq, actual_seq, msg=msg)
 
+    @classmethod
     def assertViewEqual(self, expected_seq, actual_seq, msg=None):
         """
         Test equality in items even if they are 'view' based

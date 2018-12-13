@@ -40,8 +40,8 @@ def dfs_nodes(graph, start, method='dfs', max_depth=None):
     edges_path = dfs_edges(graph, start, method=method, max_depth=max_depth)
 
     yield start
-    for first, second in edges_path:
-        yield second
+    for edge in edges_path:
+        yield edge[1]
 
 
 def dfs_edges(graph, start,  method='dfs', max_depth=None, edge_based=False):

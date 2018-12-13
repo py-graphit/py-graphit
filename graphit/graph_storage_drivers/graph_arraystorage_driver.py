@@ -8,15 +8,18 @@ Pandas package
 """
 
 import weakref
+import logging
 
 from collections import MutableMapping
 from numpy import nan as Nan
 from pandas import DataFrame, Series
 
+from graphit import __module__
 from graphit.graph_storage_drivers.graph_driver_baseclass import GraphDriverBaseClass
 from graphit.graph_storage_drivers.graph_storage_views import AdjacencyView
 
 __all__ = ['ArrayStorage', 'init_arraystorage_driver']
+logger = logging.getLogger(__module__)
 
 
 def init_arraystorage_driver(nodes, edges):
@@ -341,8 +344,8 @@ class ArrayStorage(GraphDriverBaseClass):
 
         try:
             value = dict(value)
-        except:
-            pass
+        except (ValueError, TypeError):
+            logging.debug('Unable to convert value to dictionary: {0}'.format(type(value)))
 
         index = ['key']
         if isinstance(value, dict):
@@ -420,8 +423,8 @@ class ArrayStorage(GraphDriverBaseClass):
 
     def values(self):
 
-        for k, v in self.items():
-            yield v
+        for item in self.items():
+            yield item[1]
 
     itervalues = values
     viewvalues = values

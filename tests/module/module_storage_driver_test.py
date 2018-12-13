@@ -809,7 +809,7 @@ class TestArrayStorageEdges(_BaseStorageDriverTests, UnittestPythonCompatibility
         if not isinstance(actual_seq, dict):
             actual_seq = actual_seq.to_dict()
 
-        return super(UnittestPythonCompatibility, self).assertDictEqual(expected_seq, actual_seq)
+        return super(TestArrayStorageEdges, self).assertDictEqual(expected_seq, actual_seq)
 
     def assertViewEqual(self, expected_seq, actual_seq, msg=None):
         """

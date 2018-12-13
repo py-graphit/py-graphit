@@ -9,7 +9,7 @@ Unit tests for the compatibility of the NetworkXGraph with the NetworkX package
 no_nx = False
 try:
     import networkx
-except:
+except ImportError:
     no_nx = True
 
 from unittest import skipIf
@@ -60,7 +60,7 @@ class TestGraphNetworkxCompatibility(UnittestPythonCompatibility):
 
         nx_dir = self.nx.to_directed()
         gn_dir = self.gn.to_directed()
-        
+
         self.assertTrue(nx_dir.is_directed())
         self.assertTrue(gn_dir.is_directed())
 
