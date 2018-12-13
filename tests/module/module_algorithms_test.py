@@ -11,6 +11,7 @@ Unit tests for the graphit component
 from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
+from graphit.graph_exceptions import GraphitAlgorithmError
 from graphit.graph_algorithms.path_traversal import dfs_nodes, dfs_paths, dfs_edges
 from graphit.graph_algorithms.shortest_path import dijkstra_shortest_path
 from graphit.graph_algorithms.connectivity import is_reachable
@@ -230,4 +231,4 @@ class TestGraphAlgorithms(UnittestPythonCompatibility):
                                    places=14)
 
         # Non-convergence exception
-        self.assertRaises(ArithmeticError, eigenvector_centrality, self.graph, max_iter=100)
+        self.assertRaises(GraphitAlgorithmError, eigenvector_centrality, self.graph, max_iter=100)
