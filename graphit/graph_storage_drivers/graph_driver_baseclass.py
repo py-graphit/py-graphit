@@ -34,11 +34,14 @@ graphs.
 
 import abc
 import copy
+import logging
 
+from graphit import __module__
 from graphit.graph_py2to3 import to_unicode, colabc
 from graphit.graph_storage_drivers.graph_storage_views import DataView
 
 __all__ = ['GraphDriverBaseClass']
+logger = logging.getLogger(__module__)
 
 
 class GraphDriverBaseClass(colabc.MutableMapping):
@@ -441,6 +444,43 @@ class GraphDriverBaseClass(colabc.MutableMapping):
         """
 
         self._view = None
+
+    def query(self, match_func):
+        """
+        Storage query method
+
+        Use Python lambda functions to query the storage based on primary
+        storage keys (node ID/egde ID) and values (attribute dictionary).
+        Other function are allowed as well as long as they match the
+        function fingerprint described below.
+
+        The used lambda function may except two arguments in the following
+        order: the primary key first and the attribute dictionary (value)
+        as seconds argument.
+
+        Example:    lambda k,v: v['weight'] > 2 and k == 13
+
+        :param match_func:  lambda query function
+        :type match_func:   :py:lambda
+
+        :return:            list of primary storage identifiers (keys) matching
+                            the lambda query
+        :rtype:             :py:list
+        """
+
+        if not callable(match_func):
+            raise TypeError('"match_func" argument is not a function (got {0})'.format(match_func))
+
+        results = []
+        for k in self:
+            try:
+                match = match_func(k, self[k])
+                if match:
+                    results.append(k)
+            except Exception as e:
+                logging.warn('Error in lambda query function: {0}'.format(e))
+
+        return results
 
     def set(self, key, value):
         """
