@@ -336,15 +336,13 @@ def read_pydata(data, graph=None, parser_classes=ORMDEFS_LEVEL1, level=1):
     return graph
 
 
-def write_pydata(graph, nested=True, sep='.', default=None, allow_none=True, export_all=False, include_root=False):
+def write_pydata(graph, default=None, allow_none=True, export_all=False, include_root=False):
     """
     Export a graph to a (nested) dictionary
 
     Convert graph representation of the dictionary tree into a dictionary
-    using a nested or flattened representation of the dictionary hierarchy.
+    using a nested representation of the dictionary hierarchy.
 
-    In a flattened representation, the keys are concatenated using the `sep`
-    separator.
     Dictionary keys and values are obtained from the node attributes using
     `key_tag` and `value_tag`. The key_tag is set to
     graph key_tag by default.
@@ -357,10 +355,6 @@ def write_pydata(graph, nested=True, sep='.', default=None, allow_none=True, exp
 
     :param graph:          Graph object to export
     :type graph:           :graphit:GraphAxis
-    :param nested:         return a nested or flattened dictionary
-    :type nested:          :py:bool
-    :param sep:            key separator used in flattening the dictionary
-    :type sep:             :py:str
     :param default:        value to use when node value was not found using
                            value_tag.
     :type default:         mixed
@@ -414,10 +408,6 @@ def write_pydata(graph, nested=True, sep='.', default=None, allow_none=True, exp
     # Include root_key or not
     if include_root and root_key:
         data = {root_key: data}
-
-    # Flatten the dictionary if needed
-    if not nested:
-        data = flatten_nested_dict(data, sep=sep)
 
     # Restore original ORM and NodeTools
     graph.origin.node_tools = curr_nt
