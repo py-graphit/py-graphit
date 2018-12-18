@@ -131,9 +131,9 @@ class MappingDictStorage(DictStorage):
 
             # Get node or edge attributes
             if isinstance(i, tuple):
-                attributes = graph.edges.get(i)
+                attributes = graph.origin.edges.get(i)
             else:
-                attributes = graph.nodes.get(i)
+                attributes = graph.origin.nodes.get(i)
 
             for mapping in self.values():
                 matching_result = mapping['match_func'](attributes or {})
