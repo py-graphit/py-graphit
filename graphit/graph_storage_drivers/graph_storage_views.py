@@ -12,6 +12,7 @@ it's own version of a view for performance purposes for instance.
 """
 
 from graphit.graph_py2to3 import colabc
+from graphit.graph_exceptions import GraphitNodeNotFound
 
 __all__ = ['AdjacencyView', 'DataView']
 
@@ -94,7 +95,13 @@ class AdjacencyView(object):
         :rtype:         :py:dict
         """
 
-        adj = dict([(node, []) for node in nodes])
+        adj = {}
+        for node in nodes:
+            if node in self.nodes:
+                adj[node] = []
+            else:
+                raise GraphitNodeNotFound(node)
+
         for edge in self.edges:
             if edge[0] in adj:
                 adj[edge[0]].append(edge[1])
@@ -173,15 +180,15 @@ class AdjacencyView(object):
             return default
         return self.__getitem__(node)
 
-    def values(self):
+    def items(self):
         """
-        Implements dict-like `values` method
+        Implements dict-like `items` method
 
-        :return:  Adjacency dict values
+        :return:  Adjacency dict items tuples
         :rtype:   :py:list
         """
 
-        return self._build_adjacency(self.nodes).values()
+        return self._build_adjacency(self.nodes).items()
 
     def keys(self):
         """
@@ -193,15 +200,44 @@ class AdjacencyView(object):
 
         return self._build_adjacency(self.nodes).keys()
 
-    def items(self):
+    def predecessors(self, node):
         """
-        Implements dict-like `items` method
+        Return a list for all predecessors nodes of 'node'.
 
-        :return:  Adjacency dict items tuples
+        These are all nodes for which there exist and edge from other
+        nodes to self (node).
+
+        :return:  predecessors nodes
         :rtype:   :py:list
         """
 
-        return self._build_adjacency(self.nodes).items()
+        if node in self.nodes:
+            return [edge[0] for edge in self.edges if edge[1] == node]
+
+        raise GraphitNodeNotFound(node)
+
+    def successors(self, node):
+        """
+        Return a list for all successor nodes of 'node'.
+
+        These are all nodes for which there exist and edge from 'node'
+        to other. This is the same as the neighbours of 'node' or self[node].
+
+        :return:  successor nodes
+        :rtype:   :py:list
+        """
+
+        return self._build_adjacency([node])[node]
+
+    def values(self):
+        """
+        Implements dict-like `values` method
+
+        :return:  Adjacency dict values
+        :rtype:   :py:list
+        """
+
+        return self._build_adjacency(self.nodes).values()
 
 
 class DataView(colabc.Set):
