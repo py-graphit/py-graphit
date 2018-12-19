@@ -334,19 +334,6 @@ class PydataParserTest(UnittestPythonCompatibility):
         export = write_pydata(graph, include_root=True)
         self.assertDictEqual(export, {'root': self.test_dict})
 
-    def test_format_export_flattened(self):
-        """
-        Test export of graph as flattened dictionary
-        """
-
-        result = {u'three.value': 3, u'two.extra': True, u'4.value': 'four', u'three.extra': False, u'two.value': 2,
-                  u'4.five.value': 5, u'4.five.extra': [2.22, 4.67], u'one': 1}
-        graph = read_pydata(self.test_dict, level=0)
-
-        # Export to dict again
-        export = write_pydata(graph, nested=False)
-        self.assertDictEqual(export, result)
-
 
 class JSONSchemaParserTests(UnittestPythonCompatibility):
 
