@@ -73,6 +73,15 @@ class AdjacencyView(object):
         adj = self._build_adjacency([node])
         return adj[node]
 
+    def __iter__(self):
+        """
+        Implements class __iter__
+
+        :return: Iterator over node/adjacency pairs
+        """
+
+        return iter(self.items())
+
     def __len__(self):
         """
         Implements class __len__
