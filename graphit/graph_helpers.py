@@ -31,7 +31,7 @@ def edges_between_nodes(graph, nodes):
     """
 
     edge_selection = []
-    for edge in graph.edges:
+    for edge in graph.origin.edges:
         if edge[0] in nodes and edge[1] in nodes:
             edge_selection.append(edge)
 
