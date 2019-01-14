@@ -22,12 +22,15 @@
 
 from setuptools import setup, find_packages
 
-distribution_name = 'graphit'
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setup(
-    name=distribution_name,
-    version=0.2,
+    name='py-graphit',
+    version="0.2.0",
     description='Graph based data handling for the MDStudio application',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Marc van Dijk - VU University - Amsterdam,',
     author_email='m4.van.dijk@vu.nl',
     url='https://graphit.github.io',
@@ -35,13 +38,11 @@ setup(
     keywords='graph data ORM',
     platforms=['Any'],
     packages=find_packages(),
-    py_modules=[distribution_name],
     test_suite="tests",
     install_requires=['uritools', 'pytz', 'python-dateutil'],
     include_package_data=True,
     zip_safe=True,
     classifiers=[
-        'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries',

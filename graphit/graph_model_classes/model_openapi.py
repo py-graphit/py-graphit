@@ -116,14 +116,9 @@ class OpenAPIMethod(NodeAxisTools):
         print('parameters')
         parameters = self.parameters(loc='query') + self.parameters(loc='path')
         for param in parameters:
-            print('  name: {0}'.format(param['name']))
-            print('  description: {0}'.format(param.get('description', '')))
-            print('  required: {0}, type: {1}'.format(param.get('required', False), param['type']))
-
-            if 'enum' in param:
-                print('  choices: {0}'.format(param['enum']))
-
-            print('  default: {0}\n'.format(param.get('default', '')))
+            for description, value in param.items():
+                print('  {0}: {1}'.format(description, value))
+            print('')
 
     @classmethod
     def _process_parameters(self, params, reference):
