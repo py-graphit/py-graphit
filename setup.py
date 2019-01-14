@@ -38,6 +38,7 @@ setup(
     keywords='graph data ORM',
     platforms=['Any'],
     packages=find_packages(),
+    py_modules=['graphit'],
     test_suite="tests",
     install_requires=['uritools', 'pytz', 'python-dateutil'],
     include_package_data=True,
