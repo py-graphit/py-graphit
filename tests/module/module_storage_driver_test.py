@@ -14,12 +14,15 @@ from graphit.graph_storage_drivers.graph_dictstorage_driver import DictStorage
 from graphit.graph_storage_drivers.graph_arraystorage_driver import ArrayStorage
 from graphit.graph_storage_drivers.graph_storage_views import DataView
 
+
 class _BaseStorageDriverTests(object):
     """
     Base class for storage driver unit tests
 
     Tests all of the abstract and derived methods in the 'GraphDriverBaseClass'
     base class inherited by storage specific drivers.
+
+    TODO: Test set node/edge primary keys in directional/undirectional graph
     """
 
     # Abstract methods from MutableMapping class

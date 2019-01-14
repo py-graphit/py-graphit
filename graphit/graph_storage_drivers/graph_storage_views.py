@@ -213,7 +213,7 @@ class AdjacencyView(object):
         """
         Return a list for all predecessors nodes of 'node'.
 
-        These are all nodes for which there exist and edge from other
+        These are all nodes for which there exist an edge from other
         nodes to self (node).
 
         :return:  predecessors nodes
