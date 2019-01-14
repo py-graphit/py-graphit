@@ -772,15 +772,14 @@ class GraphBase(object):
 
         # Make a deep copy
         if deep:
-            class_copy = base_cls()
+            class_copy = base_cls(nodes=copy.deepcopy(self.nodes.to_dict(return_full=copy_view)),
+                                  edges=copy.deepcopy(self.edges.to_dict(return_full=copy_view)))
 
-            # Copy nodes
-            class_copy.nodes.update(copy.deepcopy(self.nodes.to_dict(return_full=copy_view)))
+            # Copy node view
             if copy_view and self.nodes.is_view:
                 class_copy.nodes.set_view(self.nodes.keys())
 
-            # Copy edges
-            class_copy.edges.update(copy.deepcopy(self.edges.to_dict(return_full=copy_view)))
+            # Copy edge view
             if copy_view and self.edges.is_view:
                 class_copy.edges.set_view(self.edges.keys())
 
