@@ -153,14 +153,29 @@ class GraphBase(object):
         """
         Implement class __contains__
 
-        Test if other is identical to, or a subgraph of self with respect to
-        its node and edge topology.
+        Test if other is contained in self in either of two ways:
 
-        .. warning:: This comparison does not consider identity in node or
-                     edge attributes.
+        * If other is a Graph instance, test if other is identical to or a
+          subgraph of self with respect to its node and edge topology.
+
+          .. warning:: This comparison does not consider identity in node or
+                       edge attributes.
+
+        * If other is not a Graph instance test if there is a node with
+          a key_tag (usually node name) that equals other. This is similar to
+          the common task of searching for a node with 'name' using the
+          `query_nodes` method.
+
+        :rtype: :py:bool
         """
 
-        return any([other == self, graph_issubset(other, self)])
+        if isinstance(other, GraphBase):
+            return any([other == self, graph_issubset(other, self)])
+        else:
+            for attr in self.nodes.itervalues():
+                if attr.get(self.key_tag) == other:
+                    return True
+            return False
 
     def __copy__(self):
         """
