@@ -43,7 +43,7 @@ following Graph methods:
 The subgraphs returned by these methods are implemented as a dictionary view over
 the keys in the nodes and edges DictStorage objects.
 By default this means that the subgraphs are fully isolated from the parent graph.
-Returning a single node using getnodes will have no neigbors.
+Returning a single node using getnodes will have no neighbors.
 This may not be desirable in circumstances where you want a view over nodes but
 retain connectivity with nodes outside of the view. This behaviour is enabled by
 switching the Graph masked to False.
@@ -53,7 +53,7 @@ import os
 
 __module__ = 'graphit'
 __docformat__ = 'restructuredtext'
-__version__ = '{major:d}.{minor:d}'.format(major=0, minor=2)
+__version__ = '{major:d}.{minor:d}.{micro:d}'.format(major=0, minor=2, micro=0)
 __author__ = 'Marc van Dijk'
 __status__ = 'pre-release beta1'
 __date__ = '15 april 2016'
