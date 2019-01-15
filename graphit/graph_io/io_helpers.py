@@ -6,7 +6,6 @@
 
 import sys
 import os
-import collections
 import unicodedata
 import locale
 import logging
@@ -93,8 +92,9 @@ def check_graphit_version(version=None):
         logger.error('No valid graphit version identifier {0}'.format(version))
         return False
 
-    if version > float(__version__):
-        logger.error('Graph made with a newer version of graphit {0}, you have {1}'.format(version, __version__))
+    curr_version = '{0:d}.{1:d}'.format(*__version__)
+    if version > float(curr_version):
+        logger.error('Graph made with a newer version of graphit {0}, you have {1}'.format(version, curr_version))
         return False
 
     return True

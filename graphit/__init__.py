@@ -53,7 +53,7 @@ import os
 
 __module__ = 'graphit'
 __docformat__ = 'restructuredtext'
-__version__ = '{major:d}.{minor:d}.{micro:d}'.format(major=0, minor=2, micro=0)
+__version__ = (0, 2, 0)
 __author__ = 'Marc van Dijk'
 __status__ = 'pre-release beta1'
 __date__ = '15 april 2016'
