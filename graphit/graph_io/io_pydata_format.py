@@ -427,7 +427,10 @@ def write_pydata(graph, default=None, allow_none=True, export_all=False, include
     equals False.
     If the key_tag exists but value_tag is absent use `default` as default.
 
-    TODO: include ability to export multiple isolated subgraphs
+    .. note:: if a graph is composed out of multiple, independent subgraphs
+              only the subgraph for which the root node is defined will be
+              exported. To export all, iterate over the subgraphs and define
+              the appropriate root for each of them.
 
     :param graph:          Graph object to export
     :type graph:           :graphit:GraphAxis
