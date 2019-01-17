@@ -26,18 +26,26 @@ except ImportError:
 __all__ = ['read_yaml', 'write_yaml']
 
 
-def read_yaml(yaml_file, graph=None, **kwargs):
+def read_yaml(yaml_file, graph=None, link_subgraphs=True, **kwargs):
     """
     Parse (hierarchical) YAML data structure to a graph
 
-    YAML files are parsed to a Python data structure that is converted
-    to graph using the `read_pydata` mehtod.
+    YAML files are parsed to a Python data structure that is converted to graph
+    using the `read_pydata` method.
     Additional keyword arguments (kwargs) are passed to `read_pydata`
+
+    A YAML file may contain multiple separate data structures. The subgraphs
+    that result from importing these separate data structures are linked to the
+    root of the first imported graph by default. Changing the `link_subgraphs`
+    attribute to False will not link the subgraphs.
 
     :param yaml_file:      yaml data to parse
     :type yaml_file:       File, string, stream or URL
     :param graph:          Graph object to import dictionary data in
     :type graph:           :graphit:Graph
+    :param link_subgraphs: link subgraphs from separate data structures
+                           in the YAML file to the root graph
+    :type link_subgraphs:  :py:bool
 
     :return:               GraphAxis object
     :rtype:                :graphit:GraphAxis
@@ -47,26 +55,29 @@ def read_yaml(yaml_file, graph=None, **kwargs):
     yaml_file = open_anything(yaml_file)
     try:
         yaml_file = yaml.safe_load(yaml_file)
-    except IOError:
-        logger.error('Unable to decode YAML string')
+    except IOError as e:
+        logger.error('Unable to decode YAML string with error: {0}'.format(e))
         return
 
+    # A YAML file may contain multiple separate data structures
     if not isinstance(yaml_file, list):
         yaml_file = [yaml_file]
 
     base_graph = read_pydata(yaml_file[0], graph=graph, **kwargs)
-
     for yaml_object in yaml_file[1:]:
         sub_graph = read_pydata(yaml_object)
 
-        # If sub-graph root is of type 'root', connect children to base_graph
-        root = sub_graph.getnodes(sub_graph.root)
-        if root[sub_graph.key_tag] == 'root':
-            links = [(base_graph.root, child) for child in root.children(return_nids=True)]
-        else:
-            links = [(base_graph.root, sub_graph.root)]
+        # Link subgraphs to base
+        if link_subgraphs:
 
-        graph_join(base_graph, sub_graph, links=links)
+            # If sub-graph root is of type 'root', connect children to base_graph
+            root = sub_graph.getnodes(sub_graph.root)
+            if root[sub_graph.key_tag] == 'root':
+                links = [(base_graph.root, child) for child in root.children(return_nids=True)]
+            else:
+                links = [(base_graph.root, sub_graph.root)]
+
+            graph_join(base_graph, sub_graph, links=links)
 
     return base_graph
 
