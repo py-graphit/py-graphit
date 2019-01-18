@@ -61,7 +61,7 @@ __licence__ = 'Apache Software License 2.0'
 __url__ = 'https://github.com/NLeSC/LIEStudio'
 __copyright__ = "Copyright (c) VU University, Amsterdam"
 __rootpath__ = os.path.dirname(__file__)
-__all__ = ['Graph', 'GraphAxis', 'GraphORM']
+__all__ = ['Graph', 'GraphAxis', 'GraphORM', 'version']
 
 
 # Functions defined at package initiation to prevent circular import problems
@@ -99,6 +99,16 @@ def check_graphaxis_instance(*args):
         raise AttributeError('All arguments need be of type Graph')
 
     return True
+
+
+def version():
+    """
+    Return a string representation of the graphit __version__
+
+    :rtype: :py:str
+    """
+
+    return '.'.join([str(i) for i in __version__])
 
 
 # Component imports

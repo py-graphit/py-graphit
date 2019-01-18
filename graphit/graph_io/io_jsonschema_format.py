@@ -15,7 +15,7 @@ import logging
 import uritools
 
 from graphit import __module__
-from graphit.graph_py2to3 import urlparse
+from graphit.graph_py2to3 import urlparse, PY_STRING
 from graphit.graph_axis.graph_axis_class import GraphAxis
 from graphit.graph_combinatorial.graph_split_join_operations import graph_join
 from graphit.graph_io.io_helpers import open_anything

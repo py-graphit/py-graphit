@@ -21,42 +21,13 @@ __all__ = ['read_graph', 'write_graph']
 logger = logging.getLogger(__module__)
 
 
-def write_graph(graph, path=os.path.join(os.getcwd(), 'graph.gpf')):
-    """
-    Export graph as Graph Python Format file
-
-    GPF format is the modules own file format consisting out of a serialized
-    nodes and edges dictionary.
-    The format is feature rich wth good performance but is not portable.
-
-    :param graph:        Graph object to export
-    :type graph:         Graph instance
-    :param path:         File path to write to
-    :type path:          path as string
-
-    :return: Graph instance
-    """
-
-    # Export graph as serialized Graph Python Format
-    pp = pprint.PrettyPrinter(indent=2)
-    with open(path, 'w') as output:
-
-        # Export nodes as dictionary
-        output.write('nodes = {0}\n'.format(pp.pformat(graph.nodes.dict())))
-
-        # Export edges as dictionary
-        output.write('edges = {0}\n'.format(pp.pformat(graph.edges.dict())))
-
-    logger.info('Graph exported in GPF format to file: {0}'.format(path))
-
-
 def read_graph(graph_file, graph=None):
     """
     Import graph from Graph Python Format file
 
     GPF format is the modules own file format consisting out of a serialized
     nodes and edges dictionary.
-    The format is feature rich wth good performance but is not portable.
+    The format is feature rich with good performance but is not portable.
 
     :param graph_file:    File path to read from
     :type graph_file:     :py:str
@@ -76,3 +47,32 @@ def read_graph(graph_file, graph=None):
         exec(code)
 
     return graph
+
+
+def write_graph(graph, path=os.path.join(os.getcwd(), 'graph.gpf')):
+    """
+    Export graph as Graph Python Format file
+
+    GPF format is the modules own file format consisting out of a serialized
+    nodes and edges dictionary.
+    The format is feature rich wth good performance but is not portable.
+
+    :param graph:        Graph object to export
+    :type graph:         Graph instance
+    :param path:         File path to write to
+    :type path:          path as string
+
+    :return:             Graph instance
+    """
+
+    # Export graph as serialized Graph Python Format
+    pp = pprint.PrettyPrinter(indent=2)
+    with open(path, 'w') as output:
+
+        # Export nodes as dictionary
+        output.write('nodes = {0}\n'.format(pp.pformat(graph.nodes.dict())))
+
+        # Export edges as dictionary
+        output.write('edges = {0}\n'.format(pp.pformat(graph.edges.dict())))
+
+    logger.info('Graph exported in GPF format to file: {0}'.format(path))
