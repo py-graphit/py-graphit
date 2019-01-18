@@ -77,7 +77,10 @@ def coarse_type(n):
 
     if n.isdigit():
         return int(n)
-    return n
+    try:
+        return float(n)
+    except ValueError:
+        return n
 
 
 def check_graphit_version(version=None):
