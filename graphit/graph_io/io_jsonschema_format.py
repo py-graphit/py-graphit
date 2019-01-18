@@ -99,7 +99,7 @@ def read_json_schema(schema, graph=None, exclude_args=None, resolve_ref=True):
     Import hierarchical data structures defined in a JSON schema format
 
     :param schema:            JSON Schema data format to import
-    :type schema:             file, string, stream or URL
+    :type schema:             dict, file, string, stream or URL
     :param graph:             graph object to import TGF data in
     :type graph:              :graphit:Graph
     :param exclude_args:      JSON schema arguments to exclude from import
@@ -111,13 +111,16 @@ def read_json_schema(schema, graph=None, exclude_args=None, resolve_ref=True):
     :rtype:                   :graphit:Graph
     """
 
-    # Try parsing the string using default Python json parser
-    json_schema = open_anything(schema)
-    try:
-        json_schema = json.load(json_schema)
-    except (IOError, ValueError) as error:
-        logger.error('Unable to decode JSON string: {0}'.format(error))
-        return
+    json_schema = schema
+    if not isinstance(schema, dict):
+
+        # Try parsing the string using default Python json parser
+        json_schema = open_anything(schema)
+        try:
+            json_schema = json.load(json_schema)
+        except (IOError, ValueError) as error:
+            logger.error('Unable to decode JSON string: {0}'.format(error))
+            return
 
     if not isinstance(graph, GraphAxis):
         graph = GraphAxis()
