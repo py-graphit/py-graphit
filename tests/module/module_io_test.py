@@ -16,6 +16,7 @@ from graphit.graph_py2to3 import PY_STRING
 from graphit.graph_helpers import graph_directionality
 from graphit.graph_io.io_tgf_format import read_tgf, write_tgf
 from graphit.graph_io.io_jgf_format import read_jgf, write_jgf
+from graphit.graph_io.io_lgf_format import read_lgf, write_lgf
 from graphit.graph_io.io_pydata_format import read_pydata, write_pydata
 from graphit.graph_io.io_web_format import read_web, write_web
 from graphit.graph_io.io_jsonschema_format import read_json_schema
@@ -362,3 +363,61 @@ class YAMLParserTests(UnittestPythonCompatibility):
         graph = read_yaml(schema)
 
         self.assertItemsEqual(graph.children().keys(), [u'martin', u'tabitha'])
+
+
+class LGFParserTest(UnittestPythonCompatibility):
+    """
+    Unit test for reading and writing graphs in LEMON Graph Format (LGF)
+    """
+    tempfiles = []
+
+    def tearDown(self):
+        """
+        tearDown method called after each unittest to cleanup
+        the files directory
+        """
+
+        for tmp in self.tempfiles:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+
+    def test_format_import(self):
+        """
+        Test import of format. The graph defines a root and thus will be
+        imported as a GraphAxis object.
+        """
+
+        lgf_file = os.path.join(FILEPATH, 'graph.lgf')
+        graph = read_lgf(lgf_file)
+
+        # Default graph attributes set
+        self.assertEqual(len(graph), 6)
+        self.assertEqual(len(graph.edges), 12)
+        self.assertEqual(graph.directed, False)
+        self.assertEqual(graph_directionality(graph), 'undirectional')
+        self.assertTrue(isinstance(graph, Graph))
+
+        # Because default auto_nid is True, string based node IDs not supported
+        self.assertTrue('five' not in graph.nodes)
+        self.assertTrue(5 in graph.nodes)
+
+    def test_format_export(self):
+        """
+        Test export of format
+        """
+
+        lgf_file = os.path.join(FILEPATH, 'graph.lgf')
+        graph = read_lgf(lgf_file)
+
+        # Export graph as JSON to file
+        lgfout = write_lgf(graph)
+        outfile = os.path.join(FILEPATH, 'test_export.lgf')
+        with open(outfile, 'w') as otf:
+            otf.write(lgfout)
+            self.tempfiles.append(outfile)
+
+        self.assertTrue(os.path.isfile(outfile))
+
+        # Import again and compare source graph
+        graph1 = read_lgf(outfile)
+        self.assertTrue(graph1 == graph)

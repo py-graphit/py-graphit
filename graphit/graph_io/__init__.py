@@ -1,5 +1,7 @@
 #TODO: make walk and serialization methods to customize format export
-#TODO: add support for import/export of LEMON Graph Format (LGF) http://lemon.cs.elte.hu/pub/doc/1.2.3/a00002.html
+#TODO: add easy check for undirectional edges where both edge directions are
+#      present in edges but one is a pointer to the other to keep attributes
+#      in sinc, for export we should then only export one of the edges.
 
 """
 Importing and exporting data structures as graphit graphs.

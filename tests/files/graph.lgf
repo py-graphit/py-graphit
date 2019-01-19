@@ -1,0 +1,19 @@
+# LEMON graph format
+
+@nodeset
+label   coordinates_x   coordinates_y   title
+1       796.398         208.035         "First node"
+2       573.002         63.002          "Second node"
+3       568.549         401.748         "Third node"
+4       277.889         68.476          "Fouth node"
+5       288.248         397.327         "Fifth node"
+6       102.239         257.532         "Sixth node"
+
+@edgeset
+                id      capacity
+5       6       6       8
+4       6       5       8
+3       5       4       5
+2       5       3       8
+2       4       2       5
+1       2       1       10
