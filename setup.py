@@ -51,6 +51,8 @@ setup(
         'Intended Audience :: Science/Research',
     ],
     extras_require={
-        'test': ['coverage', 'PyYAML']
+        'all': ['coverage', 'PyYAML'],
+        'yaml': ['PyYAML'],
+        'test': ['coverage']
     }
 )
