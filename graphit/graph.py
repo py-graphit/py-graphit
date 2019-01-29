@@ -8,7 +8,7 @@ for dictionary like storage of data in graph nodes and edges, rich
 graph comparison, query and traversal method and a Object Relations
 Mapper.
 
-TODO: Would it be possible and usefull to create support for config files
+TODO: Would it be possible and useful to create support for config files
       to configure a Graph and function arguments?
 """
 

@@ -84,7 +84,7 @@ def graph_directional_to_undirectional(graph):
     return graph_copy
 
 
-def egdes_parent_to_subgraph(subgraph):
+def edges_parent_to_subgraph(subgraph):
     """
     Return edges connecting a subgraph with the parent graph
 
