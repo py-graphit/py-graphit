@@ -82,3 +82,21 @@ def graph_directional_to_undirectional(graph):
         graph_copy.add_edge(*edge, **attr)
 
     return graph_copy
+
+
+def egdes_parent_to_subgraph(subgraph):
+    """
+    Return edges connecting a subgraph with the parent graph
+
+    :param subgraph:  subgraph
+    :type subgraph:   :graphit:Graph
+
+    :return:           edges connecting graphs
+    :rtype:            :py:list
+    """
+
+    connected = []
+    for node in subgraph:
+        connected.extend(node.connected_edges())
+
+    return list(set(connected).difference(subgraph.edges))
