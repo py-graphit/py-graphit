@@ -15,7 +15,7 @@ __all__ = ['graph_join']
 logger = logging.getLogger(__module__)
 
 
-def graph_join(graph1, graph2, links=None):
+def graph_join(graph1, graph2, links=None, run_node_new=True, run_edge_new=True):
     """
     Add graph2 as subgraph to graph1
 
@@ -23,15 +23,21 @@ def graph_join(graph1, graph2, links=None):
     nodes in graph 1 and newly added nodes of graph 2 are defined by the edges
     in the `links` list.
 
-    :param graph1: graph to add to
-    :type graph1:  GraphAxis
-    :param graph2: graph added
-    :type graph2:  GraphAxis
-    :param links:  links between nodes in graph1 and graph2
-    :type links:   :py:list
+    :param graph1:       graph to add to
+    :type graph1:        GraphAxis
+    :param graph2:       graph added
+    :type graph2:        GraphAxis
+    :param links:        links between nodes in graph1 and graph2
+    :type links:         :py:list
+    :param run_edge_new: run the custom initiation method (new method) of
+                         the new edge once.
+    :type run_edge_new:  py:bool
+    :param run_node_new: run the custom initiation method (new method) of
+                         the new node once.
+    :type run_node_new:  :py:bool
 
-    :return:       node mapping
-    :rtype:        :py:dict
+    :return:             node mapping
+    :rtype:              :py:dict
     """
 
     # Validate if all arguments are Graphs
@@ -48,19 +54,19 @@ def graph_join(graph1, graph2, links=None):
     # Add all nodes and attributes of graph 2 to 1 and register node mapping
     mapping = {}
     for nid, attr in graph2.nodes.items():
-        newnid = graph1.add_node(node=nid, **attr)
+        newnid = graph1.add_node(node=nid, run_node_new=run_node_new, **attr)
         mapping[nid] = newnid
 
     # Transfer edges and attributes from graph 2 to graph 1 and map node IDs
     for eid, attr in graph2.edges.items():
         if eid[0] in mapping and eid[1] in mapping:
-            graph1.add_edge(mapping[eid[0]], mapping[eid[1]], directed=True, **attr)
+            graph1.add_edge(mapping[eid[0]], mapping[eid[1]], run_edge_new=run_edge_new, directed=True, **attr)
 
     # Link graph 2 nodes to graph 1
     attach_nids = []
     if links:
         for link in links:
-            graph1.add_edge(link[0], mapping[link[1]], directed=graph1.directed)
+            graph1.add_edge(link[0], mapping[link[1]], run_edge_new=run_edge_new, directed=graph1.directed)
             attach_nids.append(mapping[link[1]])
 
     return mapping
