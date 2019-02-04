@@ -84,19 +84,32 @@ def graph_directional_to_undirectional(graph):
     return graph_copy
 
 
-def edges_parent_to_subgraph(subgraph):
+def edges_parent_to_subgraph(subgraph, parent=None):
     """
     Return edges connecting a subgraph with the parent graph
 
-    :param subgraph:  subgraph
-    :type subgraph:   :graphit:Graph
+    'subgraph.origin' is used as parent graph by default to derive connections.
+    This will no longer work in case a copy is made of the subgraph as it will
+    reset the link to the parent.
+    The `parent` argument can be used to specify a dedicated parent graph in
+    these and all other cases where connected edges between two separate graphs
+    that share the same node ID's needs to be determined.
+
+    :param subgraph:   subgraph
+    :type subgraph:    :graphit:Graph
+    :param parent:     dedicated parent graph to derive connections to/from
+    :type parent:      :graphit:Graph
 
     :return:           edges connecting graphs
     :rtype:            :py:list
     """
 
+    if parent is None:
+        parent = subgraph
+
     connected = []
-    for node in subgraph:
+    for nid in subgraph.nodes():
+        node = parent.getnodes(nid)
         connected.extend(node.connected_edges())
 
     return list(set(connected).difference(subgraph.edges))
