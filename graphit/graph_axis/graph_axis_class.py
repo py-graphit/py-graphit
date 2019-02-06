@@ -5,6 +5,10 @@ Graph axis methods
 
 Class for traversing and querying (sub)graph hierarchy with respect to a root
 node.
+
+TODO: Add dict/list like methods for adding new nodes to the graph at a given
+      level automatically creating the edges to link the new node. Perhaps add
+      some more method to mimick dict/list like behaviour.
 """
 
 from graphit.graph import GraphBase

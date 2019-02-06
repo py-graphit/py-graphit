@@ -484,8 +484,19 @@ class GraphBase(object):
         Add edge between two nodes to the graph
 
         An edge is defined as a connection between two node ID's.
-        Edge metadata defined as a dictionary allows it to be queried
-        by the various graph query functions.
+        Additional keyword arguments (kwargs) to the method are stored as edge
+        metadata by the edge storage class.
+
+        Edges are always directional in the way they are stored.
+        An undirectional edge is thus represented by a pair of two edges
+        pointing in opposite directions. Directionality is defined globally by
+        the graph 'directed' attribute and can be overridden locally by the
+        method 'directed' attribute.
+        If undirected the two edges of the undirected pair need to share the
+        same metadata attributes. This enabled by using JSON style '$ref'
+        pointers that has one of the edges point to the data of the other.
+        The pointer is transparently used by the edge storage class to get, set
+        and delete attributes.
 
         After de new edge is created the edge class 'new' method is called once
         to allow any custom edge initiation to be performed. This feature can
@@ -518,6 +529,7 @@ class GraphBase(object):
         # and edge ID's
         curr_auto_nid = self.auto_nid
         if node_from_edge:
+            logger.debug('node_from_edge active. Disable auto_nid')
             self.auto_nid = False
 
         nd1 = to_unicode(nd1, convert=unicode_convert)
@@ -540,9 +552,10 @@ class GraphBase(object):
                 logger.warning('Edge between nodes {0}-{1} exists. Use edge update to change attributes.'.format(*edge))
                 continue
 
-            # Undirectional edge: second edge points to first edge attributes
+            # Undirectional edge: second edge creates a reference to the data
+            # in the first edge
             if i == 1 and not directed:
-                self.edges[edge] = self.edges[edges_to_add[0]]
+                self.edges.set_data_reference(edges_to_add[0], edge)
             else:
                 # Make a deepcopy of the added attributes
                 self.edges[edge] = prepaire_data_dict(copy.deepcopy(kwargs))
@@ -564,16 +577,14 @@ class GraphBase(object):
         """
         Add multiple edges to the graph.
 
-        This is the iterable version of the add_edge methods allowing
-        multiple edge additions from any iterable.
-        If the iterable yields a tuple with a dictionary as third
-        argument the key/value pairs of that dictionary will be added
-        as attributes to the new edge along with any keyword arguments
-        passed to the method.
+        This is the iterable version of the add_edge methods allowing multiple
+        edge additions from any iterable.
+        If the iterable yields a tuple with a dictionary as third argument the
+        key/value pairs of that dictionary will be added as attributes to the
+        new edge along with any keyword arguments passed to the method.
 
-        The latter functionality can be used to add the edges of one
-        graph to those of another by using graph.edges.items() as
-        argument to `add_edges`.
+        The latter functionality can be used to add the edges of one graph to
+        those of another by using graph.edges.items() as argument to `add_edges`.
 
         :param edges:           Objects to be added as edges to the graph
         :type edges:            Iterable of hashable objects

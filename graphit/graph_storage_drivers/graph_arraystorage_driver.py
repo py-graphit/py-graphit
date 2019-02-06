@@ -331,6 +331,26 @@ class ArrayStorage(GraphDriverBaseClass):
 
         return deepcopy
 
+    def del_data_reference(self, target):
+        """
+        Implements GraphDriverBaseClass abstract method.
+
+        The array storage does not support reference pointers
+        """
+
+        logging.warning('ArrayStorage does not support reference pointers')
+        return
+
+    def get_data_reference(self, target, default=None):
+        """
+        Implements GraphDriverBaseClass abstract method.
+
+        The array storage does not support reference pointers
+        """
+
+        logging.warning('ArrayStorage does not support reference pointers')
+        return None
+
     def get(self, key, default=None):
 
         view_selection = self._view_select()
@@ -365,6 +385,20 @@ class ArrayStorage(GraphDriverBaseClass):
         # If new key and is_view, add to view
         if self.is_view:
             self._view.append(key)
+
+    def set_data_reference(self, source, target):
+        """
+        The array storage class does not support data referencing and will
+        simply copy the data stored in source to target
+
+        :param source: source key having the data
+        :param target: target key referring to data of source
+        """
+
+        if source in self:
+            self[target] = self.get(source)
+        else:
+            logging.error('Unable to set reference from source {0} to target {1}. Source does not exist.')
 
     def to_dict(self, return_full=False):
         """

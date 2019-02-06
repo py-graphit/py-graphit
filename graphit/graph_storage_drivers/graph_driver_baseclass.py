@@ -82,6 +82,30 @@ class GraphDriverBaseClass(colabc.MutableMapping):
     """
 
     @abc.abstractmethod
+    def del_data_reference(self, target):
+        """
+        Remove JSON $ref data reference in target
+
+        :param target: key of target to remove $ref from
+        """
+
+        return
+
+    @abc.abstractmethod
+    def get_data_reference(self, target, default=None):
+        """
+        Check if the key defines a reference to the data of another key using
+        the $ref pointer.
+
+        :param target:  key to check
+        :param default: default to return if $ref pointer not found
+
+        :return:        referred key or None
+        """
+
+        return
+
+    @abc.abstractmethod
     def iteritems(self):
         """
         Implement Python 3.x dictionary like 'items' iterator method that
@@ -326,6 +350,36 @@ class GraphDriverBaseClass(colabc.MutableMapping):
         """
 
         return self._view is not None
+
+    def has_data_reference(self, target):
+        """
+        Check if the target key defines a JSON $ref pointer to the data of
+        another (source) key/value pair.
+
+        :param target: target key to check reference for
+
+        :rtype:        :py:bool
+        """
+
+        return self.get_data_reference(target) is not None
+
+    def set_data_reference(self, source, target):
+        """
+        Defines a reference in the target key to the data attributes (value)
+        of the source key using a JSON $ref pointer
+
+        This method is for instance used in setting up the edge pair that
+        defines an undirectional edge having the data of the second edge
+        in the pair referring to that of the first.
+
+        :param source: source key having the data
+        :param target: target key referring to data of source
+        """
+
+        if source in self:
+            self[target] = {'$ref': source}
+        else:
+            logging.error('Unable to set reference from source {0} to target {1}. Source does not exist.')
 
     def copy(self):
         """
