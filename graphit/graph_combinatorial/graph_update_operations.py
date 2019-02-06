@@ -13,8 +13,7 @@ are not updated.
 
 import logging
 
-from graphit import __module__, check_graphbase_instance
-
+from graphit import __module__, check_graphbase_instance, check_graphaxis_instance
 from graphit.graph_combinatorial.graph_setlike_operations import graph_difference
 
 __all__ = ['graph_add', 'graph_subtract', 'graph_update', 'graph_axis_update']
@@ -151,12 +150,9 @@ def graph_axis_update(graph, data):
     :param data:  dictionary or graph to update from
     """
 
-    # TODO: restructure module organisation to avoid circular import
-    from graphit.graph_axis.graph_axis_class import GraphAxis
-    from graphit.graph_io.io_pydata_format import write_pydata
-
     # Get data as dictionary
-    if isinstance(data, GraphAxis):
+    if check_graphaxis_instance(data):
+        from graphit.graph_io.io_pydata_format import write_pydata
         data = write_pydata(data)
     if not isinstance(data, dict):
         raise TypeError('Dictionary required')
