@@ -1189,20 +1189,18 @@ class GraphBase(object):
                            directed graph.
         :param directed:   force directed removal of the edge
         :type directed:    :py:bool
-
-        :raises:           GraphitException, if edge not in graph
         """
 
+        edge = (nd1, nd2)
         if not isinstance(directed, bool):
             directed = self.directed
 
-        # Make edges, directed or undirected based on graph settings
-        for edge in make_edges((nd1, nd2), directed=directed):
+        for edge in make_edges(edge, directed=directed):
             if edge in self.edges:
                 del self.edges[edge]
                 logger.debug('Removed edge {0} from graph'.format(edge))
             else:
-                raise GraphitException('Unable to remove edge {0}. No such edge ID'.format(edge))
+                logger.warning('Unable to remove edge {0}. No such edge ID'.format(edge))
 
     def remove_edges(self, edges, directed=None):
         """

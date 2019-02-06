@@ -337,11 +337,14 @@ class TestGraphAddEdgeExceptionWarning(UnittestPythonCompatibility):
 
     def test_remove_edge_exist(self):
         """
-        Test removal of edges that do not exist
+        Test removal of edges that do not exist should only log a warning
         """
 
         self.graph.add_nodes([1, 2])
-        self.assertRaises(GraphitException, self.graph.remove_edge, 1, 2)
+        try:
+            self.graph.remove_edge(1, 2)
+        except GraphitException:
+            self.fail('remove_edge raised GraphitException unexpectedly')
 
 
 class TestGraphAddEdgeAttributes(UnittestPythonCompatibility):
