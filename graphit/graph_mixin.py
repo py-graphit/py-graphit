@@ -12,6 +12,7 @@ respectively.
 import abc
 
 from graphit.graph_py2to3 import to_unicode
+from graphit.graph_helpers import make_edges
 
 
 __all__ = ['NodeTools', 'EdgeTools']
@@ -386,6 +387,20 @@ class EdgeTools(NodeEdgeToolsBaseClass):
             len(self.nodes),
             len(self.edges)
         )
+
+    @property
+    def is_directed(self):
+        """
+        Determine if edge is directed based
+
+        An edge is undirected if both edges of a pair pointing in opposite
+        directions are present.
+
+        :rtype: :py:bool
+        """
+
+        edges = make_edges(self.nid, directed=False)
+        return not all([edge in self.origin.edges for edge in edges])
 
     @property
     def nid(self):
