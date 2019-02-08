@@ -17,11 +17,11 @@ install:
   # install library
   - pip install codecov
   - pip install pandas
-  - pip install .[test]
+  - pip install .[all]
 
 script:
   - coverage run tests
-  
+
 branches:
   only:
     - master
