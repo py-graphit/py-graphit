@@ -266,7 +266,7 @@ class NodeTools(NodeEdgeToolsBaseClass):
         data = self.nodes.get(self.nid, {})
         return '<{0} "{1}" node object {2}, id {3}: {4} nodes, {5} edges>'.format(
             type(self).__name__,
-            data.get(self.key_tag, ''),
+            data.get(self.data.key_tag, ''),
             id(self),
             data.get('_id', '-'),
             len(self.nodes),
@@ -334,7 +334,7 @@ class NodeTools(NodeEdgeToolsBaseClass):
         # Get node attributes
         target = self.nodes[self.nid]
 
-        key = key or self.value_tag
+        key = key or self.data.value_tag
         if key in target:
             return target[key]
         return target.get(defaultattr, default)
@@ -381,7 +381,7 @@ class EdgeTools(NodeEdgeToolsBaseClass):
         data = self.edges.get(self.nid, {})
         return '<{0} "{1}" edge object {2}, id {3}: {4} nodes, {5} edges>'.format(
             type(self).__name__,
-            data.get(self.key_tag, ''),
+            data.get(self.data.key_tag, ''),
             id(self),
             self.nid,
             len(self.nodes),
@@ -438,7 +438,7 @@ class EdgeTools(NodeEdgeToolsBaseClass):
         # Get edge attributes
         target = self.edges[self.nid]
 
-        key = key or self.value_tag
+        key = key or self.data.value_tag
         if key in target:
             return target[key]
 

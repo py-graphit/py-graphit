@@ -26,7 +26,7 @@ class UUID(NodeEdgeToolsBaseClass):
 
     def set(self, key, value=None, **kwargs):
 
-        if key == self.value_tag:
+        if key == self.data.value_tag:
             if isinstance(value, PY_STRING) and UUID_REGEX.match(value):
                 pass
             else:

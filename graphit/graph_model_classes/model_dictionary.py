@@ -29,8 +29,8 @@ class PythonDictionary(object):
         :rtype:             :py:list
         """
 
-        keystring = keystring or self.key_tag
-        valuestring = valuestring or self.value_tag
+        keystring = keystring or self.data.value_tag
+        valuestring = valuestring or self.data.value_tag
 
         return [(n.get(keystring), n.get(valuestring)) for n in self.iternodes()]
 
@@ -48,7 +48,7 @@ class PythonDictionary(object):
         :rtype:             :py:list
         """
 
-        keystring = keystring or self.key_tag
+        keystring = keystring or self.data.key_tag
         return [n.get(keystring) for n in self.iternodes()]
 
     def values(self, valuestring=None):
@@ -64,5 +64,5 @@ class PythonDictionary(object):
         :rtype:             :py:list
         """
 
-        valuestring = valuestring or self.value_tag
+        valuestring = valuestring or self.data.value_tag
         return [n.get(valuestring) for n in self.iternodes()]

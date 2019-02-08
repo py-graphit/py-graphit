@@ -72,7 +72,7 @@ def read_yaml(yaml_file, graph=None, link_subgraphs=True, **kwargs):
 
             # If sub-graph root is of type 'root', connect children to base_graph
             root = sub_graph.getnodes(sub_graph.root)
-            if root[sub_graph.key_tag] == 'root':
+            if root[sub_graph.data.key_tag] == 'root':
                 links = [(base_graph.root, child) for child in root.children(return_nids=True)]
             else:
                 links = [(base_graph.root, sub_graph.root)]

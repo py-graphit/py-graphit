@@ -66,8 +66,8 @@ def graph_add(*args, **kwargs):
 
     # Temporary turn off auto_nid to ensure true addition based on node and
     # edge ID instead of auto generated node ID's
-    auto_nid = result.auto_nid
-    result.auto_nid = False
+    auto_nid = result.data.auto_nid
+    result.data.auto_nid = False
 
     update_node_attributes = kwargs.get('update_node_attributes', True)
     update_edge_attributes = kwargs.get('update_edge_attributes', True)
@@ -82,7 +82,7 @@ def graph_add(*args, **kwargs):
                 continue
             result.add_edge(*eid, **attr)
 
-    result.auto_nid = auto_nid
+    result.data.auto_nid = auto_nid
 
     return result
 
@@ -158,7 +158,7 @@ def graph_axis_update(graph, data):
         raise TypeError('Dictionary required')
 
     # (Recursive) update data
-    value_tag = graph.value_tag
+    value_tag = graph.data.value_tag
 
     def recursive_update(block, params):
 

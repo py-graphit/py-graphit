@@ -23,39 +23,39 @@ __all__ = ['JSONSchemaORMDraft07', 'StringType', 'IntegerType', 'BooleanType', '
 
 
 class JSONSchemaValidatorDraft07(NodeAxisTools):
-    
+
     def schema_validate(self, value):
-        
+
         enum = self.get('enum')
         if enum and value not in enum:
-            raise GraphitValidationError('"{0}" should be of type {1}, got {2}'.format(self.get(self.key_tag),
+            raise GraphitValidationError('"{0}" should be of type {1}, got {2}'.format(self.get(self.data.key_tag),
                                                                                        repr(enum), value), self)
-        
+
         return value
-    
+
     def set(self, key, value=None):
         """
         Set node attribute values.
-        
+
         :param key:   node attribute key
         :param value: node attribute value
         """
-        
-        if key == self.value_tag:
+
+        if key == self.data.value_tag:
             value = self.schema_validate(value)
         self.nodes[self.nid][key] = value
 
 
 class StringType(JSONSchemaValidatorDraft07):
-    
+
     def set(self, key, value=None):
-        
-        if key == self.value_tag:
+
+        if key == self.data.value_tag:
             if not isinstance(value, PY_STRING):
                 raise GraphitValidationError('{0} should be of type "string" got "{1}"'.format(key, type(value)), self)
-            
+
             value = self.schema_validate(value)
-            
+
             # String specific validation
             length = len(value)
             if length > self.get('maxLength', length):
@@ -70,20 +70,20 @@ class StringType(JSONSchemaValidatorDraft07):
                 if not pattern.match(value):
                     raise GraphitValidationError('String {0} does not match regex pattern {1}'.format(value,
                                                                                                       self.get('pattern')), self)
-        
+
         self.nodes[self.nid][key] = value
 
 
 class IntegerType(JSONSchemaValidatorDraft07):
-    
+
     def set(self, key, value=None):
-        
-        if key == self.value_tag:
+
+        if key == self.data.value_tag:
             if not isinstance(value, int):
                 raise GraphitValidationError('{0} should be of type "integer" got "{1}"'.format(key, type(value)), self)
-            
+
             value = self.schema_validate(value)
-            
+
             # Integer specific validation
             if value > self.get('maximum', value):
                 raise GraphitValidationError('{0} is larger than maximum allowed {1}'.format(value,
@@ -101,23 +101,23 @@ class IntegerType(JSONSchemaValidatorDraft07):
                 if self.get('multipleOf', value) % value != 0:
                     raise GraphitValidationError('{0} is not a multiple of {1}'.format(value,
                                                                                        self.get('multipleOf')), self)
-        
+
         self.nodes[self.nid][key] = value
 
 
 class NumberType(JSONSchemaValidatorDraft07):
-    
+
     def set(self, key, value=None):
-        
-        if key == self.value_tag:
+
+        if key == self.data.value_tag:
             if isinstance(value, int):
                 value = float(value)
 
             if not isinstance(value, float):
                 raise GraphitValidationError('{0} should be of type "float" got "{1}"'.format(key, type(value)), self)
-            
+
             value = self.schema_validate(value)
-            
+
             # Number specific validation
             if value > self.get('maximum', value):
                 raise GraphitValidationError('{0} is larger than maximum allowed {1}'.format(value,
@@ -135,33 +135,33 @@ class NumberType(JSONSchemaValidatorDraft07):
                 if self.get('multipleOf', value) % value != 0:
                     raise GraphitValidationError('{0} is not a multiple of {1}'.format(value,
                                                                                        self.get('multipleOf')), self)
-        
+
         self.nodes[self.nid][key] = value
 
 
 class BooleanType(JSONSchemaValidatorDraft07):
-    
+
     def set(self, key, value=None):
-        
-        if key == self.value_tag:
+
+        if key == self.data.value_tag:
             if value not in (True, False):
                 raise GraphitValidationError('{0} should be of type "boolean" got "{1}"'.format(key, type(value)), self)
-            
+
             value = self.schema_validate(value)
-        
+
         self.nodes[self.nid][key] = value
 
 
 class ArrayType(JSONSchemaValidatorDraft07):
-    
+
     def set(self, key, value=None):
-        
-        if key == self.value_tag:
+
+        if key == self.data.value_tag:
             if not isinstance(value, list):
                 raise GraphitValidationError('{0} should be of type "array" got "{1}"'.format(key, type(value)), self)
-            
+
             value = self.schema_validate(value)
-            
+
             # Array specific validation
             length = len(value)
             if length > self.get('maxItems', length):
@@ -174,7 +174,7 @@ class ArrayType(JSONSchemaValidatorDraft07):
                 if len(set(value)) > 1:
                     raise GraphitValidationError('Items in array {0} must be unique, got: {1}'.format(key,
                                                                                                       set(value)), self)
-        
+
         self.nodes[self.nid][key] = value
 
 

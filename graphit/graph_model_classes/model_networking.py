@@ -35,7 +35,7 @@ class IP4Address(NodeEdgeToolsBaseClass):
         syntax as defined in RFC 2673
         """
 
-        if key == self.key_tag:
+        if key == self.data.key_tag:
             try:
                 ip = ipaddress.ip_address(to_unicode(value))
                 if ip.version != 4:
@@ -53,7 +53,7 @@ class IP6Address(NodeEdgeToolsBaseClass):
         Validate and set IP6 address according to RFC 4291
         """
 
-        if key == self.key_tag:
+        if key == self.data.key_tag:
             try:
                 ip = ipaddress.ip_address(to_unicode(value))
                 if ip.version != 6:
@@ -85,8 +85,8 @@ class Hostname(NodeEdgeToolsBaseClass):
         * Validate against hostname regex
         """
 
-        key = key or self.value_tag
-        if key == self.value_tag:
+        key = key or self.data.value_tag
+        if key == self.data.value_tag:
             if not value:
                 value = self.hostname()
             if not isinstance(value, PY_STRING) or len(value) > 253 or not HOSTNAME_REGEX.match(value):
@@ -161,7 +161,7 @@ class URI(NodeEdgeToolsBaseClass):
         Validate and set RFC 3986 compliant, Unicode-aware, scheme-agnostic URIs
         """
 
-        if key == self.value_tag:
+        if key == self.data.value_tag:
             if isinstance(value, PY_STRING):
 
                 parsed = uritools.urisplit(value)

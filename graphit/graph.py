@@ -10,6 +10,9 @@ Mapper.
 
 TODO: Would it be possible and useful to create support for config files
       to configure a Graph and function arguments?
+TODO: Dynamic class creation kills performance. Turning off run_node_new
+      or run_edge_new when creation new nodes and edges results in a
+      enormous performance boost. Can we make the latter faster?
 """
 
 import collections
@@ -32,6 +35,8 @@ from graphit.graph_helpers import (edges_between_nodes, edge_list_to_nodes, make
 __all__ = ['GraphBase']
 logger = logging.getLogger(__module__)
 
+GRAPH_DEFAULTS = {'key_tag': u'key', 'value_tag': u'value', 'directed': False, 'auto_nid': True, 'nodeid': 1}
+
 
 class GraphBase(object):
     """
@@ -51,11 +56,11 @@ class GraphBase(object):
       ambiguous and will be set to the node with the lowest nid.
     """
 
-    __slots__ = ('orm', 'adjacency', 'nodes', 'edges', 'directed', 'masked', 'auto_nid', 'root', 'key_tag', 'value_tag',
-                 'node_tools', 'edge_tools', '_nodeid', 'origin', 'storagedriver', '__weakref__')
+    __slots__ = ('orm', 'adjacency', 'nodes', 'edges', 'data', 'directed', 'masked', 'root',
+                 'node_tools', 'edge_tools', 'origin', 'storagedriver', '__weakref__')
 
-    def __init__(self, auto_nid=True, edges=None, directed=False, nodes=None, key_tag=u'key',
-                 value_tag=u'value', root=None, orm=None, storagedriver=init_dictstorage_driver):
+    def __init__(self, edges=None, directed=False, nodes=None, data=None, root=None, orm=None,
+                 storagedriver=init_dictstorage_driver, **kwargs):
         """
         Implement class __init__
 
@@ -71,6 +76,9 @@ class GraphBase(object):
         :param edges:         object that stores the dictionary of edge ID/edge
                               data pairs
         :type edges:          :py:dict or other format accepted by the storage
+                              driver
+        :param data:          object that stores graph data (attributes)
+        :type data:           :py:dict or other format accepted by the storage
                               driver
         :param orm:           graph Object Relations Mapper
         :type orm:            GraphORM object
@@ -95,29 +103,32 @@ class GraphBase(object):
                               for creating the node, edge and adjacency storage
                               objects. The graph dict storage is the default
                               driver.
+        :param kwargs:        additional keyword arguments will be stored in
+                              graph.data attribute storage.
         """
 
         self.storagedriver = storagedriver
         self.orm = orm or GraphORM()
 
-        # Init nodes, edges and adjacency storage using a dedicated storage
-        # driver initiation method
-        self.nodes, self.edges, self.adjacency = self.storagedriver(nodes, edges)
+        # Init nodes, edges, adjacency and graph attributes storage using a
+        # dedicated storage driver initiation method
+        self.nodes, self.edges, self.adjacency, self.data = self.storagedriver(nodes, edges, data)
+
+        # Graph attributes stored in data
+        if not len(self.data):
+            self.data.update(GRAPH_DEFAULTS)
+        self.data.update(kwargs)
 
         # Graph attributes, set directly
         self.directed = directed
         self.masked = False
-        self.auto_nid = auto_nid
         self.root = root
-        self.key_tag = to_unicode(key_tag)
-        self.value_tag = to_unicode(value_tag)
         self.node_tools = NodeTools
         self.edge_tools = EdgeTools
 
         # Graph internal attributes, do not set manually.
         # Automatically assigned node ID's always increment the highest
         # integer ID in the graph
-        self._nodeid = 1
         self._set_auto_nid()
         self.origin = self
 
@@ -173,7 +184,7 @@ class GraphBase(object):
             return any([other == self, graph_issubset(other, self)])
         else:
             for attr in self.nodes.itervalues():
-                if attr.get(self.key_tag) == other:
+                if attr.get(self.data.key_tag) == other:
                     return True
             return False
 
@@ -299,7 +310,7 @@ class GraphBase(object):
 
         # Inplace update node and edge stores
         result = graph_update(result, other)
-        self.nodes, self.edges, self.adjacency = self.storagedriver(result.nodes, result.edges)
+        self.nodes, self.edges, self.data, self.adjacency = self.storagedriver(result.nodes, result.edges, result.data)
 
         return self
 
@@ -466,7 +477,7 @@ class GraphBase(object):
 
         _id = [attr.get('_id', 0) for attr in self.nodes.values()]
         if len(_id):
-            self._nodeid = max(_id) + 1
+            self.data.nodeid = max(_id) + 1
 
     def _set_origin(self, graph):
         """
@@ -527,10 +538,10 @@ class GraphBase(object):
 
         # If node_from_edge than set auto_nid to false forcing identical node
         # and edge ID's
-        curr_auto_nid = self.auto_nid
+        curr_auto_nid = self.data.auto_nid
         if node_from_edge:
             logger.debug('node_from_edge active. Disable auto_nid')
-            self.auto_nid = False
+            self.data.auto_nid = False
 
         nd1 = to_unicode(nd1, convert=unicode_convert)
         nd2 = to_unicode(nd2, convert=unicode_convert)
@@ -569,7 +580,7 @@ class GraphBase(object):
                 self.getedges(edge).new()
 
         # If node_from_edge, restore auto_nid setting
-        self.auto_nid = curr_auto_nid
+        self.data.auto_nid = curr_auto_nid
 
         return edges_to_add[0]
 
@@ -625,20 +636,20 @@ class GraphBase(object):
             {nid: {'_id': auto_nid, attribute_key: attribute_value, ....}}
 
         'nid' is the primary node identifier which is either an auto-incremented
-        unique integer value if `Graph.auto_nid` equals True or a custom value
-        when False.
+        unique integer value if `Graph.data.auto_nid` equals True or a custom
+        value when False.
 
-        If `Graph.auto_nid` equals True, the `node` parameter is stored as part
-        of the node attributes (value in the above dict example) using the
-        `Graph.key_tag` as key unless overloaded by any additional keyword
+        If `Graph.data.auto_nid` equals True, the `node` parameter is stored as
+        part of the node attributes (value in the above dict example) using the
+        `Graph.data.key_tag` as key unless overloaded by any additional keyword
         arguments provided to the method.
         Using the key_tag and value_tag is a convenient way of storing node
         data that should be accessible using the same key. The key_tag and
         value_tag are used as default in the various dictionary style set and
         get methods of the graph, node and edge classes.
 
-        When `Graph.auto_nid` equals False, the `node` parameter becomes the
-        primary node identifier that can be any hashable object except None.
+        When `Graph.data.auto_nid` equals False, the `node` parameter becomes
+        the primary node identifier that can be any hashable object except None.
 
         .. note:: With auto_nid disabled the method checks if there is a node
                   with nid in the graph already. If found, a warning is logged
@@ -669,8 +680,8 @@ class GraphBase(object):
         """
 
         # Use internal nid or node as node ID
-        if self.auto_nid:
-            nid = self._nodeid
+        if self.data.auto_nid:
+            nid = self.data.nodeid
         else:
 
             # Node should not be None
@@ -691,10 +702,10 @@ class GraphBase(object):
         logger.debug('Add node. id: {0}, type: {1}'.format(nid, type(node).__name__))
 
         # Prepare node data dictionary, always set a unique ID.
-        node_data = {self.key_tag: to_unicode(node, convert=unicode_convert)}
+        node_data = {self.data.key_tag: to_unicode(node, convert=unicode_convert)}
         node_data.update(prepaire_data_dict(copy.deepcopy(kwargs)))
-        node_data[u'_id'] = self._nodeid
-        self._nodeid += 1
+        node_data[u'_id'] = self.data.nodeid
+        self.data.nodeid += 1
 
         self.nodes[nid] = node_data
 
@@ -762,7 +773,7 @@ class GraphBase(object):
 
         # Reset node ID counter if the full graph is cleared
         if len(self) == len(self.origin):
-            self._nodeid = 0
+            self.data.nodeid = 0
 
     def copy(self, deep=True, copy_view=False):
         """
@@ -799,7 +810,8 @@ class GraphBase(object):
         # Make a deep copy
         if deep:
             class_copy = base_cls(nodes=copy.deepcopy(self.nodes.to_dict(return_full=copy_view)),
-                                  edges=copy.deepcopy(self.edges.to_dict(return_full=copy_view)))
+                                  edges=copy.deepcopy(self.edges.to_dict(return_full=copy_view)),
+                                  data=copy.deepcopy(self.data.to_dict(return_full=copy_view)))
 
             # Copy node view
             if copy_view and self.nodes.is_view:
@@ -815,12 +827,12 @@ class GraphBase(object):
 
         # Make a shallow copy
         else:
-            class_copy = base_cls(nodes=self.nodes, edges=self.edges, orm=self.orm)
+            class_copy = base_cls(nodes=self.nodes, edges=self.edges, data=self.data, orm=self.orm)
             class_copy.origin = self.origin
 
         # Copy class attributes except fixed
         for key in self.__slots__:
-            if key not in ('edges', 'nodes', 'adjacency', 'origin', 'orm', '__weakref__'):
+            if key not in ('edges', 'nodes', 'data', 'adjacency', 'origin', 'orm', '__weakref__'):
                 setattr(class_copy, key, copy.deepcopy(getattr(self, key)))
 
         # Reset the graph root if needed
@@ -876,7 +888,7 @@ class GraphBase(object):
         if target:
 
             # Get key or default class node/edge data key
-            key = key or self.key_tag
+            key = key or self.data.key_tag
 
             if key in target:
                 return target[key]
@@ -941,7 +953,7 @@ class GraphBase(object):
             custom_orm_cls.append(self.edge_tools)
 
         base_cls = self.orm.get_edges(self, edges, classes=custom_orm_cls)
-        w = base_cls(nodes=self.nodes, edges=self.edges, orm=self.orm)
+        w = base_cls(nodes=self.nodes, edges=self.edges, data=self.data, orm=self.orm)
 
         # Set views for nodes and edges
         w.edges.set_view(edges)
@@ -949,7 +961,7 @@ class GraphBase(object):
 
         # copy class attributes except fixed
         for key in self.__slots__:
-            if key not in ('nodes', 'edges', 'adjacency', 'orm', '__weakref__'):
+            if key not in ('nodes', 'edges', 'data', 'adjacency', 'orm', '__weakref__'):
                 setattr(w, key, getattr(self, key))
         w._set_origin(self.origin)
 
@@ -1014,7 +1026,7 @@ class GraphBase(object):
             custom_orm_cls.append(self.node_tools)
 
         base_cls = self.orm.get_nodes(self, nodes, classes=custom_orm_cls)
-        w = base_cls(nodes=self.nodes, edges=self.edges, orm=self.orm)
+        w = base_cls(nodes=self.nodes, edges=self.edges, data=self.data, orm=self.orm)
 
         # Set views for nodes and edges.
         w.nodes.set_view(nodes)
@@ -1022,7 +1034,7 @@ class GraphBase(object):
 
         # copy class attributes except fixed
         for key in self.__slots__:
-            if key not in ('nodes', 'edges', 'adjacency', 'orm', '__weakref__'):
+            if key not in ('nodes', 'edges', 'data', 'adjacency', 'orm', '__weakref__'):
                 setattr(w, key, getattr(self, key))
         w._set_origin(self.origin)
 
@@ -1291,8 +1303,8 @@ class GraphBase(object):
         :rtype:             :py:list
         """
 
-        keystring = keystring or self.key_tag
-        valuestring = valuestring or self.value_tag
+        keystring = keystring or self.data.key_tag
+        valuestring = valuestring or self.data.value_tag
 
         return [(n.get(keystring), n.get(valuestring)) for n in self.iternodes()]
 
@@ -1310,7 +1322,7 @@ class GraphBase(object):
         :rtype:             :py:list
         """
 
-        keystring = keystring or self.key_tag
+        keystring = keystring or self.data.key_tag
         return [n.get(keystring) for n in self.iternodes()]
 
     def values(self, valuestring=None, **kwargs):
@@ -1326,5 +1338,5 @@ class GraphBase(object):
         :rtype:             :py:list
         """
 
-        valuestring = valuestring or self.value_tag
+        valuestring = valuestring or self.data.value_tag
         return [n.get(valuestring) for n in self.iternodes()]

@@ -35,7 +35,7 @@ class Email(NodeEdgeToolsBaseClass):
         RFC 2822 specification.
         """
 
-        if key == self.value_tag:
+        if key == self.data.value_tag:
             if re.match(RFC_EMAIL_REGEX, value) is None:
                 logger.error('Invalid email adress syntax: {0}'.format(value))
                 return

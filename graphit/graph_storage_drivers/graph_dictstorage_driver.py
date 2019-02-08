@@ -24,7 +24,7 @@ __all__ = ['DictStorage', 'init_dictstorage_driver']
 logger = logging.getLogger(__module__)
 
 
-def init_dictstorage_driver(nodes, edges):
+def init_dictstorage_driver(nodes, edges, data):
     """
     DictStorage specific driver initiation method
 
@@ -37,15 +37,19 @@ def init_dictstorage_driver(nodes, edges):
     :param edges: Edges to initiate edges DictStorage instance
     :type edges:  :py:list, :py:dict,
                   :graphit:graph_dictstorage_driver:DictStorage
+    :param data:  graph data attributes to initiate data DictStorage instance
+    :type data:   :py:list, :py:dict,
+                  :graphit:graph_dictstorage_driver:DictStorage
 
     :return:      Nodes and edges storage instances and Adjacency view.
     """
 
     node_storage = DictStorage(nodes)
     edge_storage = DictStorage(edges)
+    data_storage = DictStorage(data)
     adjacency_storage = AdjacencyView(node_storage, edge_storage)
 
-    return node_storage, edge_storage, adjacency_storage
+    return node_storage, edge_storage, adjacency_storage, data_storage
 
 
 class DictWrapper(dict):
@@ -427,8 +431,9 @@ class DictStorage(GraphDriverBaseClass):
         :return:        referred key or None
         """
 
-        if target in self:
-            return self._storage[target].get('$ref', default)
+        target = self._storage[target]
+        if isinstance(target, dict):
+            return target.get('$ref', default)
         return default
 
     def items(self):

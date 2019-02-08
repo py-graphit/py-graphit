@@ -56,7 +56,7 @@ def read_cwl(cwl_file, graph=None, **kwargs):
     cwl_graph = read_yaml(cwl_file, graph=graph, level=0, **kwargs)
 
     # Parse referenced CWL files (steps) as relative paths to the base cwl file
-    refs = cwl_graph.query_nodes({cwl_graph.key_tag: 'run'})
+    refs = cwl_graph.query_nodes({cwl_graph.data.key_tag: 'run'})
     base_path = os.getcwd()
     for ref in refs:
         ref_cwl_path = os.path.join(base_path, ref())

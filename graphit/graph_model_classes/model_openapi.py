@@ -59,7 +59,7 @@ class OpenAPIMethod(NodeAxisTools):
         """
         Return the name of the service endpoint
         """
-        return self.get(self.key_tag).lstrip('/')
+        return self.get(self.data.key_tag).lstrip('/')
 
     def url(self, scheme='https'):
         """
@@ -79,7 +79,7 @@ class OpenAPIMethod(NodeAxisTools):
         if supported_schemes and scheme not in supported_schemes:
             scheme = supported_schemes[0]
 
-        return '{0}://{1}{2}{3}'.format(scheme, root.host(), root.basePath(), self.get(self.key_tag))
+        return '{0}://{1}{2}{3}'.format(scheme, root.host(), root.basePath(), self.get(self.data.key_tag))
 
     def http_method(self):
 
@@ -100,7 +100,7 @@ class OpenAPIMethod(NodeAxisTools):
             raise TypeError('"loc" needs to be "query" or "path", got: {0}'.format(loc))
 
         param_list = []
-        params = self.descendants().query_nodes({self.key_tag: 'parameters'})
+        params = self.descendants().query_nodes({self.data.key_tag: 'parameters'})
         for param in params:
             if loc in param.xpath('//in').values():
                 param_list.append(write_pydata(param))

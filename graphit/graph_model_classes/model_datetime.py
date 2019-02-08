@@ -93,8 +93,8 @@ class DateTime(NodeEdgeToolsBaseClass):
         Set to current date-time if called without arguments.
         """
 
-        key = key or self.value_tag
-        if key == self.value_tag:
+        key = key or self.data.value_tag
+        if key == self.data.value_tag:
             if not value:
                 value = self.now()
             dt = to_datetime(value, datetime)
@@ -144,7 +144,7 @@ class Date(NodeEdgeToolsBaseClass):
         in accordance to RFC 3339
         """
 
-        if key == self.value_tag:
+        if key == self.data.value_tag:
             if not value:
                 value = self.now()
             dt = to_datetime(value, date)
@@ -196,8 +196,8 @@ class Time(NodeEdgeToolsBaseClass):
         in accordance to RFC 3339
         """
 
-        key = key or self.value_tag
-        if key == self.value_tag:
+        key = key or self.data.value_tag
+        if key == self.data.value_tag:
             if not value:
                 value = self.now()
             dt = to_datetime(value, time)

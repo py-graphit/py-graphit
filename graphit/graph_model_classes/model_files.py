@@ -34,7 +34,7 @@ class FilePath(NodeEdgeToolsBaseClass):
 
     def set(self, key, value=None, absolute=True):
 
-        if key == self.value_tag and value and absolute:
+        if key == self.data.value_tag and value and absolute:
             value = os.path.abspath(value)
 
         self.nodes[self.nid][key] = value

@@ -200,7 +200,7 @@ def read_lgf(lgf, graph=None):
         graph = Graph()
 
     # LGF node and edge labels are unique, turn off auto_nid
-    graph.auto_nid = False
+    graph.data.auto_nid = False
 
     parser = None
     header = None
@@ -257,7 +257,7 @@ def write_lgf(graph):
     """
 
     # Define node and edge data tags to export
-    key_tag = graph.key_tag
+    key_tag = graph.data.key_tag
 
     # Create empty file buffer
     string_buffer = StringIO()

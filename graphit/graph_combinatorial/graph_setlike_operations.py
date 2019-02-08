@@ -96,8 +96,8 @@ def graph_union(*args, **kwargs):
 
         # we need control over the node ID to add
         # temporary turn off auto_nid if needed
-        auto_nid = result.auto_nid
-        result.auto_nid = False
+        auto_nid = result.data.auto_nid
+        result.data.auto_nid = False
 
         for graph in args[1:]:
             for node, attrib in graph.nodes.items():
@@ -109,7 +109,7 @@ def graph_union(*args, **kwargs):
                     result.add_edge(*edge, **attrib)
 
         # Restore auto_nid
-        result.auto_nid = auto_nid
+        result.data.auto_nid = auto_nid
 
         return result
 

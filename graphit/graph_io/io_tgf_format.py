@@ -68,7 +68,7 @@ def read_tgf(tgf, graph=None):
     graph.directed = True
 
     # TGF node and edge labels are unique, turn off auto_nid
-    graph.auto_nid = False
+    graph.data.auto_nid = False
 
     # Start parsing. First extract nodes
     nodes = True
@@ -93,7 +93,7 @@ def read_tgf(tgf, graph=None):
                 attr = {}
                 # Has node data
                 if len(line) > 1:
-                    attr = {graph.key_tag: ' '.join(line[1:])}
+                    attr = {graph.data.key_tag: ' '.join(line[1:])}
                 nid = graph.add_node(line[0], **attr)
                 node_dict[line[0]] = nid
 
@@ -105,7 +105,7 @@ def read_tgf(tgf, graph=None):
                 attr = {}
                 # Has edge data
                 if len(line) > 2:
-                    attr = {graph.key_tag: ' '.join(line[2:])}
+                    attr = {graph.data.key_tag: ' '.join(line[2:])}
                 graph.add_edge(e1, e2, **attr)
 
     tgf_file.close()
@@ -133,7 +133,7 @@ def write_tgf(graph):
     """
 
     # Define node and edge data tags to export
-    key_tag = graph.key_tag
+    key_tag = graph.data.key_tag
 
     # Create empty file buffer
     string_buffer = StringIO()

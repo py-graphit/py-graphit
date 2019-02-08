@@ -372,8 +372,8 @@ class GraphAxis(GraphBase):
         :rtype:             :py:list
         """
 
-        keystring = keystring or self.key_tag
-        valuestring = valuestring or self.value_tag
+        keystring = keystring or self.data.key_tag
+        valuestring = valuestring or self.data.value_tag
 
         if desc:
             return [(n.get(keystring), n.get(valuestring)) if n.isleaf else (n.get(keystring), n)
@@ -395,7 +395,7 @@ class GraphAxis(GraphBase):
         :rtype:            :py:list
         """
 
-        keystring = keystring or self.key_tag
+        keystring = keystring or self.data.key_tag
 
         if desc:
             return [n.get(keystring) if n.isleaf else n for n in self.iternodes()]
@@ -416,7 +416,7 @@ class GraphAxis(GraphBase):
         :rtype:             :py:list
         """
 
-        valuestring = valuestring or self.value_tag
+        valuestring = valuestring or self.data.value_tag
 
         if desc:
             return [n.get(valuestring) if n.isleaf else n for n in self.iternodes()]

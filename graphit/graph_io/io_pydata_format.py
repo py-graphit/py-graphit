@@ -58,7 +58,7 @@ class PyDataNodeTools(NodeAxisTools):
                 p.deserialize(value, graph, parser_classes, dkey='item-{0}'.format(i), rnid=nid)
         else:
             node = graph.getnodes(nid)
-            node.set(graph.value_tag, data)
+            node.set(graph.data.value_tag, data)
 
     def serialize(self, **kwargs):
         """
@@ -99,7 +99,7 @@ class PyDataNodeTools(NodeAxisTools):
         # Export all node keys instead of default key_tag/value_tag pair
         if kwargs.get('export_all', False):
             for key in self.nodes[self.nid].keys():
-                if key in excluded_keys or key == self.key_tag:
+                if key in excluded_keys or key == self.data.key_tag:
                     continue
 
                 value = self.get(key, default=kwargs.get('default'))
@@ -120,9 +120,9 @@ class PyDataNodeTools(NodeAxisTools):
             attributes[key] = value
 
         if not attributes:
-            return self.get(self.key_tag), self.get(self.value_tag, default=kwargs.get('default'))
+            return self.get(self.data.key_tag), self.get(self.data.value_tag, default=kwargs.get('default'))
 
-        return self.get(self.key_tag), attributes
+        return self.get(self.data.key_tag), attributes
 
 
 class ParseDictionaryType(NodeAxisTools):
@@ -256,7 +256,7 @@ class ParseListType(NodeAxisTools):
 
             return_list.append(value)
 
-        return self.get(self.key_tag), return_list
+        return self.get(self.data.key_tag), return_list
 
 
 class ParseTupleType(ParseListType):
@@ -395,7 +395,7 @@ def read_pydata(data, graph=None, parser_classes=None, level=0):
 
     # Define root
     if graph.empty():
-        graph.root = graph._nodeid
+        graph.root = graph.data.nodeid
 
     # Start recursive parsing by calling the `deserialize` method on the parser object
     parser = parser_class_dict.get(return_instance_type(data), parser_class_dict['fallback'])

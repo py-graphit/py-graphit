@@ -156,7 +156,7 @@ def read_json_schema(schema, graph=None, exclude_args=None, resolve_ref=True):
 
         # Store default data or None
         if attributes.get('default') is not None:
-            node.set(graph.value_tag, attributes.get('default'))
+            node.set(graph.data.value_tag, attributes.get('default'))
 
         # For all child elements in datablock, make new node
         # and parse using recursive calls to parse_schema

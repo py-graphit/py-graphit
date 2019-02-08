@@ -11,7 +11,7 @@ language (DOT) format
 
 import json
 
-from graphit import __module__, __version__
+from graphit import __module__, version
 from graphit.graph_py2to3 import StringIO, PY_PRIMITIVES
 
 __all__ = ['write_dot']
@@ -42,7 +42,7 @@ def write_dot(graph, graph_name='graph', dot_directives=None):
     string_buffer = StringIO()
 
     # Write header comment and graph container
-    string_buffer.write('//Created by {0} version {1}\n'.format(__module__, '{0:d}.{1:d}'.format(*__version__)))
+    string_buffer.write('//Created by {0} version {1}\n'.format(__module__, version()))
     string_buffer.write('{0} "{1}" {2}\n'.format('digraph' if graph.directed else 'graph', graph_name, '{'))
 
     # Write special DOT directives

@@ -47,7 +47,7 @@ def write_flattened(graph, sep='.', default=None, allow_none=False, **kwargs):
     # Create empty file buffer
     string_buffer = StringIO()
 
-    value_tag = graph.value_tag
+    value_tag = graph.data.value_tag
     for leaf in node_leaves(graph):
         node = graph.getnodes(leaf)
         value = node.get(value_tag, default=default)

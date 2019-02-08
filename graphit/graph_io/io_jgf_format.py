@@ -80,7 +80,7 @@ def read_jgf(jgf_format, graph=None):
 
         # JSON objects don't accept integers as dictionary keys
         # If graph.auto_nid equals True, course node_key to integer
-        if graph.auto_nid:
+        if graph.data.auto_nid:
             node_key = int(node_key)
 
         graph.nodes[node_key] = node_value

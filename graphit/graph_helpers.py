@@ -148,13 +148,13 @@ def renumber_id(graph, start):
         start += 1
 
     # Update root and auto_nid
-    graph._nodeid = start
+    graph.data.nodeid = start
     if graph.root:
         graph.root = mapper[graph.root]
 
     # Update nid if auto_nid
     newnodes = {}
-    if graph.auto_nid:
+    if graph.data.auto_nid:
         newnodes = {v: graph.nodes[k] for k, v in mapper.items()}
 
     # Update edges.

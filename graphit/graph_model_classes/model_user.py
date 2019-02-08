@@ -27,8 +27,8 @@ class User(NodeEdgeToolsBaseClass):
         Set to current system user if called without arguments.
         """
 
-        key = key or self.value_tag
-        if key == self.value_tag and not value:
+        key = key or self.data.key_tag
+        if key == self.data.value_tag and not value:
             value = self.username()
 
         self.nodes[self.nid][key] = value

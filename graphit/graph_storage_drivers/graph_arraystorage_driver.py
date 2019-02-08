@@ -16,13 +16,14 @@ from pandas import DataFrame, Series
 
 from graphit import __module__
 from graphit.graph_storage_drivers.graph_driver_baseclass import GraphDriverBaseClass
+from graphit.graph_storage_drivers.graph_dictstorage_driver import DictStorage
 from graphit.graph_storage_drivers.graph_storage_views import AdjacencyView
 
 __all__ = ['ArrayStorage', 'init_arraystorage_driver']
 logger = logging.getLogger(__module__)
 
 
-def init_arraystorage_driver(nodes, edges):
+def init_arraystorage_driver(nodes, edges, data):
     """
     ArrayStorage specific driver initiation method
 
@@ -35,15 +36,19 @@ def init_arraystorage_driver(nodes, edges):
     :param edges: Edges to initiate edges DictStorage instance
     :type edges:  :py:list, :py:dict,
                   :graphit:graph_arraystorage_driver:DictStorage
+    :param data:  graph data attributes to initiate data DictStorage instance
+    :type data:   :py:list, :py:dict,
+                  :graphit:graph_dictstorage_driver:DictStorage
 
     :return:      Nodes and edges storage instances and Adjacency view.
     """
 
     node_storage = ArrayStorage(nodes)
     edge_storage = ArrayStorage(edges)
+    data_storage = DictStorage(data)
     adjacency_storage = AdjacencyView(node_storage, edge_storage)
 
-    return node_storage, edge_storage, adjacency_storage
+    return node_storage, edge_storage, adjacency_storage, data_storage
 
 
 class SeriesStorage(MutableMapping):
