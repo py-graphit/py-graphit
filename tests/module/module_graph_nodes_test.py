@@ -36,7 +36,7 @@ class TestGraphAddNode(UnittestPythonCompatibility):
         self.assertTrue(len(self.graph.adjacency) == 0)
 
         # auto_nid
-        self.assertFalse(self.graph.auto_nid)
+        self.assertFalse(self.graph.data.auto_nid)
 
     def tearDown(self):
         """
@@ -50,7 +50,7 @@ class TestGraphAddNode(UnittestPythonCompatibility):
 
         # The _id is still set
         self.assertEqual(self.graph.nodes[self.node]['_id'], 1)
-        self.assertEqual(self.graph._nodeid, 2)
+        self.assertEqual(self.graph.data.nodeid, 2)
 
         # filled after addition
         self.assertTrue(len(self.graph) == 1)
@@ -73,7 +73,7 @@ class TestGraphAddNode(UnittestPythonCompatibility):
         nid = self.graph.add_node(self.node)
 
         # Added string should be unicode
-        self.assertIsInstance(self.graph.nodes[nid][self.graph.key_tag], UNICODE_TYPE)
+        self.assertIsInstance(self.graph.nodes[nid][self.graph.data.key_tag], UNICODE_TYPE)
 
     def test_add_node_int(self):
         """
@@ -139,8 +139,8 @@ class TestGraphAddNodeAutonid(UnittestPythonCompatibility):
         self.assertTrue(len(self.graph.adjacency) == 0)
 
         # auto_nid
-        self.assertTrue(self.graph.auto_nid)
-        self.assertEqual(self.graph._nodeid, 1)
+        self.assertTrue(self.graph.data.auto_nid)
+        self.assertEqual(self.graph.data.nodeid, 1)
 
     def tearDown(self):
         """
@@ -151,7 +151,7 @@ class TestGraphAddNodeAutonid(UnittestPythonCompatibility):
 
         # auto_nid
         self.assertItemsEqual(nid, [1])
-        self.assertEqual(self.graph._nodeid, 2)
+        self.assertEqual(self.graph.data.nodeid, 2)
 
         # filled after addition
         self.assertTrue(len(self.graph) == 1)
@@ -174,7 +174,7 @@ class TestGraphAddNodeAutonid(UnittestPythonCompatibility):
         nid = self.graph.add_node(self.node)
 
         # Added string should be unicode
-        self.assertIsInstance(self.graph.nodes[nid][self.graph.key_tag], UNICODE_TYPE)
+        self.assertIsInstance(self.graph.nodes[nid][self.graph.data.key_tag], UNICODE_TYPE)
 
     def test_add_node_int(self):
         """
@@ -263,8 +263,8 @@ class TestGraphAddNodesAutonid(UnittestPythonCompatibility):
         self.assertTrue(len(self.graph.adjacency) == 0)
 
         # auto_nid
-        self.assertTrue(self.graph.auto_nid)
-        self.assertEqual(self.graph._nodeid, 1)
+        self.assertTrue(self.graph.data.auto_nid)
+        self.assertEqual(self.graph.data.nodeid, 1)
 
     def tearDown(self):
         """
@@ -276,7 +276,7 @@ class TestGraphAddNodesAutonid(UnittestPythonCompatibility):
 
         # auto_nid
         self.assertItemsEqual(list(self.graph.nodes), nids)
-        self.assertEqual(self.graph._nodeid, length+1)
+        self.assertEqual(self.graph.data.nodeid, length+1)
 
         # filled after addition
         self.assertTrue(len(self.graph) == length)
@@ -369,7 +369,7 @@ class TestGraphAddNodeExceptionWarning(UnittestPythonCompatibility):
         self.graph.add_node()
         self.assertTrue(len(self.graph) == 1)
 
-        self.graph.auto_nid = False
+        self.graph.data.auto_nid = False
         self.assertRaises(GraphitException, self.graph.add_node, None)
 
     def test_add_node_hasable(self):
@@ -378,7 +378,7 @@ class TestGraphAddNodeExceptionWarning(UnittestPythonCompatibility):
         :return:
         """
 
-        self.graph.auto_nid = False
+        self.graph.data.auto_nid = False
         self.assertRaises(GraphitException, self.graph.add_node, [1, 2])
 
     def test_add_node_duplicate(self):
@@ -392,7 +392,7 @@ class TestGraphAddNodeExceptionWarning(UnittestPythonCompatibility):
         self.assertEqual(len(self.graph), 2)
 
         # Without auto_nid
-        self.graph.auto_nid = False
+        self.graph.data.auto_nid = False
         self.graph.add_nodes([3, 3])
         self.assertEqual(len(self.graph), 3)
 
@@ -417,7 +417,7 @@ class TestGraphAddNodeAttributes(UnittestPythonCompatibility):
         Test state after node addition
         """
 
-        self.attr.update({'_id': 1, self.graph.key_tag: 10})
+        self.attr.update({'_id': 1, self.graph.data.key_tag: 10})
         self.assertDictEqual(self.graph.nodes[1], self.attr)
 
     def test_add_node_no_attribute(self):
@@ -502,7 +502,7 @@ class TestGraphAddNodesAttributes(UnittestPythonCompatibility):
         match = []
         for i in nodes:
             for node in self.graph.nodes.values():
-                if node[self.graph.key_tag] == i[0]:
+                if node[self.graph.data.key_tag] == i[0]:
                     match.append(set(i[1].items()).issubset(set(node.items())))
         self.assertTrue(all(match))
 
@@ -521,7 +521,7 @@ class TestGraphAddNodesAttributes(UnittestPythonCompatibility):
         for i in nodes:
             i[1]['extra'] = 'yes'
             for node in self.graph.nodes.values():
-                if node[self.graph.key_tag] == i[0]:
+                if node[self.graph.data.key_tag] == i[0]:
                     match.append(set(i[1].items()).issubset(set(node.items())))
         self.assertTrue(all(match))
 

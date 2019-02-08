@@ -34,7 +34,7 @@ class TestGraphAddEdge(UnittestPythonCompatibility):
         self.assertTrue(all([len(a) == 0 for a in self.graph.adjacency.values()]))
 
         # auto_nid
-        self.assertFalse(self.graph.auto_nid)
+        self.assertFalse(self.graph.data.auto_nid)
 
     def tearDown(self):
         """
@@ -136,7 +136,7 @@ class TestGraphAddEdgeAutonid(UnittestPythonCompatibility):
         self.assertTrue(all([len(a) == 0 for a in self.graph.adjacency.values()]))
 
         # auto_nid
-        self.assertTrue(self.graph.auto_nid)
+        self.assertTrue(self.graph.data.auto_nid)
 
     def tearDown(self):
         """
@@ -368,7 +368,7 @@ class TestGraphAddEdgeAttributes(UnittestPythonCompatibility):
         self.assertTrue(all([len(a) == 0 for a in self.graph.adjacency.values()]))
 
         # auto_nid
-        self.assertTrue(self.graph.auto_nid)
+        self.assertTrue(self.graph.data.auto_nid)
 
     def tearDown(self):
         """

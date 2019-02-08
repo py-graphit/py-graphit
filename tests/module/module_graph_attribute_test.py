@@ -53,8 +53,8 @@ class TestGraphNodeAttribute(UnittestPythonCompatibility):
         Test get attributes based on `key_tag`
         """
 
-        self.assertEqual(self.graph.nodes[1][self.graph.key_tag], 'g')
-        self.assertEqual(self.graph.nodes[3][self.graph.key_tag], 'a')
+        self.assertEqual(self.graph.nodes[1][self.graph.data.key_tag], 'g')
+        self.assertEqual(self.graph.nodes[3][self.graph.data.key_tag], 'a')
         self.assertEqual(self.graph.get(1), 'g')  # uses default node data tag
 
     def test_graph_node_attr_value_tag(self):
@@ -62,8 +62,8 @@ class TestGraphNodeAttribute(UnittestPythonCompatibility):
         Test get attributes based on `value_tag`
         """
 
-        self.assertEqual(self.graph.nodes[1][self.graph.value_tag], 'gr')
-        self.assertEqual(self.graph.nodes[3][self.graph.value_tag], 'ap')
+        self.assertEqual(self.graph.nodes[1][self.graph.data.value_tag], 'gr')
+        self.assertEqual(self.graph.nodes[3][self.graph.data.value_tag], 'ap')
 
     def test_graph_node_attr_dict(self):
         """
@@ -205,7 +205,7 @@ class TestGraphEdgeAttribute(UnittestPythonCompatibility):
         Test get attributes based on `key_tag`
         """
 
-        self.assertEqual(self.graph.edges[(1, 2)][self.graph.key_tag], 'edge')
+        self.assertEqual(self.graph.edges[(1, 2)][self.graph.data.key_tag], 'edge')
         self.assertEqual(self.graph.get((1, 2)), 'edge')  # uses default node data tag
 
     def test_graph_edge_attr_value_tag(self):
@@ -213,7 +213,7 @@ class TestGraphEdgeAttribute(UnittestPythonCompatibility):
         Test get attributes based on `value_tag`
         """
 
-        self.assertEqual(self.graph.edges[(4, 5)][self.graph.value_tag], True)
+        self.assertEqual(self.graph.edges[(4, 5)][self.graph.data.value_tag], True)
 
     def test_graph_edge_attr_dict(self):
         """

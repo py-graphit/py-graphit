@@ -203,7 +203,7 @@ class TGFParserTest(UnittestPythonCompatibility):
 
         # Graph axis class with custom nid ID's
         graph = GraphAxis()
-        graph.auto_nid = False
+        graph.data.auto_nid = False
         graph.directed = True
 
         tgf_file = os.path.join(FILEPATH, 'graph.tgf')
