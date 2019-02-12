@@ -100,14 +100,27 @@ def check_graphaxis_instance(*args):
     return True
 
 
-def version():
+def version(digits=3):
     """
     Return a string representation of the graphit __version__
+
+    Graphit version follows the  semantic versioning guidelines formatted as
+
+    <major version int>.<minor version int>.<micro version int>
+
+    The full version string is returned by default but number of significant
+    version digits can be set using the `digits` argument.
+
+    :param digits: number of digits to format version string
+    :type digits:  :py:int
 
     :rtype: :py:str
     """
 
-    return '.'.join([str(i) for i in __version__])
+    if digits > len(__version__):
+        digits = len(__version__)
+
+    return '.'.join([str(__version__[i]) for i in range(digits)])
 
 
 # Component imports
