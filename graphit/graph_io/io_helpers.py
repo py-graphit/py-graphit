@@ -153,6 +153,231 @@ def open_anything(source, mode='r'):
             return StringIO(str(source))
 
 
+class StreamReader(object):
+    """
+    StreamReader class
+
+    Extention of the Python file like object (io class) to read data as
+    flexible streams. Enables a stream to be read by character, or block
+    of characters crossing file lines.
+
+    :param stream:  textual data that can be parsed as file-like object.
+    """
+
+    def __init__(self, stream):
+
+        self.stream = StringIO(stream)
+        self.has_more = True
+        self.block_pos = None
+
+        self._line = None
+        self._pos = 0
+        self._cursor = self.stream.tell()
+
+    def __getitem__(self, position):
+        """
+        Return character(s) at position
+
+        Accepts a Python 'slice' object.
+        Restores the cursor to the position before the call to __getitem__
+        was made.
+
+        :param position:    position of characters relative to document start
+        :type postion:      :py:int or slice operator
+
+        :rtype:             :py:str
+        """
+
+        # Key is a slice object
+        if isinstance(position, slice):
+            return self.slice(position.start, position.stop, step=position.step)
+
+        curpos = self.tell()
+        self.stream.seek(position, 0)
+
+        line = self.stream.readline()
+        self.stream.seek(curpos, 0)
+
+        return line[0]
+
+    def __iter__(self):
+        """
+        Implement class __iter__
+
+        Iteration managed by 'next' method
+        """
+
+        return self
+
+    def next(self):
+        """
+        Iterator next method
+
+        Returns next character in the iterations as long as there are
+        characters left in the file-like object
+
+        :raises: StopIteration, if no more characters
+        """
+
+        if self._line is None:
+            self._line = self.stream.readline()
+            if not self._line:
+                self.has_more = False
+                raise StopIteration
+            self._pos = self._cursor
+
+        pos = self._cursor - self._pos
+        if pos < len(self._line):
+            self._cursor += 1
+            return self._line[pos]
+        else:
+            self._line = None
+            return self.next()
+
+    __next__ = next
+
+    def readline(self):
+        """
+        Returns 'readline' method of the base file-like object
+        """
+
+        line = self.stream.readline()
+        self._cursor = self.stream.tell()
+
+        return line
+
+    def set_cursor(self, position):
+        """
+        Move the file reader cursor to a new position in the file
+
+        :param position:    position to move to
+        :type position:     :py:int
+        """
+
+        self.stream.seek(position, 0)
+        self._line = None
+        self._pos = 0
+        self._cursor = position
+
+    def read_upto_char(self, chars, keep=False):
+        """
+        Return characters from active position upto a certain
+        character or the first occurance of one of multiple
+        characters.
+
+        :param chars:   character(s) to search for.
+        :type chars:    :py:str, :py:list, :py:tuple
+        :param keep:    keep the character to search for as part of the
+                        returned string
+        :type keep:     :py:bool
+
+        :return:        tuple of text segment and termination character
+        :rtype:         :py:tuple
+        """
+
+        if not isinstance(chars, (list, tuple)):
+            chars = [chars]
+
+        curpos = self.tell()
+        for char in self:
+            if char in chars:
+                stop = self.tell()
+                if not keep:
+                    stop -= 1
+                self.block_pos = (curpos, stop)
+                return self.slice(*self.block_pos), char
+
+        return None, None
+
+    def read_upto_block(self, blocks, sep=(' ', '\n'), keep=False):
+        """
+        Return characters from active position upto a certain block of
+        characters or the first occurance of one of multiple blocks.
+        A block is defined as a sequece of characters bounded by seperator
+        characters `sep` usualy spaces and newline characters.
+
+        :param blocks:   block(s) to search for.
+        :type blocks:    :py:str, :py:list, :py:tuple
+        :param sep:      block seperation characters
+        :type sep:       :py:tuple, :py:list
+        :param keep:     keep the block to search for as part of the
+                         returned string
+        :type keep:      :py:bool
+
+        :return:         tuple of text segment and termination character
+        :rtype:          :py:tuple
+        """
+
+        if not isinstance(blocks, (list, tuple)):
+            blocks = [blocks]
+
+        curpos = self.tell()
+        block = []
+        for char in self:
+            block.append(char)
+            if char in sep:
+                blockj = ''.join(block).strip()
+                if len(block) and blockj in blocks:
+                    self._cursor -= 1
+                    if not keep:
+                        self._cursor -= len(block)
+                    self.block_pos = (curpos, self.tell())
+                    return self.slice(*self.block_pos), blockj
+                else:
+                    block = []
+
+        return None, None
+
+    def slice(self, start, stop, step=1):
+        """
+        Text slice method.
+
+        Returns a segment of text defined by a start and stop character
+        position relative to the start of the text.
+
+        :param start:   start character position
+        :type start:    :py:int
+        :param stop:    stop character position
+        :type stop:     :py:str
+
+        :rtype:         :py:str
+        """
+
+        if stop < start:
+            return ''
+
+        curpos = self.tell()
+        self.stream.seek(start, 0)
+
+        text_slice = []
+        progress = self.stream.tell()
+        read = True
+        while read:
+            line = self.stream.readline()
+            if not line:
+                read = False
+                break
+            if stop < self.stream.tell():
+                text_slice.append(line[0:stop - progress])
+                read = False
+            else:
+                text_slice.append(line)
+                progress += len(line)
+
+        self.stream.seek(curpos, 0)
+
+        return ''.join(text_slice)
+
+    def tell(self):
+        """
+        Return current position of file cursor
+
+        :rtype: :py:int
+        """
+
+        return self._cursor
+
+
 class FormatDetect(object):
     """
     Type cast string or unicode objects to float, integer or boolean.
