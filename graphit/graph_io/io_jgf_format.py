@@ -57,9 +57,9 @@ def read_jgf(jgf_format, graph=None):
             return
 
     # Check graphit version and format validity
-    if not check_graphit_version(parsed.get('graphit_version')):
+    if not check_graphit_version(parsed['data'].get('graphit_version')):
         return
-    keywords = ['graph', 'nodes', 'edges', 'edge_attr']
+    keywords = ['graph', 'data', 'nodes', 'edges', 'edge_attr']
     if not set(keywords).issubset(set(parsed.keys())):
         logger.error('JSON format does not contain required graph data')
         return
@@ -67,9 +67,9 @@ def read_jgf(jgf_format, graph=None):
     # Determine graph class to use
     if not isinstance(graph, Graph):
         if parsed['graph'].get('root') is not None:
-            graph = GraphAxis()
+            graph = GraphAxis(data=parsed['data'])
         else:
-            graph = Graph()
+            graph = Graph(data=parsed['data'])
 
     # Init graph meta-data attributes
     for key, value in parsed['graph'].items():
@@ -106,6 +106,7 @@ def write_jgf(graph, indent=2, encoding="utf-8", **kwargs):
     Format description. Primary key/value pairs:
     * graph: Graph class meta-data. Serializes all class attributes of type
              int, float, bool, long, str or unicode.
+    * data: Graph meta-data dictionary
     * nodes: Graph node identifiers (keys) and attributes (values)
     * edges: Graph enumerated edge identifiers
     * edge_attr: Graph edge attributes
@@ -125,8 +126,8 @@ def write_jgf(graph, indent=2, encoding="utf-8", **kwargs):
 
     # Init JSON format envelope
     json_format = {
-        'graphit_version': '{0:d}.{1:d}'.format(*__version__),
         'graph': {},
+        'data': {},
         'nodes': {},
         'edges': {},
         'edge_attr': {}
@@ -142,6 +143,9 @@ def write_jgf(graph, indent=2, encoding="utf-8", **kwargs):
         value = getattr(graph, key)
         if not key.startswith('_') and isinstance(value, PY_PRIMITIVES):
             json_format['graph'][key] = value
+
+    # Update graph metadata
+    json_format['data'].update(graph.data.to_dict())
 
     # Update nodes with graph node attributes
     json_format['nodes'].update(graph.nodes.to_dict())

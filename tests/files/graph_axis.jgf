@@ -1,10 +1,15 @@
 {
   "graph": {
-    "key_tag": "data",
-    "directed": false,
     "masked": false,
-    "root": 1,
-    "auto_nid": true
+    "root": 1
+  },
+  "data": {
+    "key_tag": "key",
+    "value_tag": "value",
+    "directed": true,
+    "auto_nid": true,
+    "nodeid": 36,
+    "graphit_version": "0.2"
   },
   "nodes": {
     "1": {"_id": 1},
@@ -103,7 +108,6 @@
       "_id": 35
     }
   },
-  "graphit_version": "0.1",
   "edge_attr": {},
   "edges": {
     "0": [

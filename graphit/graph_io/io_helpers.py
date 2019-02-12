@@ -10,7 +10,7 @@ import unicodedata
 import locale
 import logging
 
-from graphit import __version__, __module__
+from graphit import __module__, version
 from graphit.graph_py2to3 import StringIO, urllib, urlparse, PY_STRING, to_unicode
 
 __all__ = ['initial_node', 'resolve_root_node', 'coarse_type', 'check_graphit_version', 'open_anything', 'FormatDetect']
@@ -83,21 +83,24 @@ def coarse_type(n):
         return n
 
 
-def check_graphit_version(version=None):
+def check_graphit_version(file_version):
     """
     Check if the graph version of the file is (backwards) compatible with
     the current graphit module version
+
+    :param file_version: graphit version to check
+    :type file_version:  :py:str
     """
 
     try:
-        version = float(version)
+        file_version = float(file_version)
     except TypeError:
-        logger.error('No valid graphit version identifier {0}'.format(version))
+        logger.error('No valid graphit version identifier {0}'.format(file_version))
         return False
 
-    curr_version = '{0:d}.{1:d}'.format(*__version__)
-    if version > float(curr_version):
-        logger.error('Graph made with a newer version of graphit {0}, you have {1}'.format(version, curr_version))
+    curr_version = version(digits=2)
+    if file_version > float(curr_version):
+        logger.error('Graph made with a newer version of graphit {0}, you have {1}'.format(file_version, curr_version))
         return False
 
     return True
