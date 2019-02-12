@@ -20,7 +20,7 @@ import copy
 import logging
 import weakref
 
-from graphit import __module__
+from graphit import __module__, version
 from graphit.graph_py2to3 import to_unicode, prepaire_data_dict
 from graphit.graph_storage_drivers.graph_dictstorage_driver import init_dictstorage_driver
 from graphit.graph_mixin import NodeTools, EdgeTools
@@ -35,7 +35,8 @@ from graphit.graph_helpers import (edges_between_nodes, edge_list_to_nodes, make
 __all__ = ['GraphBase']
 logger = logging.getLogger(__module__)
 
-GRAPH_DEFAULTS = {'key_tag': u'key', 'value_tag': u'value', 'directed': False, 'auto_nid': True, 'nodeid': 1}
+GRAPH_DEFAULTS = {'key_tag': u'key', 'value_tag': u'value', 'directed': False, 'auto_nid': True, 'nodeid': 1,
+                  'graphit_version': version(digits=2)}
 
 
 class GraphBase(object):
