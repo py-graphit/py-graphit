@@ -490,7 +490,7 @@ class GraphBase(object):
         if isinstance(graph, GraphBase):
             self.origin = weakref.ref(graph.origin)()
 
-    def add_edge(self, nd1, nd2, directed=None, node_from_edge=False, unicode_convert=True, run_edge_new=True,
+    def add_edge(self, nd1, nd2, directed=None, node_from_edge=False, unicode_convert=True, run_edge_new=False,
                  **kwargs):
         """
         Add edge between two nodes to the graph
@@ -585,7 +585,7 @@ class GraphBase(object):
 
         return edges_to_add[0]
 
-    def add_edges(self, edges, node_from_edge=False, unicode_convert=True, run_edge_new=True, **kwargs):
+    def add_edges(self, edges, node_from_edge=False, unicode_convert=True, run_edge_new=False, **kwargs):
         """
         Add multiple edges to the graph.
 
@@ -627,7 +627,7 @@ class GraphBase(object):
 
         return edges_added
 
-    def add_node(self, node=None, unicode_convert=True, run_node_new=True, **kwargs):
+    def add_node(self, node=None, unicode_convert=True, run_node_new=False, **kwargs):
         """
         Add a node to the graph
 
@@ -716,7 +716,7 @@ class GraphBase(object):
 
         return nid
 
-    def add_nodes(self, nodes, unicode_convert=True, run_node_new=True, **kwargs):
+    def add_nodes(self, nodes, unicode_convert=True, run_node_new=False, **kwargs):
         """
         Add multiple nodes to the graph.
 
