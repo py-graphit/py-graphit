@@ -26,7 +26,7 @@ class AdjacencyView(object):
     are 'views' then AdjacencyView als behaves as a view.
     """
 
-    def __init__(self, nodes, edges):
+    def __init__(self, nodes, edges, cache=True):
         """
         Implements class __init__
 
@@ -36,6 +36,11 @@ class AdjacencyView(object):
 
         self.edges = edges
         self.nodes = nodes
+        self._adj = None
+
+        # Cache full adjacency
+        if cache:
+            self._adj = self._build_adjacency(self.nodes)
 
     def __call__(self):
         """
@@ -95,7 +100,7 @@ class AdjacencyView(object):
     def _build_adjacency(self, nodes):
         """
         Build the adjacency dictionary for each call to the AdjacencyView
-        instance for all nodes or a selection.
+        instance for all nodes or a selection unless self._adj is set.
 
         :param nodes:   Nodes to determine adjacency for
         :type nodes:    :py:list
@@ -103,6 +108,9 @@ class AdjacencyView(object):
         :return:        adjacency
         :rtype:         :py:dict
         """
+
+        if self._adj:
+            return self._adj
 
         adj = {}
         for node in nodes:
