@@ -248,8 +248,7 @@ class ParseListType(NodeAxisTools):
 
         return_list = []
         for cid in self.children(return_nids=True):
-            child_node = self.origin.getnodes(cid)
-
+            child_node = self.getnodes(cid)
             key, value = child_node.serialize(**kwargs)
             if not kwargs.get('allow_none', False) and value is None:
                 continue
@@ -468,8 +467,8 @@ def write_pydata(graph, default=None, allow_none=True, export_all=False, include
     graph.orm = pydataorm
 
     # Set current NodeTools aside and register new one
-    curr_nt = graph.origin.node_tools
-    graph.origin.node_tools = PyDataNodeTools
+    curr_nt = graph.node_tools
+    graph.node_tools = PyDataNodeTools
 
     # Define start node for recursive export
     if len(graph) > 1:
@@ -487,7 +486,7 @@ def write_pydata(graph, default=None, allow_none=True, export_all=False, include
         data = {root_key: data}
 
     # Restore original ORM and NodeTools
-    graph.origin.node_tools = curr_nt
+    graph.node_tools = curr_nt
     graph.orm = curr_orm
 
     return data
