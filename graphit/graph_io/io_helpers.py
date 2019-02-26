@@ -13,7 +13,9 @@ import logging
 from graphit import __module__, version
 from graphit.graph_py2to3 import StringIO, urllib, urlparse, PY_STRING, to_unicode
 
-__all__ = ['initial_node', 'resolve_root_node', 'coarse_type', 'check_graphit_version', 'open_anything', 'FormatDetect']
+__all__ = ['initial_node', 'resolve_root_node', 'coarse_type', 'check_graphit_version', 'open_anything',
+           'FormatDetect', 'StreamReader']
+
 logger = logging.getLogger(__module__)
 
 
