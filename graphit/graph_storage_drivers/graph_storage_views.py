@@ -26,7 +26,7 @@ class AdjacencyView(object):
     are 'views' then AdjacencyView als behaves as a view.
     """
 
-    def __init__(self, nodes, edges, cache=True):
+    def __init__(self, nodes, edges):
         """
         Implements class __init__
 
@@ -36,10 +36,6 @@ class AdjacencyView(object):
 
         self.edges = edges
         self.nodes = nodes
-        self.cache = cache
-
-        self._edge_size = len(self.edges)
-        self._adj = None
 
     def __call__(self):
         """
@@ -108,10 +104,6 @@ class AdjacencyView(object):
         :rtype:         :py:dict
         """
 
-        edge_size = len(self.edges)
-        if self.cache and edge_size == self._edge_size:
-            return self._adj
-
         adj = {}
         for node in nodes:
             if node in self.nodes:
@@ -122,11 +114,7 @@ class AdjacencyView(object):
         for edge in self.edges:
             if edge[0] in adj:
                 adj[edge[0]].append(edge[1])
-
-        if self.cache:
-            self._adj = adj
-            self._edge_size = edge_size
-
+        
         return adj
 
     @property
