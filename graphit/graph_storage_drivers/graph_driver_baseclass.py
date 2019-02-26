@@ -508,7 +508,7 @@ class GraphDriverBaseClass(colabc.MutableMapping):
         Other function are allowed as well as long as they match the
         function signature described below.
 
-        The used lambda function may except two arguments in the following
+        The used lambda function excepts two arguments in the following
         order: the primary key first and the attribute dictionary (value)
         as seconds argument.
 
