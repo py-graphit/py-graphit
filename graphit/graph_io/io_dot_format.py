@@ -28,7 +28,7 @@ __all__ = ['write_dot']
 
 def parse_graph_type(reader, graph):
     """
-    Parse the start of a DOT graph and create a new Graphit graph for it.
+    Parse the start of a DOT graph and set a new Graphit graph for it.
 
     DOT syntax defines a graph as:
 
@@ -36,6 +36,8 @@ def parse_graph_type(reader, graph):
 
     :param reader: StreamReader instance
     :type reader:  StreamReader
+    :param graph:  Graph object to import DOT data in
+    :type graph:   :graphit:Graph
 
     :return:       Graphit Graph
     :rtype:        :graphit:Graph
@@ -57,7 +59,7 @@ def parse_graph_type(reader, graph):
     return None
 
 
-def parse_edge(line, graph, attr={}):
+def parse_edge(line, graph, attr=None):
     """
     Add DOT edges to the graphit Graph
 
@@ -73,6 +75,7 @@ def parse_edge(line, graph, attr={}):
     """
 
     added_edges = []
+    attr = attr or {}
 
     edges = [e.strip() for e in direction_splitter.split(line)]
     for n in [i for i, x in enumerate(edges) if x in ('--', '->')]:
@@ -107,7 +110,7 @@ def parse_attributes(line):
     attributes = {}
     for attr in block:
         attr = attr.split('=')
-        attributes[attr[0].strip()] = attr[1].strip()
+        attributes[attr[0].strip()] = coarse_type(attr[1].strip())
 
     return attributes
 
@@ -230,19 +233,27 @@ def read_dot(dot, graph=None):
     return graph
 
 
-def write_dot(graph, graph_name='graph', dot_directives=None):
+def write_dot(graph, graph_name=None):
     """
     DOT graphs are either directional (digraph) or undirectional, mixed mode
     is not supported.
 
-    Basic types for node and edge attributes are supported.
+    Nodes and edges are all exported separably, short hand notations are not
+    supported. Grouping and supgraphs are not supported.
+    Graph attributes in graph.data, graph.edges and graph.nodes will be
+    exported as DOT directives regardless if they are official GraphVis DOT
+    graph directives as listed in the reference documentation:
+        https://www.graphviz.org/doc/info/attrs.html
+
+    Dot reserved rendering keywords part of the graphs global attributes in
+    graph.data or part of the node and edge attributes are exported as part
+    of the DOT graph.
 
     :param graph:          Graph object to export
     :type graph:           :graphit:Graph
-    :param graph_name:     graph name to include
+    :param graph_name:     name of the 'graph' or 'digraph'. Uses the 'title'
+                           attribute in graph.data by default, else graph_name
     :type graph_name:      :py:str
-    :param dot_directives: special DOT format rendering directives
-    :type dot_directives:  :py:dict
 
     :return:               DOT graph representation
     :rtype:                :py:str
@@ -255,18 +266,19 @@ def write_dot(graph, graph_name='graph', dot_directives=None):
     string_buffer = StringIO()
 
     # Write header comment and graph container
+    graph_name = graph.data.get('title', graph_name or 'graph')
     string_buffer.write('//Created by {0} version {1}\n'.format(__module__, version()))
     string_buffer.write('{0} "{1}" {2}\n'.format('digraph' if graph.directed else 'graph', graph_name, '{'))
 
-    # Write special DOT directives
-    if isinstance(dot_directives, dict):
-        for directive, value in dot_directives.items():
-            string_buffer.write('{0}{1}={2}\n'.format(indent, directive, value))
+    # Write global DOT directives
+    for dot_key, dot_value in graph.data.items():
+        if isinstance(dot_value, PY_PRIMITIVES) and not dot_key.startswith('$'):
+            string_buffer.write('{0}{1}={2}\n'.format(indent, dot_key, json.dumps(dot_value)))
 
     # Export nodes
     string_buffer.write('{0}//nodes\n'.format(indent))
     for node in graph.iternodes():
-        attr = ['{0}={1}'.format(k, json.dumps(v)) for k,v in node.nodes[node.nid].items() if
+        attr = ['{0}={1}'.format(k, json.dumps(v)) for k, v in node.nodes[node.nid].items() if
                 isinstance(v, PY_PRIMITIVES) and not k.startswith('$')]
         if attr:
             string_buffer.write('{0}{1} [{2}];\n'.format(indent, node.nid, ','.join(attr)))
@@ -274,21 +286,20 @@ def write_dot(graph, graph_name='graph', dot_directives=None):
     # Export adjacency
     string_buffer.write('{0}//edges\n'.format(indent))
     done = []
-    for node, adj in graph.adjacency.items():
-        for a in adj:
-            edges = [(node, a), (a, node)]
+    for edge in graph.edges:
+        if edge not in done:
+            edges = sorted([edge, edge[::-1]])
 
-            if all([e not in done for e in edges]):
-                attr = {}
-                for edge in edges:
-                   attr.update(graph.edges.get(edge, {}))
-                attr = ['{0}={1}'.format(k, json.dumps(v)) for k, v in attr.items() if
-                        isinstance(v, PY_PRIMITIVES) and not k.startswith('$')]
+            attr = []
+            for e in edges:
+                attr.extend(['{0}={1}'.format(k, json.dumps(v)) for k, v in graph.edges[e].items()
+                             if isinstance(v, PY_PRIMITIVES) and not k.startswith('$')])
 
-                if attr:
-                    string_buffer.write('{0}{1} {2} {3} [{4}];\n'.format(indent, node, link, a, ','.join(attr)))
-                else:
-                    string_buffer.write('{0}{1} {2} {3};\n'.format(indent, node, link, a))
+            start, end = edges[0]
+            if attr:
+                string_buffer.write('{0}{1} {2} {3} [{4}];\n'.format(indent, start, link, end, ','.join(attr)))
+            else:
+                string_buffer.write('{0}{1} {2} {3};\n'.format(indent, start, link, end))
 
             done.extend(edges)
 
