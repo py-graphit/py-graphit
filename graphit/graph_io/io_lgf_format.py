@@ -255,10 +255,7 @@ def write_lgf(graph):
     :return:                Graph object
     :rtype:                 :graphit:Graph
     """
-
-    # Define node and edge data tags to export
-    key_tag = graph.data.key_tag
-
+    
     # Create empty file buffer
     string_buffer = StringIO()
 
