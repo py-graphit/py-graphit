@@ -16,6 +16,7 @@ import pprint
 import logging
 
 from graphit import Graph, __module__
+from graphit.graph_py2to3 import StringIO
 
 __all__ = ['read_graph', 'write_graph']
 logger = logging.getLogger(__module__)
@@ -49,7 +50,7 @@ def read_graph(graph_file, graph=None):
     return graph
 
 
-def write_graph(graph, path=os.path.join(os.getcwd(), 'graph.gpf')):
+def write_graph(graph):
     """
     Export graph as Graph Python Format file
 
@@ -59,20 +60,25 @@ def write_graph(graph, path=os.path.join(os.getcwd(), 'graph.gpf')):
 
     :param graph:        Graph object to export
     :type graph:         Graph instance
-    :param path:         File path to write to
-    :type path:          path as string
 
-    :return:             Graph instance
+    :return:             Graph in GPF graph representation
+    :rtype:              :py:str
     """
+
+    # Create empty file buffer
+    string_buffer = StringIO()
 
     # Export graph as serialized Graph Python Format
     pp = pprint.PrettyPrinter(indent=2)
-    with open(path, 'w') as output:
 
-        # Export nodes as dictionary
-        output.write('nodes = {0}\n'.format(pp.pformat(graph.nodes.dict())))
+    # Export nodes as dictionary
+    string_buffer.write('nodes = {0}\n'.format(pp.pformat(graph.nodes.dict())))
 
-        # Export edges as dictionary
-        output.write('edges = {0}\n'.format(pp.pformat(graph.edges.dict())))
+    # Export edges as dictionary
+    string_buffer.write('edges = {0}\n'.format(pp.pformat(graph.edges.dict())))
 
-    logger.info('Graph exported in GPF format to file: {0}'.format(path))
+    logger.info('Graph {0} exported in GPF format'.format(repr(graph)))
+
+    # Reset buffer cursor
+    string_buffer.seek(0)
+    return string_buffer.read()
