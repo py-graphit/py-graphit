@@ -168,7 +168,10 @@ class StreamReader(object):
 
     def __init__(self, stream):
 
-        self.stream = StringIO(stream)
+        self.stream = stream
+        if isinstance(stream, str):
+            self.stream = StringIO(stream)
+
         self.has_more = True
         self.block_pos = None
 
@@ -263,8 +266,8 @@ class StreamReader(object):
 
     def read_upto_char(self, chars, keep=False):
         """
-        Return characters from active position upto a certain
-        character or the first occurance of one of multiple
+        Return characters from active position up to a certain
+        character or the first occurrence of one of multiple
         characters.
 
         :param chars:   character(s) to search for.
@@ -293,10 +296,10 @@ class StreamReader(object):
 
     def read_upto_block(self, blocks, sep=(' ', '\n'), keep=False):
         """
-        Return characters from active position upto a certain block of
-        characters or the first occurance of one of multiple blocks.
-        A block is defined as a sequece of characters bounded by seperator
-        characters `sep` usualy spaces and newline characters.
+        Return characters from active position up to a certain block of
+        characters or the first occurrence of one of multiple blocks.
+        A block is defined as a sequence of characters bounded by separator
+        characters `sep` usually spaces and newline characters.
 
         :param blocks:   block(s) to search for.
         :type blocks:    :py:str, :py:list, :py:tuple

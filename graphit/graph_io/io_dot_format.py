@@ -23,7 +23,7 @@ attribute_splitter = re.compile('(?<=[^0-9]),(?=[^0-9]+)')
 
 logger = logging.getLogger(__module__)
 
-__all__ = ['write_dot']
+__all__ = ['write_dot', 'read_dot']
 
 
 def parse_graph_type(reader, graph):
@@ -48,10 +48,10 @@ def parse_graph_type(reader, graph):
         line, char = reader.read_upto_char('{')
         line = shlex.split(line)
         if line:
-            graph.data.title = line[0]
+            graph.data['title'] = line[0]
 
         graph.directed = True if graph_type == 'digraph' else False
-        graph.data.auto_nid = False
+        graph.data['auto_nid'] = False
 
         logging.info('Graph type "{0}" with title: {1}'.format(graph_type, graph.data.get('title', '')))
         return graph

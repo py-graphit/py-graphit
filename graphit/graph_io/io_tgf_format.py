@@ -19,6 +19,26 @@ by means of a label.
 TGF format only described the nodes themselves and edges connecting them.
 Node data (attributes) are not represented.
 
+Example:
+    1 January
+    2 March
+    3 April
+    4 May
+    5 December
+    6 June
+    7 September
+    #
+    1 2
+    3 2
+    4 3
+    5 1 Happy New Year!
+    5 3 April Fools Day
+    6 3
+    6 1
+    7 5
+    7 6
+    7 1
+
 Reference: https://en.wikipedia.org/wiki/Trivial_Graph_Format
 """
 
@@ -68,7 +88,7 @@ def read_tgf(tgf, graph=None):
     graph.directed = True
 
     # TGF node and edge labels are unique, turn off auto_nid
-    graph.data.auto_nid = False
+    graph.data['auto_nid'] = False
 
     # Start parsing. First extract nodes
     nodes = True

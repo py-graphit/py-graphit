@@ -148,7 +148,7 @@ def renumber_id(graph, start):
         start += 1
 
     # Update root and auto_nid
-    graph.data.nodeid = start
+    graph.data['nodeid'] = start
     if graph.root:
         graph.root = mapper[graph.root]
 

@@ -5,7 +5,7 @@
 # file: io_lgf_format.py
 
 """
-Functions for reading and writing graphs defined in the LEMONG Graph Format
+Functions for reading and writing graphs defined in the LEMON Graph Format
 
 Reference:  http://lemon.cs.elte.hu/pub/doc/1.3/a00002.html
 
@@ -200,7 +200,7 @@ def read_lgf(lgf, graph=None):
         graph = Graph()
 
     # LGF node and edge labels are unique, turn off auto_nid
-    graph.data.auto_nid = False
+    graph.data['auto_nid'] = False
 
     parser = None
     header = None
@@ -255,7 +255,7 @@ def write_lgf(graph):
     :return:                Graph object
     :rtype:                 :graphit:Graph
     """
-    
+
     # Create empty file buffer
     string_buffer = StringIO()
 

@@ -313,7 +313,7 @@ def read_web(web, graph=None, orm_data_tag='haddock_type', auto_parse_format=Tru
     return graph
 
 
-def write_web(graph, orm_data_tag='haddock_type', indent=2, root_nid=None,):
+def write_web(graph, orm_data_tag='haddock_type', indent=2, root_nid=None):
     """
     Export a graph in Spyder .web format
 
@@ -423,6 +423,8 @@ def write_web(graph, orm_data_tag='haddock_type', indent=2, root_nid=None,):
     # Restore original ORM and NodeTools
     graph.node_tools = curr_nt
     graph.orm = curr_orm
+
+    logger.info('Graph {0} exported in WEB format'.format(repr(graph)))
 
     # Reset buffer cursor
     string_buffer.seek(0)

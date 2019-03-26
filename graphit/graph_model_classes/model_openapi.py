@@ -79,7 +79,11 @@ class OpenAPIMethod(NodeAxisTools):
         if supported_schemes and scheme not in supported_schemes:
             scheme = supported_schemes[0]
 
-        return '{0}://{1}{2}{3}'.format(scheme, root.host(), root.basePath(), self.get(self.data.key_tag))
+        basepath = root.basePath()
+        if basepath == '/':
+            basepath = ''
+
+        return '{0}://{1}{2}{3}'.format(scheme, root.host(), basepath, self.get(self.data.key_tag))
 
     def http_method(self):
 
@@ -99,11 +103,14 @@ class OpenAPIMethod(NodeAxisTools):
         if loc not in ('query', 'path'):
             raise TypeError('"loc" needs to be "query" or "path", got: {0}'.format(loc))
 
+        def check_loc(k, v):
+            return v[param.data.key_tag] == 'in' and v[param.data.value_tag] == loc
+
         param_list = []
-        params = self.descendants().query_nodes({self.data.key_tag: 'parameters'})
-        for param in params:
-            if loc in param.xpath('//in').values():
-                param_list.append(write_pydata(param))
+        for param in self.xpath('//*/parameters'):
+            param = param.descendants(include_self=True)
+            if not param.query_nodes(check_loc).empty():
+                param_list.append(param)
 
         return param_list
 
@@ -116,6 +123,7 @@ class OpenAPIMethod(NodeAxisTools):
         print('parameters')
         parameters = self.parameters(loc='query') + self.parameters(loc='path')
         for param in parameters:
+            param = write_pydata(param)
             for description, value in param.items():
                 print('  {0}: {1}'.format(description, value))
             print('')
@@ -125,6 +133,7 @@ class OpenAPIMethod(NodeAxisTools):
 
         checked_params = {}
         for ref in reference:
+            ref = write_pydata(ref)
             if ref['name'] in params:
 
                 if 'enum' in ref and not reference[ref['name']] in ref['enum']:
@@ -149,6 +158,7 @@ class OpenAPIMethod(NodeAxisTools):
         path_params = self._process_parameters(kwargs, self.parameters(loc='path'))
         url = self.url()
         url = url.format(**path_params)
+        logging.info('Calling: {0}'.format(url))
 
         http_method = self.http_method()
         if http_method == 'get':
@@ -157,8 +167,8 @@ class OpenAPIMethod(NodeAxisTools):
             response = requests.post(url, params=query_params)
 
         status_code = str(response.status_code)
-        logging.debug('Called: {0}'.format(response.url))
-        logging.debug('Response in {0} with status code {1}'.format(response.elapsed, status_code))
+        logging.info('Called: {0}'.format(response.url))
+        logging.info('Response in {0} with status code {1}'.format(response.elapsed, status_code))
 
         status_response = self.xpath('//{0}'.format(status_code))
         if not status_response.empty():
