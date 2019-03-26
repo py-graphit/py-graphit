@@ -461,6 +461,22 @@ class GraphBase(object):
 
         return graph_subtract(self, other)
 
+    @property
+    def directed(self):
+        """
+        Quick access to 'directed' attribute in data
+        """
+
+        return self.data['directed']
+
+    @directed.setter
+    def directed(self, value):
+        """
+        Quick setter of 'directed' attribute in data
+        """
+
+        self.data['directed'] = True if value in (True, 1) else False
+
     @classmethod
     def _get_class_object(cls):
         """
