@@ -364,6 +364,7 @@ def read_gml(gml, graph=None):
     if 'directed' in graph_attr:
         directed = graph_attr.pop('directed')
         graph.directed = True if directed == 1 else False
+        graph.data['directed'] = graph.directed
 
     graph.data.update(graph_attr)
 
