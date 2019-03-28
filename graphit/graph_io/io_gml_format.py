@@ -18,6 +18,7 @@ import shlex
 from itertools import izip_longest
 
 from graphit import __module__, Graph
+from graphit.graph_exceptions import GraphitException
 from graphit.graph_mixin import NodeTools, EdgeTools
 from graphit.graph_py2to3 import StringIO, PY_PRIMITIVES, PY_STRING
 from graphit.graph_io.io_helpers import coarse_type, open_anything, StreamReader
@@ -404,7 +405,13 @@ def write_gml(graph, node_tools=None, edge_tools=None):
     # Set current node and edge tools aside and register GML ones for export
     curr_nt = graph.node_tools
     curr_et = graph.edge_tools
+
+    if node_tools and not isinstance(node_tools, NodeTools):
+        raise GraphitException('Node_tools ({0}) needs to inherit from the NodeTools class'.format(type(node_tools)))
     graph.node_tools = node_tools or type('GMLNodeTools', (GMLTools, NodeTools), {})
+
+    if edge_tools and not isinstance(edge_tools, EdgeTools):
+        raise GraphitException('Edge_tools ({0}) needs to inherit from the EdgeTools class'.format(type(edge_tools)))
     graph.edge_tools = edge_tools or type('GMLEdgeTools', (GMLTools, EdgeTools), {})
 
     # Create empty file buffer
