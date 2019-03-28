@@ -435,7 +435,7 @@ class GraphBase(object):
         """
 
         for key, value in state.items():
-            if key in self.__slots__:
+            if key in self.__slots__ and not key == '__weakref__':
                 setattr(self, key, value)
 
     def __sub__(self, other):
