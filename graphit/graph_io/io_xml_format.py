@@ -40,11 +40,35 @@ def create_attrib(node):
     return attrib_dict
 
 
+def walk_element_tree(element, graph, parent=None):
+    """
+    Recursively add XML ElementTree elements as nodes to the Graph connecting
+    the element to its parent.
+
+    :param element: XML element to add
+    :type element:  :xml:etree:cElementTree:Element
+    :param graph:   graph to add XML elements to
+    :type graph:    :graphit:Graph
+    :param parent:  parent node ID to connect new element to
+    :type parent:   :py:int
+    """
+
+    for child in element:
+        child_data = child.attrib
+        if child.text and len(child.text.strip()):
+            child_data[graph.data.value_tag] = child.text.strip()
+
+        nid = graph.add_node(child.tag, **child_data)
+        graph.add_edge(parent, nid)
+
+        walk_element_tree(child, graph, parent=nid)
+
+
 class XMLNodeTools(NodeTools):
 
     def serialize(self, tree=None):
         """
-        Serialize to XML
+        Serialize node to XML
 
         :param tree:    ElementTree XML parent element to add node to as
                         new XML SubElement
@@ -104,18 +128,6 @@ def read_xml(xml_file, graph=None):
         logging.error('Unable to parse XML file. cElementTree error: {0}'.format(error))
         return
 
-    def walk_element_tree(element, parent=None):
-
-        for child in element:
-            child_data = child.attrib
-            if child.text and len(child.text.strip()):
-                child_data[graph.data.value_tag] = child.text.strip()
-
-            nid = graph.add_node(child.tag, **child_data)
-            graph.add_edge(parent, nid)
-
-            walk_element_tree(child, parent=nid)
-
     is_empty = graph.empty()
 
     # Add root element
@@ -128,17 +140,27 @@ def read_xml(xml_file, graph=None):
         graph.root = rid
 
     # Recursive add XML elements as nodes
-    walk_element_tree(tree, parent=graph.root)
+    walk_element_tree(tree, graph, parent=graph.root)
 
     return graph
 
 
-def write_xml(graph):
+def write_xml(graph, node_tools=XMLNodeTools):
     """
     Export a graph to an XML data format
 
-    :param graph:
-    :return:
+    Custom XML serializers may be introduced as a custom NodeTools
+    class using the `node_tools` attribute. In addition, the graph
+    ORM may be used to inject tailored `serialize` methods in specific
+    nodes or edges.
+
+    :param graph:       Graph to export
+    :type graph:        :graphit:Graph
+    :param node_tools:  NodeTools class with node serialize method
+    :type node_tools:   :graphit:NodeTools
+
+    :return:            Graph exported as a hierarchical XML node structure
+    :rtype:             :py:str
     """
 
     # Graph should be of type GraphAxis with a root node nid defined
