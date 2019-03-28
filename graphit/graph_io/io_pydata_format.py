@@ -440,6 +440,8 @@ def write_pydata(graph, default=None, allow_none=True, export_all=False, include
     :type allow_none:      :py:bool
     :param export_all:     Export the full node storage dictionary.
     :type export_all:      :py:bool
+    :param include_root:   Include the root node in the hierarchy
+    :type include_root:    :py:bool
 
     :rtype:                :py:dict
     """

@@ -14,7 +14,7 @@ and their data dictionaries are stored in JSON format.
 import json
 import logging
 
-from graphit import __version__, __module__, Graph, GraphAxis
+from graphit import __module__, Graph, GraphAxis
 from graphit.graph_py2to3 import PY_PRIMITIVES, MAJOR_PY_VERSION
 from graphit.graph_io.io_helpers import check_graphit_version, open_anything
 

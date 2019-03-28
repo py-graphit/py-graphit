@@ -247,8 +247,6 @@ def write_lgf(graph):
     """
     Write graph in LEMON Graph Format (LGF)
 
-    :param lgf:             LGF graph data.
-    :type lgf:              File, string, stream or URL
     :param graph:           Graph object to import LGF data in
     :type graph:            :graphit:Graph
 
