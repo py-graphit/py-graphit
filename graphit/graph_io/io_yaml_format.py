@@ -106,4 +106,5 @@ def write_yaml(graph, default=None, include_root=False, allow_none=True):
     :rtype:                 :py:yaml
     """
 
-    return yaml.dump(write_pydata(graph, default=default, include_root=include_root, allow_none=allow_none))
+    return yaml.dump(write_pydata(graph, default=default, include_root=include_root,
+                                  allow_none=allow_none, export_all=False))
