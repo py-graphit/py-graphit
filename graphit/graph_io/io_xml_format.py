@@ -11,7 +11,10 @@ Functions for exporting and importing XML documents in a graph structure.
 import logging
 import xml.etree.cElementTree as et
 
+from xml.dom import minidom
+
 from graphit import __module__
+from graphit.graph_py2to3 import PY_PRIMITIVES
 from graphit.graph_exceptions import GraphitException
 from graphit.graph_mixin import NodeTools
 from graphit.graph_axis.graph_axis_class import GraphAxis
@@ -31,7 +34,7 @@ def create_attrib(node):
             continue
 
         # Data should be serializable
-        if not isinstance(value, (str, int, float, bool)):
+        if not isinstance(value, PY_PRIMITIVES):
             logger.warning('Unable to serialize to XML: {0}, {1}'.format(key, repr(value)))
             continue
 
