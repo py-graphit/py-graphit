@@ -5,21 +5,31 @@
 # file: io_pgf_format.py
 
 """
-Reading and writing graphs defined in Propitiatory Graph Format
-(.pgf) a format specific to the graphit module.
+Reading and writing graphs defined in Propitiatory Graph Format (.pgf) a
+format specific to the graphit module.
 
-Graph nodes, edges and data are stored as plain python dictionaries
+PGF stores graphit graph data as plain text python dictionaries or as
+serialized byte stream using the Python `pickle` module. Graphit graphs can
+contain any hashable Python object as node (not just integers and strings).
+Storing a graph by "Pickling" it is probably the best way of representing
+arbitrary hashable data types.
+Both storage options are feature rich but not portable as they are (so far)
+only supported by graphit.
 """
 
 import pprint
 import logging
-import pickle
 import ast
 
 from graphit import Graph, __module__
 from graphit.graph_exceptions import GraphitException
 from graphit.graph_io.io_helpers import open_anything
 from graphit.graph_py2to3 import StringIO
+
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 __all__ = ['read_pgf', 'write_pgf']
 logger = logging.getLogger(__module__)
@@ -29,7 +39,7 @@ def read_pgf(pgf_file, graph=None, pickle_graph=False):
     """
     Import graph from Graph Python Format file
 
-    PGF format is the modules own file format consisting out of a serialized
+    PGF format is the modules own file format consisting of a serialized
     graph data, nodes and edges dictionaries. Import either as plain text
     serialized dictionary or pickled graph object.
     The format is feature rich with good performance but is not portable.
@@ -81,7 +91,7 @@ def write_pgf(graph, pickle_graph=False):
     """
     Export graph as Graph Python Format file
 
-    PGF format is the modules own file format consisting out of a serialized
+    PGF format is the modules own file format consisting of a serialized
     graph data, nodes and edges dictionaries. Exports either as plain text
     serialized dictionary or pickled graph object.
     The format is feature rich with good performance but is not portable.
