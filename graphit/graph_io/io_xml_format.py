@@ -188,4 +188,5 @@ def write_xml(graph, node_tools=XMLNodeTools):
     # Restore original NodeTools
     graph.node_tools = curr_nt
 
-    return et.tostring(tree)
+    # Return pretty printed XML using minidom.parseString
+    return minidom.parseString(et.tostring(root)).toprettyxml(indent="   ")
