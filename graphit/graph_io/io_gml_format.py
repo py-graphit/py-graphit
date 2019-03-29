@@ -409,11 +409,11 @@ def write_gml(graph, node_tools=None, edge_tools=None):
     curr_nt = graph.node_tools
     curr_et = graph.edge_tools
 
-    if node_tools and not isinstance(node_tools, NodeTools):
+    if node_tools and not issubclass(node_tools, NodeTools):
         raise GraphitException('Node_tools ({0}) needs to inherit from the NodeTools class'.format(type(node_tools)))
     graph.node_tools = node_tools or type('GMLNodeTools', (GMLTools, NodeTools), {})
 
-    if edge_tools and not isinstance(edge_tools, EdgeTools):
+    if edge_tools and not issubclass(edge_tools, EdgeTools):
         raise GraphitException('Edge_tools ({0}) needs to inherit from the EdgeTools class'.format(type(edge_tools)))
     graph.edge_tools = edge_tools or type('GMLEdgeTools', (GMLTools, EdgeTools), {})
 

@@ -171,7 +171,7 @@ def write_xml(graph, node_tools=XMLNodeTools):
         raise GraphitException('No graph root node defines')
 
     # Set current NodeTools aside and register new one
-    if not isinstance(node_tools, NodeTools):
+    if not issubclass(node_tools, NodeTools):
         raise GraphitException('Node_tools ({0}) needs to inherit from the NodeTools class'.format(type(node_tools)))
     curr_nt = graph.node_tools
     graph.node_tools = node_tools
