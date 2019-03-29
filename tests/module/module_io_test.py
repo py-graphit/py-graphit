@@ -17,6 +17,7 @@ from graphit.graph_helpers import graph_directionality
 from graphit.graph_io.io_tgf_format import read_tgf, write_tgf
 from graphit.graph_io.io_jgf_format import read_jgf, write_jgf
 from graphit.graph_io.io_lgf_format import read_lgf, write_lgf
+from graphit.graph_io.io_pgf_format import read_pgf, write_pgf
 from graphit.graph_io.io_pydata_format import read_pydata, write_pydata
 from graphit.graph_io.io_web_format import read_web, write_web
 from graphit.graph_io.io_jsonschema_format import read_json_schema
@@ -363,6 +364,97 @@ class YAMLParserTests(UnittestPythonCompatibility):
         graph = read_yaml(schema)
 
         self.assertItemsEqual(graph.children().keys(), [u'martin', u'tabitha'])
+
+
+class PGFParserTest(UnittestPythonCompatibility):
+    """
+    Unit test for reading and writing graphs in Propitiatory Graph Format (PGF)
+    """
+    tempfiles = []
+
+    def tearDown(self):
+        """
+        tearDown method called after each unittest to cleanup
+        the files directory
+        """
+
+        for tmp in self.tempfiles:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+
+    def test_format_import(self):
+        """
+        Test import of format.
+        """
+
+        # Plain text serialized
+        pgf_file = os.path.join(FILEPATH, 'graph.pgf')
+        graph = read_pgf(pgf_file)
+
+        # Default graph attributes set
+        self.assertEqual(len(graph), 37)
+        self.assertEqual(len(graph.edges), 72)
+        self.assertEqual(graph.directed, False)
+        self.assertEqual(graph_directionality(graph), 'undirectional')
+        self.assertTrue(isinstance(graph, Graph))
+
+    def test_pickled_format_import(self):
+        """
+        Test import of pickled format.
+        """
+
+        # Plain text serialized
+        pgf_file = os.path.join(FILEPATH, 'graph_pickled.pgf')
+        graph = read_pgf(pgf_file, pickle_graph=True)
+
+        # Default graph attributes set
+        self.assertEqual(len(graph), 37)
+        self.assertEqual(len(graph.edges), 72)
+        self.assertEqual(graph.directed, False)
+        self.assertEqual(graph_directionality(graph), 'undirectional')
+        self.assertTrue(isinstance(graph, Graph))
+
+    def test_format_export(self):
+        """
+        Test export of format
+        """
+
+        pgf_file = os.path.join(FILEPATH, 'graph.pgf')
+        graph = read_pgf(pgf_file)
+
+        # Export graph as plain text
+        pgfout = write_pgf(graph)
+        outfile = os.path.join(FILEPATH, 'test_export.pgf')
+        with open(outfile, 'w') as otf:
+            otf.write(pgfout)
+            self.tempfiles.append(outfile)
+
+        self.assertTrue(os.path.isfile(outfile))
+
+        # Import again and compare source graph
+        graph1 = read_pgf(outfile)
+        self.assertTrue(graph1 == graph)
+
+    def test_pickled_format_export(self):
+        """
+        Test export of pickled format
+        """
+
+        pgf_file = os.path.join(FILEPATH, 'graph.pgf')
+        graph = read_pgf(pgf_file)
+
+        # Export graph as plain text
+        pgfout = write_pgf(graph, pickle_graph=True)
+        outfile = os.path.join(FILEPATH, 'test_export_pickled.pgf')
+        with open(outfile, 'wb') as otf:
+            otf.write(pgfout)
+            self.tempfiles.append(outfile)
+
+        self.assertTrue(os.path.isfile(outfile))
+
+        # Import again and compare source graph
+        graph1 = read_pgf(outfile, pickle_graph=True)
+        self.assertTrue(graph1 == graph)
 
 
 class LGFParserTest(UnittestPythonCompatibility):
