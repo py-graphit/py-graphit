@@ -19,6 +19,7 @@ import time
 import shlex
 
 from graphit import Graph, version, __module__
+from graphit.graph_exceptions import GraphitException
 from graphit.graph_py2to3 import StringIO, PY_STRING
 from graphit.graph_io.io_helpers import coarse_type, open_anything
 
@@ -196,8 +197,12 @@ def read_lgf(lgf, graph=None):
     """
 
     lgf_file = open_anything(lgf)
-    if not isinstance(graph, Graph):
+
+    # User defined or default Graph object
+    if graph is None:
         graph = Graph()
+    elif not isinstance(graph, Graph):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     # LGF node and edge labels are unique, turn off auto_nid
     graph.data['auto_nid'] = False
@@ -280,6 +285,8 @@ def write_lgf(graph):
 
         for edge, attr in graph.edges.items():
             string_buffer.write('{0}  {1}  {2}\n'.format(edge[0], edge[1], table.export_row(attr)))
+
+    logger.info('Graph {0} exported in LEMON graph format'.format(repr(graph)))
 
     # Reset buffer cursor
     string_buffer.seek(0)

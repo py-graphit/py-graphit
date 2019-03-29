@@ -344,8 +344,11 @@ def read_gml(gml, graph=None):
     :rtype:                 :graphit:Graph
     """
 
-    if not isinstance(graph, Graph):
+    # User defined or default Graph object
+    if graph is None:
         graph = Graph()
+    elif not isinstance(graph, Graph):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     # Parse GML into nested structure of Record class instances
     gml_stream = StreamReader(open_anything(gml))

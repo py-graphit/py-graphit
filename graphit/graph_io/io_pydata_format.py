@@ -378,8 +378,8 @@ def read_pydata(data, graph=None, parser_classes=None, level=0):
     # User defined or default GraphAxis object
     if graph is None:
         graph = GraphAxis()
-    if not isinstance(graph, GraphAxis):
-        raise TypeError('Unsupported graph type {0}'.format(type(graph)))
+    elif not isinstance(graph, GraphAxis):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     # Determine parser classes to use based on level
     assert level in (0, 1), GraphitException('Unsupported level {0}. Required to be 0 or 1'.format(level))

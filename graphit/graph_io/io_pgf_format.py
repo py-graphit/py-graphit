@@ -67,11 +67,14 @@ def read_pgf(pgf_file, graph=None, pickle_graph=False):
             return graph
         return pgraph
 
-    # Import graph from serialized Graph Python Format
-    if not graph:
-        graph = Graph()
-
     pgf_file = open_anything(pgf_file)
+
+    # Import graph from serialized Graph Python Format
+    if graph is None:
+        graph = Graph()
+    elif not isinstance(graph, Graph):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
+
     pgf_eval = ast.literal_eval(pgf_file.read())
     if not isinstance(pgf_eval, dict):
         raise GraphitException('Invalid PGF file format')
@@ -124,7 +127,7 @@ def write_pgf(graph, pickle_graph=False):
     string_buffer.write('"edges": {0},\n'.format(pp.pformat(graph.edges.to_dict())))
     string_buffer.write('}')
 
-    logger.info('Graph {0} exported in GPF format'.format(repr(graph)))
+    logger.info('Graph {0} exported in PGF format'.format(repr(graph)))
 
     # Reset buffer cursor
     string_buffer.seek(0)

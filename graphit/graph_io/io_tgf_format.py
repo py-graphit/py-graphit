@@ -43,6 +43,7 @@ Reference: https://en.wikipedia.org/wiki/Trivial_Graph_Format
 """
 
 from graphit import Graph
+from graphit.graph_exceptions import GraphitException
 from graphit.graph_py2to3 import StringIO
 from graphit.graph_io.io_helpers import coarse_type, open_anything
 
@@ -80,8 +81,11 @@ def read_tgf(tgf, graph=None):
     """
 
     tgf_file = open_anything(tgf)
-    if not isinstance(graph, Graph):
+
+    if graph is None:
         graph = Graph()
+    elif not isinstance(graph, Graph):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     # TGF defines edges in a directed fashion. Enforce but restore later
     default_directionality = graph.directed

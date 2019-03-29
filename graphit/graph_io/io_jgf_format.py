@@ -15,6 +15,7 @@ import json
 import logging
 
 from graphit import __module__, Graph, GraphAxis
+from graphit.graph_exceptions import GraphitException
 from graphit.graph_py2to3 import PY_PRIMITIVES, MAJOR_PY_VERSION
 from graphit.graph_io.io_helpers import check_graphit_version, open_anything
 
@@ -64,12 +65,14 @@ def read_jgf(jgf_format, graph=None):
         logger.error('JSON format does not contain required graph data')
         return
 
-    # Determine graph class to use
-    if not isinstance(graph, Graph):
+    # User defined or default Graph object
+    if graph is None:
         if parsed['graph'].get('root') is not None:
             graph = GraphAxis(data=parsed['data'])
         else:
             graph = Graph(data=parsed['data'])
+    elif not isinstance(graph, (Graph, GraphAxis)):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     # Init graph meta-data attributes
     for key, value in parsed['graph'].items():

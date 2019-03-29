@@ -56,8 +56,12 @@ def read_p2g(p2g_file, graph=None):
     :rtype:               :graphit:Graph
     """
 
-    if not graph:
+    p2g_file = open_anything(p2g_file)
+
+    if graph is None:
         graph = Graph()
+    elif not isinstance(graph, Graph):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     # P2G graphs are directed
     graph.directed = True
@@ -66,7 +70,6 @@ def read_p2g(p2g_file, graph=None):
     graph_layout = None
     curr_node = None
     nodes = {}
-    p2g_file = open_anything(p2g_file)
     for i, line in enumerate(p2g_file.readlines()):
 
         line = line.strip()

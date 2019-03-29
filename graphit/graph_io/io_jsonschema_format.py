@@ -16,6 +16,7 @@ import uritools
 
 from graphit import __module__
 from graphit.graph_py2to3 import urlparse, PY_STRING
+from graphit.graph_exceptions import GraphitException
 from graphit.graph_axis.graph_axis_class import GraphAxis
 from graphit.graph_combinatorial.graph_split_join_operations import graph_join
 from graphit.graph_io.io_helpers import open_anything
@@ -122,8 +123,11 @@ def read_json_schema(schema, graph=None, exclude_args=None, resolve_ref=True):
             logger.error('Unable to decode JSON string: {0}'.format(error))
             return
 
-    if not isinstance(graph, GraphAxis):
+    # User defined or default Graph object
+    if graph is None:
         graph = GraphAxis()
+    elif not isinstance(graph, GraphAxis):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     if graph.empty():
         rid = graph.add_node('root')

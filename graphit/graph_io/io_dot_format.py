@@ -16,6 +16,7 @@ import shlex
 
 from graphit import __module__, version, Graph
 from graphit.graph_py2to3 import StringIO, PY_PRIMITIVES
+from graphit.graph_exceptions import GraphitException
 from graphit.graph_io.io_helpers import coarse_type, open_anything, StreamReader
 
 direction_splitter = re.compile('(--|->)')
@@ -151,8 +152,12 @@ def read_dot(dot, graph=None):
     """
 
     dot_stream = StreamReader(open_anything(dot))
-    if not isinstance(graph, Graph):
+
+    # User defined or default Graph object
+    if graph is None:
         graph = Graph()
+    elif not isinstance(graph, Graph):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     block = None
     node_attr = {}

@@ -114,14 +114,15 @@ def read_xml(xml_file, graph=None):
     :rtype:                :graphit:GraphAxis
     """
 
+    xml_file = open_anything(xml_file)
+
     # User defined or default GraphAxis object
     if graph is None:
         graph = GraphAxis()
-    if not isinstance(graph, GraphAxis):
-        raise TypeError('Unsupported graph type {0}'.format(type(graph)))
+    elif not isinstance(graph, GraphAxis):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     # Try parsing the string using default Python cElementTree parser
-    xml_file = open_anything(xml_file)
     try:
         tree = et.fromstring(xml_file.read())
     except et.ParseError as error:

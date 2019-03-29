@@ -201,8 +201,10 @@ def read_web(web, graph=None, orm_data_tag='haddock_type', auto_parse_format=Tru
     """
 
     web_file = open_anything(web)
-    if not isinstance(graph, GraphAxis):
+    if graph is None:
         graph = GraphAxis()
+    elif not isinstance(graph, GraphAxis):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     # Build .web parser ORM with format specific conversion classes
     weborm = GraphORM()

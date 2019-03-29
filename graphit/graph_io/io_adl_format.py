@@ -21,6 +21,7 @@ import logging
 
 from graphit import Graph, __module__
 from graphit.graph_io.io_helpers import open_anything
+from graphit.graph_exceptions import GraphitException
 from graphit.graph_py2to3 import StringIO
 
 __all__ = ['read_adl', 'write_adl']
@@ -44,13 +45,17 @@ def read_adl(adl_file, graph=None):
     :rtype:                 :graphit:Graph
     """
 
+    adl_file = open_anything(adl_file)
+
+    # User defined or default Graph object
     if graph is None:
         graph = Graph()
+    elif not isinstance(graph, Graph):
+        raise GraphitException('Unsupported graph type {0}'.format(type(graph)))
 
     # ADL node labels are unique, turn off auto_nid
     graph.data['auto_nid'] = False
 
-    adl_file = open_anything(adl_file)
     for line in adl_file.readlines():
 
         # Ignore comments (# ..)
