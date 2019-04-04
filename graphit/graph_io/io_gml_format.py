@@ -27,7 +27,7 @@ logger = logging.getLogger(__module__)
 
 gml_syntax_arguments = ('node', 'edge', 'graph', 'id', 'source', 'target', 'directed')
 
-__all__ = ['read_gml']
+__all__ = ['read_gml', 'write_gml']
 
 
 class Record(object):

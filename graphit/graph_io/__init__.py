@@ -1,4 +1,5 @@
 #TODO: make walk and serialization methods to customize format export
+#TODO: deal with key/value (de)serialization for file formats in a universal way
 """
 Importing and exporting data structures as graphit graphs.
 
