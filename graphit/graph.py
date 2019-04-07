@@ -130,7 +130,8 @@ class GraphBase(object):
         # Graph internal attributes, do not set manually.
         # Automatically assigned node ID's always increment the highest
         # integer ID in the graph
-        self._set_auto_nid()
+        if data is None:
+            self._set_auto_nid()
         self.origin = self
 
     def __add__(self, other):
@@ -478,7 +479,7 @@ class GraphBase(object):
 
         _id = [attr.get('_id', 0) for attr in self.nodes.values()]
         if len(_id):
-            self.data.nodeid = max(_id) + 1
+            self.data['nodeid'] = max(_id) + 1
 
     def _set_origin(self, graph):
         """
