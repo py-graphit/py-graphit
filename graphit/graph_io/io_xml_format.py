@@ -185,8 +185,9 @@ def write_xml(graph, node_tools=XMLNodeTools):
     else:
         root = graph.getnodes(graph.nid)
 
-    # Start recursive parsing
-    tree = root.serialize()
+    # Start recursive parsing. Build adjacency only once
+    with root.adjacency as adj:
+        tree = root.serialize()
 
     # Restore original NodeTools
     graph.node_tools = curr_nt

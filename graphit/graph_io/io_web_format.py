@@ -413,7 +413,9 @@ def write_web(graph, orm_data_tag='haddock_type', indent=2, root_nid=None):
             indent_level -= indent
             string_buffer.write('{0}),\n'.format(' ' * indent_level))
 
-    rootnode = graph.getnodes(root_nid)
+    # Build adjacency only once
+    with graph.adjacency as adj:
+        rootnode = graph.getnodes(root_nid)
 
     if rootnode.isleaf:
         _walk_dict(rootnode, 0)
