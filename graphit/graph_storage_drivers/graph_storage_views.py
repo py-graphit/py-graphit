@@ -24,6 +24,14 @@ class AdjacencyView(object):
     Makes class adjacency information available through a dict-like API.
     Adjacency is based on the graphs nodes and edges. When the latter two
     are 'views' then AdjacencyView als behaves as a view.
+
+    An adjacency view is based on nodes and edges. The view is built on
+    each call to a method of the AdjacencyView. This is not very efficient
+    if the nodes and edges did not change in the meantime. As a solution
+    one can either request the full adjacency dictionary by calling the
+    class (`__call__`) or using the 'with graph.adjacency as adj' construct
+    that will use the same adjacency dictionary for all calls made to the
+    class while in the 'with' loop.
     """
 
     def __init__(self, nodes, edges):
@@ -36,6 +44,8 @@ class AdjacencyView(object):
 
         self.edges = edges
         self.nodes = nodes
+
+        self.adj = None
 
     def __call__(self):
         """
@@ -58,6 +68,33 @@ class AdjacencyView(object):
         """
 
         return node in self.nodes
+
+    def __enter__(self):
+        """
+        Implement class __enter__
+
+        Build full adjacency dictionary for the graph once for every call made
+        to the adjacency view in the code:
+
+            with graph.adjacency as adj:
+
+                code ..
+
+        :return:    adjacency
+        :rtype:     :py:dict
+        """
+
+        self.adj = self._build_adjacency(self.nodes.keys())
+        return self.adj
+
+    def __exit__(self, type, value, traceback):
+        """
+        Implement class __exit__
+
+        Clear stored adjacency matrix used in 'with graph.adjacency as adj'
+        """
+
+        self.adj = None
 
     def __getitem__(self, node):
         """
@@ -104,6 +141,9 @@ class AdjacencyView(object):
         :rtype:         :py:dict
         """
 
+        if self.adj:
+            return self.adj
+
         adj = {}
         for node in nodes:
             if node in self.nodes:
@@ -114,7 +154,7 @@ class AdjacencyView(object):
         for edge in self.edges:
             if edge[0] in adj:
                 adj[edge[0]].append(edge[1])
-        
+
         return adj
 
     @property
