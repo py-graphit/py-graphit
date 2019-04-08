@@ -261,7 +261,7 @@ def node_all_parents(graph, nid, root):
     return sorted(set(all_adjacent))
 
 
-def node_siblings(graph, nid, root):
+def node_siblings(graph, nid, root, parent=None):
     """
     Get the siblings of the source node
 
@@ -271,16 +271,18 @@ def node_siblings(graph, nid, root):
     :param graph:  Graph to perform calculation for
     :type graph:   Graph class instance
     :param nid:    source node to start search from
-    :type nid:     :py:int
+    :type nid:     :py:int, :py:str
     :param root:   root node for the search
-    :type root:    :py:int
+    :type root:    :py:int, :py:str
+    :param parent: parent nid if known
+    :type parent:  :py:int, :py:str
 
-    :return:       sibling node nids
+    :return:       sibling node ID's
     :rtype:        :py:list
     """
 
     # Siblings are all children of the nid parent except self.
-    parent = node_parent(graph, nid, root)
+    parent = parent or node_parent(graph, nid, root)
     siblings = []
     if parent is not None:
         if graph.masked:
