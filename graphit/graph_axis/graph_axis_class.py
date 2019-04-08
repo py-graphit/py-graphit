@@ -91,12 +91,15 @@ class GraphAxis(GraphBase):
         remain empty.
 
         :param node:         source node to start search from
-        :type node:          mixed
+        :type node:          :py:int, :py:str
         :param include_self: include source nid in results
-        :type include_self:  bool
+        :type include_self:  :py:bool
         :param return_nids:  return a list of node ID's (nid) instead of a new
                              graph object representing the selection
-        :type return_nids:   bool
+        :type return_nids:   :py:bool
+
+        :return:             node ancestors
+        :rtype:              :graphit:graph, :py:list
         """
 
         nid = node or self._resolve_nid()
@@ -110,7 +113,7 @@ class GraphAxis(GraphBase):
             return anc
         return self.getnodes(anc, add_node_tools=False)
 
-    def children(self, node=None, include_self=False, return_nids=False):
+    def children(self, node=None, include_self=False, parent=None, return_nids=False):
         """
         Return the children of the source node.
 
@@ -122,18 +125,21 @@ class GraphAxis(GraphBase):
         will not be returned.
 
         :param node:         source node to start search from
-        :type node:          mixed
+        :type node:          :py:int, :py:str
         :param include_self: include source nid in results
-        :type include_self:  bool
+        :type include_self:  :py:bool
+        :param parent:       parent nid if known
+        :type parent:        :py:int, :py:str
         :param return_nids:  return a list of node ID's (nid) instead of a new
                              graph object representing the selection
-        :type return_nids:   bool
+        :type return_nids:   :py:bool
 
-        :rtype:              Graph object or :py:list
+        :return:             node children
+        :rtype:              :graphit:graph, :py:list
         """
 
         nid = node or self._resolve_nid()
-        nch = node_children(self.origin, nid, self.root, include_self=include_self)
+        nch = node_children(self.origin, nid, self.root, include_self=include_self, parent=parent)
 
         # mask node check
         if self.masked:
@@ -154,12 +160,15 @@ class GraphAxis(GraphBase):
         or linage's unreachable by directed edges are not returned.
 
         :param node:         source node to start search from
-        :type node:          mixed
+        :type node:          :py:int, :py:str
         :param include_self: include source nid in results
-        :type include_self:  bool
+        :type include_self:  :py:bool
         :param return_nids:  return a list of node ID's (nid) instead of a new
                              graph object representing the selection
-        :type return_nids:   bool
+        :type return_nids:   :py:bool
+
+        :return:             node descendants
+        :rtype:              :graphit:graph, :py:list
         """
 
         nid = node or self._resolve_nid()
@@ -187,14 +196,15 @@ class GraphAxis(GraphBase):
         neither will unidirectional versus directional edges.
 
         :param include_root:     include the root node if it is a leaf
-        :type include_root:      bool
+        :type include_root:      :py:bool
         :param return_nids:      return a list of node ID's (nid) instead of a new
                                  graph object representing the selection
-        :type return_nids:       bool
+        :type return_nids:       :py:bool
         :param include_isolated: Include isolated nodes in the result
         :type include_isolated:  :py:bool
 
-        :return:                 leaf node nids
+        :return:                 leaf nodes
+        :rtype:                  :graphit:graph, :py:list
         """
 
         leaves = node_leaves(self, include_isolated=include_isolated)
@@ -216,12 +226,15 @@ class GraphAxis(GraphBase):
         nodes not having an edge from source to node will not be returned.
 
         :param node:         node to return neighbors for
-        :type node:          mixed
+        :type node:          :py:int, :py:str
         :param include_self: include source nid in results
-        :type include_self:  bool
+        :type include_self:  :py:bool
         :param return_nids:  return a list of node ID's (nid) instead of a new
                              graph object representing the selection
-        :type return_nids:   bool
+        :type return_nids:   :py:bool
+
+        :return:             node neighbors
+        :rtype:              :graphit:graph, :py:list
         """
 
         nid = node or self._resolve_nid()
@@ -244,15 +257,15 @@ class GraphAxis(GraphBase):
         when following the shortest path (Dijkstra shortest path).
 
         :param node:         node to define parent of
-        :type node:          mixed
+        :type node:          :py:int, :py:str
         :param include_self: include source nid in results
-        :type include_self:  bool
+        :type include_self:  :py:bool
         :param return_nids:  return parent nid instead of a new graph object
                              representing the selection
-        :type return_nids:   bool
+        :type return_nids:   :py:bool
 
         :return:             parent node
-        :rtype:              Graph object
+        :rtype:              :graphit:graph, :py:list
         """
 
         nid = node or self._resolve_nid()
@@ -279,15 +292,15 @@ class GraphAxis(GraphBase):
         nodes not having an edge from source to node will not be returned.
 
         :param node:         node to define parents of
-        :type node:          mixed
+        :type node:          :py:int, :py:str
         :param include_self: include source nid in results
-        :type include_self:  bool
+        :type include_self:  :py:bool
         :param return_nids:  return parent nid instead of a new graph object
                              representing the selection
-        :type return_nids:   bool
+        :type return_nids:   :py:bool
 
-        :return:             parent nodes
-        :rtype:              Graph object or list
+        :return:             all parents of the node
+        :rtype:              :graphit:graph, :py:list
         """
 
         nid = node or self._resolve_nid()
@@ -304,7 +317,7 @@ class GraphAxis(GraphBase):
             return anp
         return self.getnodes(anp, add_node_tools=False)
 
-    def siblings(self, node=None, include_self=False, return_nids=False):
+    def siblings(self, node=None, include_self=False, parent=None, return_nids=False):
         """
         Get the siblings of the source node
 
@@ -312,19 +325,21 @@ class GraphAxis(GraphBase):
         nodes not having an edge from source to node will not be returned.
 
         :param node:         source node to start search from
-        :type node:          mixed
+        :type node:          :py:int, :py:str
         :param include_self: include source nid in results
-        :type include_self:  bool
+        :type include_self:  :py:bool
+        :param parent:       parent nid if known
+        :type parent:        :py:int, :py:str
         :param return_nids:  return a list of node ID's (nid) instead of a new
                              graph object representing the selection
-        :type return_nids:   bool
+        :type return_nids:   :py:bool
 
-        :return:             sibling nodes
-        :rtype:              Graph object or list
+        :return:             node siblings
+        :rtype:              :graphit:graph, :py:list
         """
 
         nid = node or self._resolve_nid()
-        nsb = node_siblings(self.origin, nid, self.root)
+        nsb = node_siblings(self.origin, nid, self.root, parent=parent)
 
         # mask node check
         if self.masked:

@@ -32,7 +32,7 @@ def closest_to(graph, source, target):
     :param graph:  Graph to perform calculation for
     :type graph:   Graph class instance
     :param source: source node id
-    :type source:  :py:int
+    :type source:  :py:int, :py:str
     :param target: target node id's
     :type target:  :py:list
 
@@ -75,11 +75,14 @@ def node_ancestors(graph, nid, root, include_self=False):
     :param graph:        Graph to perform calculation for
     :type graph:         Graph class instance
     :param nid:          source node to start search from
-    :type nid:           :py:int
+    :type nid:           :py:int, :py:str
     :param root:         root node for the search
-    :type root:          :py:int
+    :type root:          :py:int, :py:str
     :param include_self: include source nid in results
     :type include_self:  :py:bool
+
+    :return:             ancestor node ID's
+    :rtype:              :py:list
     """
 
     anc = dijkstra_shortest_path(graph.origin, root, nid)
@@ -113,6 +116,9 @@ def node_children(graph, nid, root, include_self=False, parent=None):
     :type include_self:  :py:bool
     :param parent:       parent nid if known
     :type parent:        :py:int, :py:str
+
+    :return:             children node ID's
+    :rtype:              :py:list
     """
 
     # Children are all neighbors of the node except the parent
@@ -138,11 +144,14 @@ def node_descendants(graph, nid, root, include_self=False):
     :param graph:        Graph to perform calculation for
     :type graph:         Graph class instance
     :param nid:          source node to start search from
-    :type nid:           :py:int
+    :type nid:           :py:int, :py:str
     :param root:         root node for the search
-    :type root:          :py:int
+    :type root:          :py:int, :py:str
     :param include_self: include source nid in results
     :type include_self:  :py:bool
+
+    :return:             descendants node ID's
+    :rtype:              :py:list
     """
 
     # Get nid child nodes to start descendants walk from
@@ -186,7 +195,7 @@ def node_leaves(graph, include_isolated=False):
     :param include_isolated: Include isolated nodes in the result
     :type include_isolated:  :py:bool
 
-    :return:                 leaf node nids
+    :return:                 leaf node ID's
     :rtype:                  :py:list
     """
 
@@ -220,11 +229,11 @@ def node_parent(graph, nid, root):
     :param graph:  Graph to perform calculation for
     :type graph:   Graph class instance
     :param nid:    source node to start search from
-    :type nid:     :py:int
+    :type nid:     :py:int, :py:str
     :param root:   root node for the search
-    :type root:    :py:int
+    :type root:    :py:int, :py:str
 
-    :return:       parent node
+    :return:       parent node ID
     :rtype:        Graph object
     """
 
@@ -244,11 +253,11 @@ def node_all_parents(graph, nid, root):
     :param graph:  Graph to perform calculation for
     :type graph:   Graph class instance
     :param nid:    source node to start search from
-    :type nid:     :py:int
+    :type nid:     :py:int, :py:str
     :param root:   root node for the search
-    :type root:    :py:int
+    :type root:    :py:int, :py:str
 
-    :return:       parent node nids
+    :return:       parent node ID's
     :rtype:        :py:list
     """
 
@@ -267,6 +276,8 @@ def node_siblings(graph, nid, root, parent=None):
 
     Directed graphs and/or masked behaviour: masked nodes or directed
     nodes not having an edge from source to node will not be returned.
+    A speedup can be achieved by proving the known parent nid using the
+    `parent` argument no longer requiring a call to `node_parent`.
 
     :param graph:  Graph to perform calculation for
     :type graph:   Graph class instance
