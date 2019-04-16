@@ -149,7 +149,7 @@ def read_lgr(lgr, graph=None, edge_label='label'):
     return graph
 
 
-def write_lgr(graph, node_key=None, edge_key=None, node_data_type='void', edge_data_type='void'):
+def write_lgr(graph, node_key=None, edge_key=None, node_data_type='string', edge_data_type='void'):
     """
     Export a graph to an LGR data format
 

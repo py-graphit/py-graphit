@@ -141,9 +141,10 @@ class MappingDictStorage(DictStorage):
                     mro_class_stack.append((mapping['mro_pos'], mapping['class']))
 
         # Sort mapped classes according to preferred MRO order (mro_pos)
-        orm_classes = [c[1] for c in sorted(mro_class_stack, key=lambda x: x[0])]
+        if mro_class_stack:
+            mro_class_stack = [c[1] for c in sorted(mro_class_stack, key=lambda x: x[0])]
 
-        return orm_classes
+        return mro_class_stack
 
 
 class GraphORM(object):
