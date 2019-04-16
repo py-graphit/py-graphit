@@ -5,7 +5,7 @@
 # file: io_gml_format.py
 
 """
-Reading and writing graphs in Protein DataBank format (.pdb).
+Reading and writing graphs in RCSB Protein DataBank format (.pdb).
 
 The PDB molecular structure format is represented as GraphAxis graph using the
 Model-Segment-Residue-Atom (MSRA) hierarchical structure. The reader and
@@ -48,7 +48,7 @@ __all__ = ['read_pdb', 'write_pdb']
 
 def read_pdb(pdb_file, graph=None, column_format=read_column_format):
     """
-    Parse Protein Data Bank (PDB) structure files to a graph
+    Parse RCSB Protein Data Bank (PDB) structure files to a graph
 
     Builds a Model-Segment-Residue-Atom (MSRA) hierarchy of the structure
     in a GraphAxis graph. Primary structure data will be extracted from the
@@ -144,13 +144,13 @@ def read_pdb(pdb_file, graph=None, column_format=read_column_format):
                 graph.add_edge(curr_chain, curr_resnum, label='msra')
 
             # Set atom node
-            curr_atom = graph.add_node('atom', atnum=record['atnum'], atname=record['atname'],
+            curr_atom = graph.add_node(line_label.lower(), atnum=record['atnum'], atname=record['atname'],
                                        atalt=record['atalt'], label=record['label'],
                                        coord=[record[c] for c in ('xcoor', 'ycoor', 'zcoor')],
                                        elem=record['elem'], charge=record['charge'], b=record['b'],
                                        occ=record['occ'])
-            nid_atnum_mapping[record['atnum']] = curr_atom
             graph.add_edge(curr_resnum, curr_atom, label='msra')
+            nid_atnum_mapping[record['atnum']] = curr_atom
 
     graph.root = curr_model
 
@@ -158,6 +158,21 @@ def read_pdb(pdb_file, graph=None, column_format=read_column_format):
 
 
 def write_pdb(graph, atom_format=write_column_format):
+    """
+    Export a Model-Segment-Residue-Atom (MSRA) graph structure as
+    RCSB Protein Data Bank (PDB) structure file
+
+    PDB ATOM and HETATM lines are formatted using the `atom_format` string
+    formatter using Python's keyword based format() mini-language.
+
+    :param graph:        Graph to export
+    :type graph:         :graphit:graph
+    :param atom_format:  String formater for ATOM/HETATM lines
+    :type atom_format:   :py:str
+
+    :return:             RCSB PDB string
+    :rtype:              :py:str
+    """
 
     key = graph.data.key_tag
     models = graph.query_nodes({key: 'model'})
@@ -165,42 +180,70 @@ def write_pdb(graph, atom_format=write_column_format):
     # Create empty file buffer
     string_buffer = StringIO()
 
-    # Export MSRA structure
-    models = [models] if len(models) == 1 else list(models)
-    for model in models:
+    # Export MSRA structure. Build adjacency only once
+    with graph.adjacency as adj:
 
-        # Export models if multiple exist
-        if len(models) > 1:
-            string_buffer.write('MODEL {0}\n'.format(model.id))
+        models = [models] if len(models) == 1 else list(models)
+        for model in models:
 
-        for segment in model:
-            seg_dict = dict([(key, segment.get(key)) for key in segment.nodes[segment.nid]])
+            # Export models if multiple exist
+            if len(models) > 1:
+                string_buffer.write('MODEL {0}\n'.format(model.id))
 
-            for residue in segment:
-                res_dict = dict([(key, residue.get(key)) for key in residue.nodes[residue.nid]])
+            hetatm = []
+            segments = model.children().query_nodes({key: 'segment'})
+            for segid, segment in sorted(segments.items()):
+                seg_dict = segment.nodes[segment.nid]
 
-                atoms = residue.children().query_nodes({key: 'atom'})
-                for atom_nid in atoms.nodes:
+                residues = segment.children(parent=model.nid).query_nodes({key: 'residue'})
+                for resnum, residue in sorted(residues.items(keystring='resnum')):
+                    res_dict = residue.nodes[residue.nid]
 
-                    line_dict = {}
-                    line_dict.update(graph.nodes[atom_nid])
-                    line_dict.update(res_dict)
-                    line_dict.update(seg_dict)
+                    atoms = residue.children(parent=segment.nid).query_nodes(lambda k,v: v[key] in ('atom', 'hetatm'))
+                    for atom_nid in atoms.nodes:
 
-                    # Format atom coordinates from list
-                    line_dict['xcoor'] = line_dict['coord'][0]
-                    line_dict['ycoor'] = line_dict['coord'][1]
-                    line_dict['zcoor'] = line_dict['coord'][2]
+                        line_dict = {}
+                        line_dict.update(seg_dict)
+                        line_dict.update(res_dict)
+                        line_dict.update(graph.nodes[atom_nid])
 
-                    # Replace all None values by strings
-                    for key in line_dict.keys():
-                        if line_dict[key] is None:
-                            line_dict[key] = ''
+                        # Format atom coordinates from list
+                        line_dict['xcoor'], line_dict['ycoor'], line_dict['zcoor'] = line_dict['coord']
 
-                    string_buffer.write(atom_format.format(**line_dict))
+                        # Replace all None values by strings
+                        for k in line_dict.keys():
+                            if line_dict[k] is None:
+                                line_dict[k] = ''
 
-        # Export CONECT statements
+                        if line_dict[key] == 'hetatm':
+                            hetatm.append(atom_format.format(**line_dict))
+                        else:
+                            string_buffer.write(atom_format.format(**line_dict))
 
+                # Multiple segment closing record
+                if len(segments) > 1 and not line_dict[key] == 'hetatm':
+                    string_buffer.write('TER\n')
+
+            # Export HETATM records
+            for htm in hetatm:
+                string_buffer.write(htm)
+
+            # Export CONECT statements
+            conected = graph.query_edges({u'label': u'conect'})
+            if conected:
+                conected.masked = True
+                source_mapping = dict([(value['atnum'], key) for key, value in conected.nodes.items()])
+                for source in sorted(source_mapping.keys()):
+                    neighbors = conected.neighbors(node=source_mapping[source])
+                    string_buffer.write('CONECT {0} {1}\n'.format(source,
+                                                        ' '.join([str(i['atnum']) for i in neighbors.nodes.values()])))
+
+            # Model closing record
+            if len(models) > 1:
+                string_buffer.write('ENDMDL\n'.format(model.id))
+
+        # Structure closing record
+        string_buffer.write('END\n')
 
     # Reset buffer cursor
     string_buffer.seek(0)
