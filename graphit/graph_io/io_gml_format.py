@@ -15,12 +15,10 @@ language (GML) format as described in the online documentation:
 import logging
 import shlex
 
-from itertools import izip_longest
-
 from graphit import __module__, Graph
 from graphit.graph_exceptions import GraphitException
 from graphit.graph_mixin import NodeTools, EdgeTools
-from graphit.graph_py2to3 import StringIO, PY_PRIMITIVES, PY_STRING
+from graphit.graph_py2to3 import StringIO, zip_longest, PY_PRIMITIVES, PY_STRING
 from graphit.graph_io.io_helpers import coarse_type, open_anything, StreamReader
 
 logger = logging.getLogger(__module__)

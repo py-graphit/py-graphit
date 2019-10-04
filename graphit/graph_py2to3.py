@@ -14,11 +14,13 @@ MAJOR_PY_VERSION = sys.version_info[0]
 # Library and function compatibility
 if MAJOR_PY_VERSION < 3:
     from cStringIO import StringIO
+    from itertools import izip_longest as zip_longest
     import urlparse
     import urllib2 as urllib
     import collections as colabc
 else:
     from io import StringIO
+    from itertools import zip_longest
     import urllib
     from urllib import parse as urlparse
     import collections.abc as colabc
