@@ -5,5 +5,6 @@
 [![codecov](https://codecov.io/gh/r-lib/objectable/branch/master/graph/badge.svg)](https://codecov.io/gh/py-graphit/py-graphit)
 [![Github All Releases](https://img.shields.io/github/downloads/py-graphit/py-graphit/total.svg)]()
 [![PyPI version](https://badge.fury.io/py/py-graphit.svg)](https://badge.fury.io/py/py-graphit)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/ansicolortags.svg)](https://pypi.python.org/pypi/py-graphit/)
 
 A Python graph based data modeling library
