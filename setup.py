@@ -28,7 +28,7 @@ with open("README.md", "r") as fh:
 setup(
     name='py-graphit',
     version="0.2.1",
-    description='Graph based data handling for the MDStudio application',
+    description='A Python graph based data modeling library',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Marc van Dijk - VU University - Amsterdam,',
