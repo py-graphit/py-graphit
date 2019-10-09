@@ -7,13 +7,9 @@ Graph base class implementing a graph based data storage with support
 for dictionary like storage of data in graph nodes and edges, rich
 graph comparison, query and traversal method and a Object Relations
 Mapper.
-
-TODO: Would it be possible and useful to create support for config files
-      to configure a Graph and function arguments?
-TODO: Dynamic class creation kills performance. Turning off run_node_new
-      or run_edge_new when creation new nodes and edges results in a
-      enormous performance boost. Can we make the latter faster?
 """
+
+#TODO: Would it be possible and useful to create support for config files to configure a Graph and function arguments?
 
 import collections
 import copy
@@ -515,7 +511,10 @@ class GraphBase(object):
         to allow any custom edge initiation to be performed. This feature can
         be customized by overloading the 'new' method in the
         NodeEdgeToolsBaseClass abstract base class.
-        Calling the 'new' method can be disabled using the run_node_new flag.
+
+        .. warning:: calling the 'new' method requires dynamic class creation
+                     resulting in a significant performance drop. Therefore
+                     this option is disabled by default using `run_edge_new`.
 
         :param nd1:             first node in edge node pair. Source node in
                                 directed graph.
@@ -576,10 +575,11 @@ class GraphBase(object):
             edges_added.append(edge)
             logger.debug('Add edge between node {0}-{1}'.format(*edge))
 
-        # Call 'new' method of new edges once to allow for custom initiation
+        # Call 'new' method on every single edge added once to allow for
+        # custom initiation
         if run_edge_new:
             for edge in edges_added:
-                self.getedges(edge).new()
+                self.getedges(edge, directed=True).new()
 
         # If node_from_edge, restore auto_nid setting
         self.data.auto_nid = curr_auto_nid
@@ -665,7 +665,10 @@ class GraphBase(object):
         to allow any custom node initiation to be performed. This feature can
         be customized by overloading the 'new' method in the
         NodeEdgeToolsBaseClass abstract base class.
-        Calling the 'new' method can be disabled using the run_node_new flag.
+
+        .. warning:: calling the 'new' method requires dynamic class creation
+             resulting in a significant performance drop. Therefore
+             this option is disabled by default using `run_node_new`.
 
         :param node:            object representing the node
         :type node:             any hashable object
@@ -678,7 +681,7 @@ class GraphBase(object):
                                 node attributes.
 
         :return:                node ID (nid)
-        :rtype:                 int
+        :rtype:                 :py:int
         """
 
         # Use internal nid or node as node ID
@@ -899,7 +902,7 @@ class GraphBase(object):
             return target.get(defaultattr, default)
         return default
 
-    def getedges(self, edges, orm_cls=None, add_edge_tools=True):
+    def getedges(self, edges, directed=None, orm_cls=None, add_edge_tools=True):
         """
         Get an edge as graph object
 
@@ -923,6 +926,8 @@ class GraphBase(object):
 
         :param edges:           edge id
         :type edges:            iterable of length 2 containing integers
+        :param directed:        return directed edge in undirected graph
+        :type directed:         :py:bool
         :param orm_cls:         custom classes to construct new edge oriented
                                 Graph class from.
         :type orm_cls:          :py:list
@@ -935,6 +940,13 @@ class GraphBase(object):
             edges = [tuple(e) for e in edges]
         elif len(edges) == 2:
             edges = [tuple(edges)]
+
+        # If graph not directed, make undirectional edge list
+        if not self.directed and not directed:
+            undirected_edge_list = []
+            for edge in edges:
+                undirected_edge_list.extend(make_edges(edge, directed=False))
+            edges = set(undirected_edge_list)
 
         # Edges need to be in graph
         if edges:
@@ -1085,8 +1097,9 @@ class GraphBase(object):
         :rtype:          :graphit:Graph
         """
 
+        # TODO: iterate over pairs of edges in undirected graph?
         for edge in sorted(self.edges.keys(), reverse=reverse, key=sort_key):
-            yield self.getedges(edge, orm_cls=orm_cls)
+            yield self.getedges(edge, directed=True, orm_cls=orm_cls)
 
     def iternodes(self, orm_cls=None, reverse=False, sort_key=str):
         """

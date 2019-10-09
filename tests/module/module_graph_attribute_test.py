@@ -250,7 +250,7 @@ class TestGraphEdgeAttribute(UnittestPythonCompatibility):
         Graph API which has the required methods (edge_tools) added to it.
         """
 
-        edge = self.graph.getedges((1, 2))
+        edge = self.graph.getedges((1, 2), directed=True)
         edge.weight = 4.5
         edge['key'] = 'edge_set'
         edge.set('value', False)
@@ -265,7 +265,7 @@ class TestGraphEdgeAttribute(UnittestPythonCompatibility):
         class
         """
 
-        edge = self.graph.getedges((1, 2))
+        edge = self.graph.getedges((1, 2), directed=True)
 
         self.assertEqual(edge.get(), True)
         self.assertRaises(KeyError, edge.__getitem__, 'no_key')
