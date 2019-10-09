@@ -588,3 +588,86 @@ class TestGraphRemoveNodes(UnittestPythonCompatibility):
         self.assertTrue(len(self.graph.nodes) == 0)
         self.assertTrue(len(self.graph.edges) == 0)
         self.assertTrue(len(self.graph.adjacency) == 0)
+
+
+class TestGraphAddNodeConnected(UnittestPythonCompatibility):
+    """
+    Test add_connect method for direct addition and edge connection of a new
+    node to an existing node using a single node object
+    """
+    currpath = os.path.dirname(__file__)
+
+    def setUp(self):
+        """
+        Build empty graph to add a node to and test default state
+        """
+
+        self.graph = Graph(auto_nid=False)
+
+        # Add two nodes
+        self.graph.add_nodes(('one', 'two'))
+        self.graph.add_edge('one', 'two')
+
+        # Two nodes and one edge
+        self.assertTrue(len(self.graph) == 2)
+        self.assertTrue(len(self.graph.nodes) == 2)
+        self.assertTrue(len(self.graph.edges) == 2)
+        self.assertTrue(len(self.graph.adjacency) == 2)
+
+        # auto_nid
+        self.assertFalse(self.graph.data.auto_nid)
+
+    def tearDown(self):
+        """
+        Test state after node addition
+        """
+
+        nids = list(self.graph.nodes)
+
+        # The nid should equal the node
+        self.assertTrue(self.node in nids)
+
+        # The _id is still set
+        self.assertEqual(self.graph.nodes[self.node]['_id'], 3)
+        self.assertEqual(self.graph.data.nodeid, 4)
+
+        # filled after addition
+        self.assertTrue(len(self.graph) == 3)
+        self.assertTrue(len(self.graph.nodes) == 3)
+        self.assertTrue(len(self.graph.edges) == 4)
+        self.assertTrue(len(self.graph.adjacency) == 3)
+
+        # no adjacency
+        self.assertTrue(len(self.graph.adjacency[nids[0]]) == 1)
+
+    def test_add_connect_string(self):
+        """
+        Test add connect a string node
+        """
+
+        self.node = 'three'
+
+        node = self.graph.getnodes('two')
+        node.add_connect(self.node)
+
+        self.assertTrue(('two', 'three') in self.graph.edges)
+        self.assertTrue(('three', 'two') in self.graph.edges)
+
+    def test_add_connect_attr(self):
+        """
+        Test add connect a node with node and edge attributes
+        """
+
+        self.node = 'three'
+
+        node = self.graph.getnodes('two')
+        node.add_connect(self.node, node_kwargs={'arg': True, 'n': 1.22}, edge_kwargs={'arg': True, 'e': 5.44})
+
+        # Node should contain keyword arguments
+        self.assertTrue(self.graph.nodes[self.node]['arg'])
+        self.assertTrue(self.graph.nodes[self.node]['n'] == 1.22)
+
+        # Edges should contain keyword arguments
+        edge = self.graph.getedges(('two', self.node))
+        self.assertTrue(all(e.get('arg', False) for e in edge.edges.values()))
+        self.assertTrue(all(e.get('e') == 5.44 for e in edge.edges.values()))

@@ -296,6 +296,31 @@ class NodeTools(NodeEdgeToolsBaseClass):
 
         return None
 
+    def add_connect(self, node=None, node_kwargs=None, edge_kwargs=None):
+        """
+        Convenient method to connect a new node to the present node.
+
+        Combined the add_node and add_edge functionality in one method
+
+        :param node:        node to add
+        :type node:         any hashable object
+        :param node_kwargs: keyword arguments for the add_node method
+        :type node_kwargs:  :py:dict
+        :param edge_kwargs: keyword arguments for the add_edge method
+        :type edge_kwargs:  :py:dict
+
+        :return:            node ID (nid)
+        :rtype:             py:int
+        """
+
+        node_kwargs = node_kwargs or {}
+        edge_kwargs = edge_kwargs or {}
+
+        nid = self.origin.add_node(node=node, **node_kwargs)
+        self.origin.add_edge(self.nid, nid, **edge_kwargs)
+
+        return nid
+
     def connected_edges(self):
         """
         Return the connected edges to a node
