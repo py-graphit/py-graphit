@@ -323,8 +323,8 @@ class DictStorage(GraphDriverBaseClass):
         if isinstance(value, dict):
             refkey = value.get('$ref')
         if refkey is not None:
-            if not refkey in self._storage:
-               logging.warning('{0} defines a reference ($ref) to non-existing {1}'.format(key, refkey))
+            if refkey not in self._storage:
+                logging.warning('{0} defines a reference ($ref) to non-existing {1}'.format(key, refkey))
             return self._storage.get(refkey, {})
 
         return value
