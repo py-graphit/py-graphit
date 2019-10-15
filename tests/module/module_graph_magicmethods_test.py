@@ -58,9 +58,9 @@ class TestGraphIteration(UnittestPythonCompatibility):
         sub2 = self.graph.getnodes([4, 5])
         self.assertNotEqual(sub1 + sub2, self.graph)
 
-        # Sub graphs are still views on the origin
-        combined = sub1  + sub2
-        self.assertTrue(combined.nodes.is_view)
+        # Sub graphs are still views on the origin if nodes/edges differ
+        combined = sub1 + sub2
+        self.assertFalse(combined.nodes.is_view)
         self.assertTrue(combined.edges.is_view)
         self.assertEqual(id(combined.origin), id(self.graph.origin))
 
@@ -89,8 +89,8 @@ class TestGraphIteration(UnittestPythonCompatibility):
         sub1 += sub2
         self.assertNotEqual(sub1, self.graph)
 
-        # Sub graphs are still views on the origin
-        self.assertTrue(sub1.nodes.is_view)
+        # Sub graphs are still views on the origin if nodes/edges differ
+        self.assertFalse(sub1.nodes.is_view)
         self.assertTrue(sub1.edges.is_view)
         self.assertEqual(id(sub1.origin), id(self.graph.origin))
 

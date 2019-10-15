@@ -558,6 +558,10 @@ class GraphDriverBaseClass(colabc.MutableMapping):
         :type keys:  list or tuple
         """
 
+        # If the view covers the dictionary do not set it
+        if len(keys) == len(self):
+            return
+
         keys = [to_unicode(key) for key in keys if key in self]
         self._view = keys
 
