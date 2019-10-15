@@ -25,6 +25,8 @@ __all__ = ['read_pydata', 'write_pydata']
 logger = logging.getLogger(__module__)
 excluded_keys = ('_id', 'format', 'type')
 
+# TODO: prevent recursion in circular graphs
+
 
 class PyDataNodeTools(NodeAxisTools):
     """
@@ -115,7 +117,7 @@ class PyDataNodeTools(NodeAxisTools):
 
             # Check for dictionary key overload
             if key in attributes:
-                logging.warning('Key {0} already defined. Values will be updated'.format(key))
+                logging.warning('Key "{0}" already defined. Values will be updated'.format(key))
 
             attributes[key] = value
 

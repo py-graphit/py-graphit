@@ -906,8 +906,8 @@ class GraphBase(object):
         """
         Get an edge as graph object
 
-        Returns a new Graph with a 'view' on the selected nodes and the edges
-        connecting them. If nodes equals None or empty list, the returned Graph
+        Returns a new Graph with a 'view' on the selected edges and the nodes
+        they connect. If nodes equals None or empty list, the returned Graph
         object will have no nodes and is basically 'empty'.
 
         Getedges calls the Graph Object Relation Mapper (GraphORM) class

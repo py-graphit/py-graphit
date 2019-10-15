@@ -34,7 +34,6 @@ class TestGraphCombinatorialSetlike(UnittestPythonCompatibility):
         """
 
         intr = graph_intersection(self.graph1, self.graph2)
-
         self.assertItemsEqual(intr.nodes.keys(), range(6, 11))
         self.assertItemsEqual(intr.edges.keys(), [(8, 9), (6, 8), (9, 8), (9, 10), (8, 7), (8, 6), (7, 8), (10, 9)])
 

@@ -144,7 +144,6 @@ def graph_intersection(graph1, graph2, return_copy=False):
     # Compute node/edge intersection
     intersect_nodes = graph1.nodes.intersection(graph2.nodes)
     intersect_edges = graph1.edges.intersection(graph2.edges)
-
     if share_common_origin(graph1, graph2) and not return_copy:
 
         # First get node intersection then edges

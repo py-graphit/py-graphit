@@ -66,7 +66,7 @@ class MappingDictStorage(DictStorage):
         mapping_dict = {'mro_pos': mro_pos, 'class': cls, 'match_func': match_func}
         for mapidx, mapping in self._storage.items():
             if self._check_duplicate_mapping(mapping, mapping_dict):
-                logger.info('Mapping {0} already defined. Use update to make changes'.format(mapidx))
+                logger.info('Mapping "{0}" already defined. Use update to make changes'.format(mapidx))
                 return mapidx
 
         # Add to mapping dictionary

@@ -196,7 +196,7 @@ def parse_attvalue_elements(element, attr, xmlns=''):
         if key not in attr:
             attr[key] = attvalue.attrib
         else:
-            logging.warning('GEXF attrvalue {0} already defined as key in graph node/edge attributes'.format(key))
+            logging.warning('GEXF attrvalue "{0}" already defined as key in graph node/edge attributes'.format(key))
 
     return attr
 
