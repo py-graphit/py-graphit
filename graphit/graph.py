@@ -9,7 +9,7 @@ graph comparison, query and traversal method and a Object Relations
 Mapper.
 """
 
-#TODO: Would it be possible and useful to create support for config files to configure a Graph and function arguments?
+# TODO: Would it be possible and useful to create support for config files to configure a Graph and function arguments?
 
 import collections
 import copy
@@ -338,7 +338,7 @@ class GraphBase(object):
             return result
 
         # Inplace update node and edge stores
-        self.nodes, self.edges, self.adjacency = self.storagedriver(result.nodes, result.edges)
+        self.nodes, self.edges, self.adjacency = self.storagedriver(result.nodes, result.edges, result.data)
 
         return self
 
