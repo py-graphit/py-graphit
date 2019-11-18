@@ -249,6 +249,17 @@ class AdjacencyView(object):
 
         return self._build_adjacency(self.nodes).keys()
 
+    def link_count(self):
+        """
+        Return the edges between the nodes in the adjacency as
+        a sum of the length of all adjacency dictionary values.
+
+        :return: total number of edges between nodes
+        :rtype:  :py:int
+        """
+
+        return sum([len(adj) for adj in self.values()])
+
     def predecessors(self, node):
         """
         Return a list for all predecessors nodes of 'node'.
