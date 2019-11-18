@@ -9,7 +9,9 @@ Unit tests for graphit 'set' like math operations functions
 from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit import Graph
-from graphit.graph_combinatorial.graph_setlike_operations import *
+from graphit.graph_combinatorial.graph_setlike_operations import (graph_difference, graph_intersection, graph_issubset,
+                                                                  graph_issuperset, graph_symmetric_difference,
+                                                                  graph_union)
 
 
 class TestGraphCombinatorialSetlike(UnittestPythonCompatibility):

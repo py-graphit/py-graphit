@@ -99,7 +99,7 @@ class Record(object):
         split = [coarse_type(a) for a in split]
 
         args = [iter(split)] * n
-        return list(izip_longest(*args, fillvalue=fillvalue))
+        return list(zip_longest(*args, fillvalue=fillvalue))
 
     def parse_block(self, gml_stream):
         """

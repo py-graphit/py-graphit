@@ -136,7 +136,7 @@ class RestraintsInterface(NodeTools):
         """
 
         if key == self.data.value_tag:
-            if value == None:
+            if value is None:
                 value = []
 
             if isinstance(value, PY_STRING):
@@ -344,7 +344,7 @@ def write_web(graph, orm_data_tag='haddock_type', indent=2, root_nid=None):
     weborm.node_mapping.add(RestraintsInterface, lambda x: x.get(graph.data.key_tag) == 'passivereslist')
 
     # Resolve the root node (if any) for hierarchical data structures
-    if root_nid and not root_nid in graph.nodes:
+    if root_nid and root_nid not in graph.nodes:
         raise GraphitException('Root node ID {0} not in graph'.format(root_nid))
     else:
         root_nid = resolve_root_node(graph)

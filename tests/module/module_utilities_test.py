@@ -9,7 +9,7 @@ Unit tests for the graphit utility functions
 from tests.module.unittest_baseclass import UnittestPythonCompatibility, PY_VERSION
 
 from graphit import Graph
-from graphit.graph_utils.graph_utilities import *
+from graphit.graph_utils.graph_utilities import (graph_directional_to_undirectional, graph_undirectional_to_directional)
 
 
 class TestUtilityFunctions(UnittestPythonCompatibility):
@@ -50,8 +50,7 @@ class TestUtilityFunctions(UnittestPythonCompatibility):
 
         # Make a directed graph
         dg = Graph(directed=True)
-        dg.add_edges([(1, 2), (2, 3), (3, 4), (3, 5), (5, 6), (6, 2)],
-                             node_from_edge=True, arg1=1.22, arg2=False)
+        dg.add_edges([(1, 2), (2, 3), (3, 4), (3, 5), (5, 6), (6, 2)], node_from_edge=True, arg1=1.22, arg2=False)
         dg.add_edges([(3, 2), (2, 6)], arg1=2.66)
 
         ug2 = graph_directional_to_undirectional(dg)

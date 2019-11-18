@@ -11,7 +11,8 @@ from tests.module.unittest_baseclass import UnittestPythonCompatibility
 
 from graphit.graph_exceptions import GraphitException
 from graphit.graph_io.io_jgf_format import read_jgf
-from graphit.graph_axis.graph_axis_methods import *
+from graphit.graph_axis.graph_axis_methods import (node_children, node_parent, node_all_parents, node_neighbors,
+                                                   node_ancestors, node_descendants, node_leaves, node_siblings)
 from graphit.graph_axis.graph_axis_mixin import NodeAxisTools
 
 
@@ -675,9 +676,9 @@ class GraphAxisDescendantsTests(UnittestPythonCompatibility):
         """
 
         # Create copy of subgraph
-        sub = self.graph.getnodes(list(range(2,11))).copy()
+        sub = self.graph.getnodes(list(range(2, 11))).copy()
 
-        self.assertItemsEqual(sub.descendants(return_nids=True), [3, 4, 5, 6, 7, 8, 9 ,10])
+        self.assertItemsEqual(sub.descendants(return_nids=True), [3, 4, 5, 6, 7, 8, 9, 10])
 
         sub.root = 10
         self.assertItemsEqual(sub.descendants(7, return_nids=True), [3, 8, 2, 4, 5, 6])

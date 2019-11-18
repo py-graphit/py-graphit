@@ -352,7 +352,7 @@ class JSONSchemaParserTests(UnittestPythonCompatibility):
         self.assertRaises(GraphitValidationError, node.set, 'value', 'ff')
 
 
-@unittest.skipIf(HAS_YAML == False, 'PyYAML package not installed')
+@unittest.skipIf(HAS_YAML is False, 'PyYAML package not installed')
 class YAMLParserTests(UnittestPythonCompatibility):
 
     def test_yaml_import(self):

@@ -270,7 +270,7 @@ class GraphAxis(GraphBase):
             np = node_parent(self.origin, nid, self.root)
 
             # For masked graphs, parent might not be in nodes
-            if self.masked and not np in self.nodes:
+            if self.masked and np not in self.nodes:
                 np = None
 
         if include_self:

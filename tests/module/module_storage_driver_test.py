@@ -413,7 +413,6 @@ class _BaseStorageDriverTests(object):
 
         # Select view and none view primary keys
         viewkeys = random.sample(self.mapping.keys(), 2)
-        noneviewkeys = [k for k in self.mapping.keys() if k not in viewkeys]
 
         # Set and check the view
         self.storage.set_view(viewkeys)

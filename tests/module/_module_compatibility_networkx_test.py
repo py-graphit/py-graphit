@@ -18,7 +18,7 @@ from tests.module.unittest_baseclass import UnittestPythonCompatibility
 from graphit.graph_networkx import NetworkXGraph
 
 
-@skipIf(no_nx == True, 'NetworkX not installed, skipping compatibility tests')
+@skipIf(no_nx is True, 'NetworkX not installed, skipping compatibility tests')
 class TestGraphNetworkxCompatibility(UnittestPythonCompatibility):
     """
     Unit tests for the compatibility of the NetworkXGraph with the NetworkX
