@@ -64,7 +64,7 @@ class TestGraphORMRegistration(UnittestPythonCompatibility):
 
     def test_graph_orm_exception_nonefunction(self):
         """
-        Registration 'match_func' argument should be a fucntion else raise
+        Registration 'match_func' argument should be a function else raise
         exception.
         """
 
