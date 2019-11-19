@@ -622,7 +622,7 @@ class TestGraphAddNodeConnected(UnittestPythonCompatibility):
         Test state after node addition
         """
 
-        nids = list(self.graph.nodes)
+        nids = sorted(self.graph.nodes)
 
         # The nid should equal the node
         self.assertTrue(self.node in nids)
