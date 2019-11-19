@@ -638,6 +638,7 @@ class TestGraphAddNodeConnected(UnittestPythonCompatibility):
         self.assertTrue(len(self.graph.adjacency) == 3)
 
         # no adjacency
+        print('$$$', self.graph.adjacency[nids[0]])
         self.assertTrue(len(self.graph.adjacency[nids[0]]) == 1)
 
     def test_add_connect_string(self):
