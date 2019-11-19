@@ -11,7 +11,7 @@ import os
 from tests.module.unittest_baseclass import UnittestPythonCompatibility, UNICODE_TYPE
 
 from graphit import Graph
-from graphit.graph import GraphitException
+from graphit.graph_exceptions import GraphitException
 
 
 class TestGraphAddNode(UnittestPythonCompatibility):
