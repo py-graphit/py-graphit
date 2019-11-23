@@ -31,11 +31,16 @@ def graph_undirectional_to_directional(graph):
 
     graph_copy = graph.copy(deep=True)
     graph_copy.directed = True
-    graph_copy.edges.clear()
 
-    # copy directional edges in emptied edge store
-    for edge, attr in graph.edges.items():
-        graph_copy.add_edge(*edge, **attr)
+    # remove all $ref pointers between undirectional edge pairs
+    for edge in graph_copy.edges:
+        if graph_copy.edges.has_data_reference(edge):
+            graph_copy.edges.del_data_reference(edge)
+
+            # Update reverse edge with data from forwards edge
+            reverse_edge = tuple(reversed(edge))
+            if reverse_edge in graph_copy.edges:
+                graph_copy.edges[reverse_edge].update(graph_copy.edges[edge])
 
     return graph_copy
 
