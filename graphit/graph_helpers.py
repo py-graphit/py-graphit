@@ -31,6 +31,7 @@ def edges_between_nodes(graph, nodes):
     """
 
     edge_selection = []
+    # TODO: graph.origin or graph
     for edge in graph.origin.edges:
         if edge[0] in nodes and edge[1] in nodes:
             edge_selection.append(edge)
@@ -167,12 +168,28 @@ def renumber_id(graph, start):
     return graph, mapper
 
 
-def graph_directionality(graph):
+def graph_directionality(graph, has_data_reference=True):
     """
     Return a graph overall directionality as 'directional', 'undirectional'
-    or 'mixed'
+    or 'mixed' based on node adjacency.
 
-    :param graph: Graph to asses directionality of
+    * undirected:  forward and reverse edges exists between every node
+    * directional: edges between nodes are one directional only
+    * mixed:       a mix of undirected and directed edges
+
+    Graphit represent edges in an undirected graph as linked pairs of
+    forward and reversed edges. That means that strictly considering the
+    existence of a pair of bidirectional edges between nodes or their
+    adjacency equivalent is not a unique identifier of directionality in
+    graphit.
+    This is resolved by checking for linked edges to identify a graphit graph
+    as truly undirectional. This check can be disabled using the
+    `has_data_reference` attribute.
+
+    :param graph:               Graph to asses directionality of
+    :type graph:                :graphit:Graph
+    :param has_data_reference:  Check for linked edges
+    :type has_data_reference:   :py:bool
 
     :return:      'directional', 'undirectional' or 'mixed'
     :rtype:       :py:str
@@ -183,6 +200,23 @@ def graph_directionality(graph):
         edge_directionality.extend([node in graph.adjacency[n] for n in adj])
 
     if all(edge_directionality):
+
+        # check for linked edges
+        if has_data_reference:
+            pairs = []
+            for edge in graph.edges:
+                linked_edge = graph.edges.get_data_reference(edge)
+                if linked_edge:
+                    pairs.append(edge)
+                    pairs.append(linked_edge)
+
+            if len(pairs) == len(graph.edges):
+                return 'undirectional'
+            elif not len(pairs):
+                return 'directional'
+            else:
+                return 'mixed'
+
         return 'undirectional'
     elif any(edge_directionality):
         return 'mixed'
