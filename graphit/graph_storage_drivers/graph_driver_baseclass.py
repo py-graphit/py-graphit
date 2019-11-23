@@ -605,11 +605,12 @@ class GraphDriverBaseClass(colabc.MutableMapping):
 
     def to_dict(self, return_full=False):
         """
-        Return a shallow copy of the full dictionary.
+        Return a copy of the (full) storage as dictionary.
 
-        If the current DictStorage represent a selective view on the parent
-        dictionary then only return a dictionary with a shallow copy of the
-        keys in the selective view.
+        If the current storage instance represents a selective view on the
+        parent storage then only return a dictionary with a copy of the
+        keys in the selective view. If `return_full` is True, return the
+        dictionary of the full storage instead.
 
         :param return_full: ignores is_view and return the full dictionary
         :type return_full:  bool
