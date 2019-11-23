@@ -72,19 +72,20 @@ def graph_directional_to_undirectional(graph):
     graph_copy.directed = False
     graph_copy.edges.clear()
 
-    edges = list(graph.edges.keys())
-    while len(edges):
-        edge = edges.pop()
-        attr = copy.deepcopy(graph.edges[edge])
+    done = []
+    for edge in graph.edges:
+        reverse_edge = tuple(reversed(edge))
+        values = copy.deepcopy(graph.edges[edge])
 
-        # Look for reverse edge. Update common attributes.
-        reverse_edge = edge[::-1]
-        if reverse_edge in edges:
-            attr.update(graph.edges[reverse_edge])
-            edges.remove(reverse_edge)
+        if edge in done or reverse_edge in done:
+            continue
 
-        # Add undirectional edge
-        graph_copy.add_edge(*edge, **attr)
+        if reverse_edge in graph.edges:
+            values.update(graph.edges[reverse_edge])
+            done.append(reverse_edge)
+
+        graph_copy.add_edge(*edge, **values)
+        done.append(edge)
 
     return graph_copy
 
