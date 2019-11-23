@@ -194,6 +194,35 @@ class GraphDriverBaseClass(colabc.MutableMapping):
 
         return self.to_dict()
 
+    def __enter__(self):
+        """
+        Implement class __enter__
+
+        Implement a context in which the data referencing is temporary
+        turned off by setting self._data_pointer_key to None.
+
+        This is useful when values need to uniquely access even if the
+        'point' towards the value of linked key. This feature is for
+        instance used when making a (deep) copy of a data storage.
+
+        :return:    storage driver instance
+        """
+
+        self.curr_ref = self._data_pointer_key
+        self._data_pointer_key = None
+
+        return self
+
+    def __exit__(self, type, value, traceback):
+        """
+        Implement class __exit__
+
+        Reset the data reference pointer (self._data_pointer_key) to its
+        original value before entering the context.
+        """
+
+        self._data_pointer_key = self.curr_ref
+
     def __ge__(self, other):
         """
         Implement class __ge__
