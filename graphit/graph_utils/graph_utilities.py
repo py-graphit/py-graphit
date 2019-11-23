@@ -15,7 +15,7 @@ def graph_undirectional_to_directional(graph):
     Returns a deep copy of the full graph with all undirectional edges
     duplicated as directional ones.
 
-    In an undirectional edge the egde pair shares a single attribute
+    In an undirectional edge the edge pair shares a single attribute
     dictionary. This dictionary gets duplicated to the unique directional
     edges.
 
