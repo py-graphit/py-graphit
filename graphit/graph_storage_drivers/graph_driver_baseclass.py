@@ -84,9 +84,9 @@ class GraphDriverBaseClass(colabc.MutableMapping):
     @abc.abstractmethod
     def del_data_reference(self, target):
         """
-        Remove JSON $ref data reference in target
+        Remove data reference in target (self._data_pointer_key)
 
-        :param target: key of target to remove $ref from
+        :param target: key of target to remove self._data_pointer_key from
         """
 
         return
@@ -95,10 +95,10 @@ class GraphDriverBaseClass(colabc.MutableMapping):
     def get_data_reference(self, target, default=None):
         """
         Check if the key defines a reference to the data of another key using
-        the $ref pointer.
+        the data reference pointer (self._data_pointer_key).
 
         :param target:  key to check
-        :param default: default to return if $ref pointer not found
+        :param default: default to return if self._data_pointer_key not found
 
         :return:        referred key or None
         """
@@ -353,7 +353,7 @@ class GraphDriverBaseClass(colabc.MutableMapping):
 
     def has_data_reference(self, target):
         """
-        Check if the target key defines a JSON $ref pointer to the data of
+        Check if the target key defines a data reference pointer to the data of
         another (source) key/value pair.
 
         :param target: target key to check reference for
@@ -366,7 +366,7 @@ class GraphDriverBaseClass(colabc.MutableMapping):
     def set_data_reference(self, source, target):
         """
         Defines a reference in the target key to the data attributes (value)
-        of the source key using a JSON $ref pointer
+        of the source key using a reference pointer (self._data_pointer_key)
 
         This method is for instance used in setting up the edge pair that
         defines an undirectional edge having the data of the second edge
@@ -377,7 +377,7 @@ class GraphDriverBaseClass(colabc.MutableMapping):
         """
 
         if source in self:
-            self[target] = {'$ref': source}
+            self[target] = {self._data_pointer_key: source}
         else:
             logging.error('Unable to set reference from source {0} to target {1}. Source does not exist.')
 

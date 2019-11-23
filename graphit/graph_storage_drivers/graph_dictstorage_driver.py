@@ -209,11 +209,11 @@ class DictStorage(GraphDriverBaseClass):
     Provides a Python native dict like class with unified keys, values, and
     items based dictionary views across Python distributions.
     The class supports weak referencing of the internal dictionary (_storage)
-    using the weakref module to reduce memory footprint and enable true
+    using the `weakref` module to reduce memory footprint and enable true
     synchronized views across different instances of the DictStorage class.
     """
 
-    __slots__ = ('_storage', '_view')
+    __slots__ = ('_storage', '_view', '_data_pointer_key')
 
     def __init__(self, *args, **kwargs):
         """
@@ -228,6 +228,7 @@ class DictStorage(GraphDriverBaseClass):
 
         self._view = None
         self._storage = None
+        self._data_pointer_key = '$ref'
 
         if len(args):
             if not len(args) == 1:
@@ -254,9 +255,10 @@ class DictStorage(GraphDriverBaseClass):
 
         The collections MutableMapping base class uses __getitem__ in there
         __contains__ implementation.
+
         The DictStorage __getitem__ may return the value from another key if
-        there is a reference ($ref pointer) setup which is an inadequate
-        'contains' test.
+        there is a reference (self._data_pointer_key) setup which is an
+        inadequate 'contains' test.
 
         :param item: key to check existence for
 
@@ -274,10 +276,11 @@ class DictStorage(GraphDriverBaseClass):
         If the storage class defines a data 'view' on the parent, remove the
         key from the view
 
+        # TODO
         .. note :: Implement a check to prevent orphan data pointers.
                    If the key defines a reference to attributes of another key
-                   using the JSON $ref pointer, the pointer will be removed but
-                   the target attributes remain.
+                   using the self._data_pointer_key, the pointer will be removed
+                   but the target attributes remain.
                    The other way around, the source attributes will be removed
                    but the now orphan pointer remains. That needs to be
                    resolved.
@@ -301,10 +304,10 @@ class DictStorage(GraphDriverBaseClass):
 
         If the storage class defines a data 'view' on the parent, check if the
         key is in the view.
-        Resolve data references defined using the JSON $ref pointer.
+        Resolve data references defined using the self._data_pointer_key.
 
-        .. note:: a $ref data pointer can point to a key that is not part of a
-                  data 'view'.
+        .. note:: a self._data_pointer_key data pointer can point to a key that
+                  is not part of a data 'view'.
 
         :param key: attribute to return value for
 
@@ -321,10 +324,11 @@ class DictStorage(GraphDriverBaseClass):
         refkey = None
         value = self._storage[key]
         if isinstance(value, dict):
-            refkey = value.get('$ref')
+            refkey = value.get(self._data_pointer_key)
         if refkey is not None:
             if refkey not in self._storage:
-                logging.warning('{0} defines a reference ($ref) to non-existing {1}'.format(key, refkey))
+                logging.warning('{0} defines a reference ({1}) to non-existing {2}'.format(key, self._data_pointer_key,
+                                                                                           refkey))
             return self._storage.get(refkey, {})
 
         return value
@@ -352,8 +356,8 @@ class DictStorage(GraphDriverBaseClass):
 
         If the storage class defines a data 'view' on the parent, add the new
         key to the view.
-        Resolve data references defined using the JSON $ref pointer and set
-        new value on the source attribute.
+        Resolve data references defined using the self._data_pointer_key and
+        set new value on the source attribute.
 
         :param key:     attribute to set value for
         :param value:   value to set
@@ -410,30 +414,30 @@ class DictStorage(GraphDriverBaseClass):
 
     def del_data_reference(self, target):
         """
-        Remove JSON $ref data reference in target
+        Remove self._data_pointer_key data reference in target
 
-        :param target: key of target to remove $ref from
+        :param target: key of target to remove self._data_pointer_key from
         """
 
         if target in self:
             target = self._storage[target]
-            if '$ref' in target:
-                del target['$ref']
+            if self._data_pointer_key in target:
+                del target[self._data_pointer_key]
 
     def get_data_reference(self, target, default=None):
         """
         Check if the key defines a reference to the data of another key using
-        the $ref pointer.
+        the self._data_pointer_key.
 
         :param target:  key to check
-        :param default: default to return if $ref pointer not found
+        :param default: default to return if self._data_pointer_key not found
 
         :return:        referred key or None
         """
 
         target = self._storage[target]
         if isinstance(target, dict):
-            return target.get('$ref', default)
+            return target.get(self._data_pointer_key, default)
         return default
 
     def items(self):
