@@ -249,7 +249,7 @@ class JGFParserTest(UnittestPythonCompatibility):
         self.assertEqual(len(graph), 35)
         self.assertEqual(len(graph.edges), 72)
         self.assertEqual(graph.directed, False)
-        self.assertEqual(graph_directionality(graph), 'undirectional')
+        self.assertEqual(graph_directionality(graph, has_data_reference=False), 'undirectional')
         self.assertEqual(graph.root, 1)
         self.assertTrue(isinstance(graph, GraphAxis))
 
@@ -395,7 +395,7 @@ class PGFParserTest(UnittestPythonCompatibility):
         self.assertEqual(len(graph), 37)
         self.assertEqual(len(graph.edges), 72)
         self.assertEqual(graph.directed, False)
-        self.assertEqual(graph_directionality(graph), 'undirectional')
+        self.assertEqual(graph_directionality(graph, has_data_reference=False), 'undirectional')
         self.assertTrue(isinstance(graph, Graph))
 
     def test_pickled_format_import(self):
