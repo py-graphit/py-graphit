@@ -293,7 +293,7 @@ class DictStorage(GraphDriverBaseClass):
             self._view.remove(key)
 
         # resolve orphan data pointers
-        # TODO: this may be a bottle neck in large graphs
+        # TODO: this may be a performance bottle neck in large graphs
         for target_key, target_value in self._storage.items():
             if target_value.get(self._data_pointer_key) == key:
 
