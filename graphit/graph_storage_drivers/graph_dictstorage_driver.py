@@ -274,16 +274,12 @@ class DictStorage(GraphDriverBaseClass):
         Implement class abstract method __delitem__
 
         If the storage class defines a data 'view' on the parent, remove the
-        key from the view
+        key from the view.
 
-        # TODO
-        .. note :: Implement a check to prevent orphan data pointers.
-                   If the key defines a reference to attributes of another key
-                   using the self._data_pointer_key, the pointer will be removed
-                   but the target attributes remain.
-                   The other way around, the source attributes will be removed
-                   but the now orphan pointer remains. That needs to be
-                   resolved.
+        Prevent orphan data pointers by:
+        Checking all key/value pairs in the storage for pairs that have a data
+        reference (_data_pinter_key) to the current key and update the values
+        with data from the current value store and remove the data pointer.
 
         :param key: key to remove
 
@@ -295,6 +291,14 @@ class DictStorage(GraphDriverBaseClass):
 
         if self.is_view:
             self._view.remove(key)
+
+        # resolve orphan data pointers
+        # TODO: this may be a bottle neck in large graphs
+        for target_key, target_value in self._storage.items():
+            if target_value.get(self._data_pointer_key) == key:
+
+                self._storage[target_key].update(self._storage[key])
+                del self._storage[target_key][self._data_pointer_key]
 
         del self._storage[key]
 
@@ -325,10 +329,11 @@ class DictStorage(GraphDriverBaseClass):
         value = self._storage[key]
         if isinstance(value, dict):
             refkey = value.get(self._data_pointer_key)
+
         if refkey is not None:
             if refkey not in self._storage:
-                logging.warning('{0} defines a reference ({1}) to non-existing {2}'.format(key, self._data_pointer_key,
-                                                                                           refkey))
+                logging.warning('"{0}" defines a reference ({1}) to non-existing "{2}"'.format(
+                    key, self._data_pointer_key, refkey))
             return self._storage.get(refkey, {})
 
         return value
