@@ -30,7 +30,7 @@ class TestGraphUndirectional(UnittestPythonCompatibility):
 
     def setUp(self):
         """
-        Build Graph with a few nodes but no edges yet
+        Build undirected Graph
         """
 
         self.graph = Graph()
@@ -103,8 +103,31 @@ class TestGraphUndirectional(UnittestPythonCompatibility):
         self.assertTrue((3, 2) in self.graph.edges)
         self.assertEqual(len(self.graph.edges), 13)
 
-        self.assertFalse(self.graph.directed)  # globally still marked as undirected
+        # globally still marked as undirected but of mixed type
+        self.assertFalse(self.graph.directed)
         self.assertEqual(graph_directionality(self.graph), 'mixed')
+
+    def test_graph_edge_removal_directed_data_reference(self):
+        """
+        Test resolving data references after directed edge removal in a
+        undirected graph to prevent orphan pointers
+        """
+
+        # Before removal values are referenced
+        self.assertDictEqual(self.graph.edges[(2, 3)], self.graph.edges[(2, 3)])
+        self.assertEqual(id(self.graph.edges[(2, 3)]), id(self.graph.edges[(2, 3)]))
+
+        # Remove parent edge copies data to referencing edge
+        self.graph.remove_edge(2, 3, directed=True)
+
+        self.assertTrue(self.graph.edges._data_pointer_key not in self.graph.edges[(3, 2)])
+        self.assertDictEqual(self.graph.edges[(3, 2)], {'arg1': 1.22, 'arg2': False})
+
+        # Remove referencing edge does not change anything
+        self.graph.remove_edge(4, 2, directed=True)
+
+        self.assertTrue(self.graph.edges._data_pointer_key not in self.graph.edges[(2, 4)])
+        self.assertDictEqual(self.graph.edges[(2, 4)], {'arg1': 1.22, 'arg2': False})
 
     def test_graph_undirectional_to_directional(self):
         """
@@ -163,12 +186,14 @@ class TestGraphDirectional(UnittestPythonCompatibility):
 
     def setUp(self):
         """
-        Build Graph with a few nodes but no edges yet
+        Build directed Graph
         """
 
         self.graph = Graph(directed=True)
         self.graph.add_edges([(1, 2), (2, 3), (3, 6), (3, 5), (5, 4), (4, 3), (4, 2)],
                              node_from_edge=True, arg1=1.22, arg2=False)
+        self.graph.edges[(3, 6)]['arg1'] = 2.44
+        self.graph.edges[(5, 4)]['arg3'] = 'test'
 
     def test_graph_is_directed(self):
 
@@ -217,12 +242,8 @@ class TestGraphDirectional(UnittestPythonCompatibility):
 
     def test_graph_directional_to_undirectional(self):
         """
-        Test conversion of a undirectional to directional graph
+        Test conversion of a directional to undirectional graph
         """
-
-        # Set/overwrite a few values
-        self.graph.edges[(3, 6)]['arg1'] = 2.44
-        self.graph.edges[(5, 4)]['arg3'] = 'test'
 
         undirectional = graph_directional_to_undirectional(self.graph)
 
@@ -245,3 +266,61 @@ class TestGraphDirectional(UnittestPythonCompatibility):
         self.assertDictEqual(undirectional.edges[(6, 3)], {'arg1': 2.44, 'arg2': False})
         self.assertDictEqual(undirectional.edges[(5, 4)], {'arg1': 1.22, 'arg2': False, 'arg3': 'test'})
         self.assertDictEqual(undirectional.edges[(4, 5)], {'arg1': 1.22, 'arg2': False, 'arg3': 'test'})
+
+
+class TestGraphMixed(UnittestPythonCompatibility):
+    """
+    Test graph with mixed directed and undirected edges
+
+        1 - 2 - 3 - 6
+            | / |
+            4 - 5
+    """
+
+    def setUp(self):
+        """
+        Build mixed directed and undirected Graph
+        """
+
+        self.graph = Graph(directed=True)
+        self.graph.add_edges([(1, 2), (2, 3), (3, 2), (3, 6), (3, 5), (5, 4), (4, 5), (4, 2)],
+                             node_from_edge=True, arg1=1.22, arg2=False)
+        self.graph.add_edge(3, 4, directed=False, node_from_edge=True, arg1=1.22, arg2=False)
+
+        for i, edge in enumerate(self.graph.iteredges()):
+            edge['nd'] = i
+
+    def test_graph_is_mixed(self):
+
+        self.assertTrue(self.graph.directed)
+        self.assertEqual(graph_directionality(self.graph), 'mixed')
+        self.assertEqual(sum([1 for edge in self.graph.iteredges() if edge.is_directed]), 4)
+        self.assertEqual(sum([1 for edge in self.graph.iteredges() if not edge.is_directed]), 6)
+        self.assertTrue(len(self.graph.edges) == 10)
+
+    def test_graph_contains(self):
+        """
+        Test a mix of directed and undirected (pairs) edges
+        """
+
+        directed = [edge.is_directed for edge in self.graph.iteredges()]
+        self.assertEqual(directed, [True, False, False, False, True, True, True, False, False, False])
+
+    def test_graph_directional_to_undirectional(self):
+        """
+        Test conversion of a directional to undirectional graph
+        """
+
+        undirectional = graph_directional_to_undirectional(self.graph)
+
+        # directed attribute changed to True
+        self.assertFalse(undirectional.directed)
+        self.assertNotEqual(undirectional, self.graph)
+
+        # data reference pointers determine directionality
+        self.assertEqual(graph_directionality(undirectional), 'undirectional')
+        self.assertEqual(graph_directionality(undirectional, has_data_reference=False), 'undirectional')
+
+        # all edges exist in pairs resulting duplicated values
+        values = undirectional.edges(data='nd').values()
+        self.assertEqual(len(values), len(set(values)) * 2)
