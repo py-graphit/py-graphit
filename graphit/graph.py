@@ -26,7 +26,7 @@ from graphit.graph_combinatorial.graph_setlike_operations import graph_union, gr
 from graphit.graph_combinatorial.graph_update_operations import graph_update, graph_subtract
 from graphit.graph_exceptions import GraphitException
 from graphit.graph_helpers import (edges_between_nodes, edge_list_to_nodes, make_edges, share_common_origin,
-                                   check_nodes_in_graph)
+                                   check_nodes_in_graph, group_edge_pairs)
 
 __all__ = ['GraphBase']
 logger = logging.getLogger(__module__)
@@ -1086,27 +1086,33 @@ class GraphBase(object):
 
             del self.edges[between]
 
-    def iteredges(self, orm_cls=None, reverse=False, sort_key=str):
+    def iteredges(self, orm_cls=None, reverse=False, sort_key=str, group_pairs=False):
         """
         Graph edge iterator
 
         Returns a new graph view object for the given edge and it's nodes.
 
-        :param orm_cls:  custom classes to construct new Graph class from for
-                         every edge that is returned
-        :type orm_cls:   list
-        :param reverse:  switch between ascending and descending sort order of
-                         the returned edges
-        :type reverse:   :py:bool
-        :param sort_key: function for sorting edge IDs. Equivalent to the 'key'
-                         argument to Pythons 'sorted' build in function.
+        :param orm_cls:     custom classes to construct new Graph class from
+                            for every edge that is returned
+        :type orm_cls:      :py:list
+        :param reverse:     switch between ascending and descending sort order
+                            of the returned edges
+        :type reverse:      :py:bool
+        :param sort_key:    function for sorting edge IDs. Equivalent to the
+                            'key' argument Pythons 'sorted' build in function.
+        :param group_pairs: group pairs of forward and reverse edges between
+                            nodes and return as one edge Graph object.
+        :type group_pairs:  :py:bool
 
-        :return:         single edge Graph object
-        :rtype:          :graphit:Graph
+        :return:            single edge Graph object
+        :rtype:             :graphit:Graph
         """
 
-        # TODO: iterate over pairs of edges in undirected graph?
-        for edge in sorted(self.edges.keys(), reverse=reverse, key=sort_key):
+        edges = sorted(self.edges.keys(), reverse=reverse, key=sort_key)
+        if group_pairs:
+            edges = group_edge_pairs(edges)
+            
+        for edge in edges:
             yield self.getedges(edge, directed=True, orm_cls=orm_cls)
 
     def iternodes(self, orm_cls=None, reverse=False, sort_key=str):
