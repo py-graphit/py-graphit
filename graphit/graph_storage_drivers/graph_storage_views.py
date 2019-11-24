@@ -428,3 +428,33 @@ class DataView(colabc.Set):
                 return default
 
         return data
+
+    def keys(self):
+        """
+        Implement support for dict-like keys method
+
+        :return: node/edge primary keys
+        :rtype:  :py:list
+        """
+
+        return [data[0] for data in self]
+
+    def values(self):
+        """
+        Implement support for dict-like values method
+
+        :return: node/edge values
+        :rtype:  :py:list
+        """
+
+        return [data[1] for data in self]
+
+    def items(self):
+        """
+        Implement support for dict-like items method
+
+        :return: node/edge items
+        :rtype:  :py:list
+        """
+
+        return list(self)
