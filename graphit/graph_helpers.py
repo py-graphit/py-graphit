@@ -122,6 +122,36 @@ def make_edges(nodes, directed=True):
     return edges
 
 
+def group_edge_pairs(edges):
+    """
+    Group pairs of forward and reverse edges between nodes as tuples in a
+    list together with single directed edges if any
+
+    :param edges:   list of edges
+    :type edges:    :py:list
+
+    :return:        paired edges
+    :rtype:         :py:list
+    """
+
+    pairs = []
+    done = []
+    for e in edges:
+
+        if e in done:
+            continue
+
+        reverse_e = e[::-1]
+        if reverse_e in edges:
+            pairs.append((e, reverse_e))
+            done.append(reverse_e)
+        else:
+            pairs.append(e)
+        done.append(e)
+
+    return pairs
+
+
 def renumber_id(graph, start):
     """
     Renumber all node ID's in the graph from a new start ID and adjust edges
