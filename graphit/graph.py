@@ -815,15 +815,12 @@ class GraphBase(object):
         # Make a deep copy
         if deep:
 
-            nodes_copy = None
             with self.nodes as nc:
                 nodes_copy = copy.deepcopy(nc.to_dict(return_full=copy_view))
 
-            edges_copy = None
             with self.edges as ec:
                 edges_copy = copy.deepcopy(ec.to_dict(return_full=copy_view))
 
-            data_copy = None
             with self.data as dc:
                 data_copy = copy.deepcopy(dc.to_dict(return_full=copy_view))
 
