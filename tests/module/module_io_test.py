@@ -411,7 +411,8 @@ class PGFParserTest(UnittestPythonCompatibility):
         self.assertEqual(len(graph), 37)
         self.assertEqual(len(graph.edges), 72)
         self.assertEqual(graph.directed, False)
-        self.assertEqual(graph_directionality(graph), 'undirectional')
+        self.assertEqual(graph_directionality(graph), 'directional')
+        self.assertEqual(graph_directionality(graph, has_data_reference=False), 'undirectional')
         self.assertTrue(isinstance(graph, Graph))
 
     def test_format_export(self):
