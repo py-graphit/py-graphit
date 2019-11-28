@@ -710,7 +710,7 @@ class GraphBase(object):
         node_data = {self.data.key_tag: to_unicode(node, convert=unicode_convert)}
         node_data.update(prepaire_data_dict(copy.deepcopy(kwargs)))
         node_data[u'_id'] = self.data.nodeid
-        self.data.nodeid += 1
+        self.data[u'nodeid'] += 1
 
         self.nodes[nid] = node_data
 
