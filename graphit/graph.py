@@ -502,7 +502,7 @@ class GraphBase(object):
         the graph 'directed' attribute and can be overridden locally by the
         method 'directed' attribute.
         If undirected the two edges of the undirected pair need to share the
-        same metadata attributes. This enabled by using JSON style '$ref'
+        same metadata attributes. This enabled by using JSON style '$data_ref'
         pointers that has one of the edges point to the data of the other.
         The pointer is transparently used by the edge storage class to get, set
         and delete attributes.
@@ -1111,7 +1111,7 @@ class GraphBase(object):
         edges = sorted(self.edges.keys(), reverse=reverse, key=sort_key)
         if group_pairs:
             edges = group_edge_pairs(edges)
-            
+
         for edge in edges:
             yield self.getedges(edge, directed=True, orm_cls=orm_cls)
 

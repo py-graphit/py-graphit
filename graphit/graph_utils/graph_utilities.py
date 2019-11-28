@@ -32,7 +32,7 @@ def graph_undirectional_to_directional(graph):
     graph_copy = graph.copy(deep=True)
     graph_copy.directed = True
 
-    # remove all $ref pointers between undirectional edge pairs
+    # remove all $data_ref pointers between undirectional edge pairs
     for edge in graph_copy.edges:
         if graph_copy.edges.has_data_reference(edge):
             graph_copy.edges.del_data_reference(edge)

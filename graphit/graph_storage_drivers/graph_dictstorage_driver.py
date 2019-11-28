@@ -228,7 +228,7 @@ class DictStorage(GraphDriverBaseClass):
 
         self._view = None
         self._storage = None
-        self._data_pointer_key = '$ref'
+        self._data_pointer_key = '$data_ref'
 
         if len(args):
             if not len(args) == 1:
