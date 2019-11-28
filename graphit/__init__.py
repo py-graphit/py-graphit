@@ -64,38 +64,46 @@ __rootpath__ = os.path.dirname(__file__)
 
 
 # Functions defined at package initiation to prevent circular import problems
-def check_graphbase_instance(*args):
+def check_graphbase_instance(*args, **kwargs):
     """
     Validate if all objects in `args` are instances of the GraphBase class
 
-    :param args: Arguments to check
+    :param exception: raise exception if check failed
+    :type exception:  :py:bool
+    :param args:      Arguments to check
 
-    :return:     True if validation successful
-    :rtype:      :py:bool
-    :raises:     AttributeError if validation fails
+    :return:          True if validation successful
+    :rtype:           :py:bool
+    :raises:          AttributeError if validation fails
     """
 
     # Validate arguments, should be Graph instance
     if not all([isinstance(graph, Graph) for graph in args]):
-        raise AttributeError('All arguments need be of type Graph')
+        if kwargs.get('exception', True):
+            raise AttributeError('All arguments need be of type Graph')
+        return False
 
     return True
 
 
-def check_graphaxis_instance(*args):
+def check_graphaxis_instance(*args, **kwargs):
     """
     Validate if all objects in `args` are instances of the GraphAxis class
 
-    :param args: Arguments to check
+    :param exception: raise exception if check failed
+    :type exception:  :py:bool
+    :param args:      Arguments to check
 
-    :return:     True if validation successful
-    :rtype:      :py:bool
-    :raises:     AttributeError if validation fails
+    :return:          True if validation successful
+    :rtype:           :py:bool
+    :raises:          AttributeError if validation fails
     """
 
     # Validate arguments, should be GraphAxis instance
     if not all([isinstance(graph, GraphAxis) for graph in args]):
-        raise AttributeError('All arguments need be of type Graph')
+        if kwargs.get('exception', True):
+            raise AttributeError('All arguments need be of type Graph')
+        return False
 
     return True
 

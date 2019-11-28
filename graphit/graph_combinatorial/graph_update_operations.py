@@ -151,7 +151,7 @@ def graph_axis_update(graph, data):
     """
 
     # Get data as dictionary
-    if check_graphaxis_instance(data):
+    if check_graphaxis_instance(data, exception=False):
         from graphit.graph_io.io_pydata_format import write_pydata
         data = write_pydata(data)
     if not isinstance(data, dict):
