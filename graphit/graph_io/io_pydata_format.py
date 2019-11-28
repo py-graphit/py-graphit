@@ -115,6 +115,9 @@ class PyDataNodeTools(NodeAxisTools):
             child_node = self.getnodes(cid)
             key, value = child_node.serialize(**kwargs)
 
+            if not kwargs.get('allow_none') and value is None:
+                continue
+                
             # Check for dictionary key overload
             if key in attributes:
                 logging.warning('Key "{0}" already defined. Values will be updated'.format(key))
