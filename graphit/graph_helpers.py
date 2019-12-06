@@ -193,7 +193,7 @@ def renumber_id(graph, start):
     for eid, edge in graph.edges.items():
         newedges[(mapper.get(eid[0], eid[0]), mapper.get(eid[1], eid[1]))] = edge
 
-    graph.nodes, graph.edges, graph.adjacency = graph.storagedriver(newnodes, newedges)
+    graph.nodes, graph.edges, graph.adjacency, graph.data = graph.storagedriver(newnodes, newedges, graph.data)
 
     return graph, mapper
 
