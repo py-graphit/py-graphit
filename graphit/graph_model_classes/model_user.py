@@ -12,6 +12,7 @@ from graphit.graph_mixin import NodeEdgeToolsBaseClass
 
 __all__ = ['User']
 
+
 class User(NodeEdgeToolsBaseClass):
 
     @staticmethod
@@ -27,7 +28,7 @@ class User(NodeEdgeToolsBaseClass):
         Set to current system user if called without arguments.
         """
 
-        key = key or self.data.key_tag
+        key = key or self.data.value_tag
         if key == self.data.value_tag and not value:
             value = self.username()
 
