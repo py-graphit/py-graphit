@@ -48,6 +48,10 @@ class FilePath(NodeEdgeToolsBaseClass):
         """
 
         path = self.get()
+        if not path:
+            logger.error('No path defined')
+            return None
+        
         if self.exists and self.iswritable:
             logger.info('Directory exists and writable: {0}'.format(path))
             return path
