@@ -54,8 +54,8 @@ class FilePath(NodeEdgeToolsBaseClass):
 
         try:
             os.makedirs(path, 0o755)
-        except OSError:
-            logger.error('Unable to create project directory: {0}'.format(path))
+        except OSError, e:
+            logger.error('Unable to create project directory {0}: {1}'.format(path, e))
 
         logger.info('Create directory {0}'.format(path))
         return path
